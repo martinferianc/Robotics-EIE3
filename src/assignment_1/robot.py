@@ -3,7 +3,7 @@ import time
 import json
 
 class Robot:
-	def __init__(self, interface, file="config.json"):
+	def __init__(self, interface, config_file="config.json"):
 		self.motors = [0,1]
 		self.motorParams = {}
 		self.interface = interface
@@ -16,7 +16,8 @@ class Robot:
 
 		#Open the config file
 		data = None
-    	data = json.load(file)
+    	with open(config_file) as data_file:
+    		data = json.load(data_file)
 
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
@@ -45,7 +46,7 @@ class Robot:
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 
-		self.interface.setMotorRotationSpeedReferences(self.motors,self.left_speed,self.right_speed)
+		self.interface.setMotorRotationSpeedReferences(self.motors,[self.left_speed,self.right_speed])
 
 	#Takes the distance in centimeters and moves it forward
 
@@ -72,15 +73,13 @@ class Robot:
 
 	#Takes the angle in degrees and rotates the robot right
 	def rotateRight(self, angle):
-		self.interface.increaseMotorAngleReferences(self.motors,[angle,angle])
-    	while not self.interface.motorAngleReferencesReached(self.motors) :
-        	time.sleep(0.03)
+		pass
 
 	#Takes the angle in degrees and rotates the robot left
 	def rotateLeft(self, angle):
 		pass
 
-	def rotate(self, angle):
+	def calibrate(self, angle):
 		self.interface.increaseMotorAngleReferences(self.motors,[angle,angle])
     	while not self.interface.motorAngleReferencesReached(self.motors) :
 			motorAngles = self.interface.getMotorAngles(self.motors)

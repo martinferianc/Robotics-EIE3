@@ -15,7 +15,7 @@ Robot = Robot(interface)
 while True:
     angle = float(input("Enter a angle to rotate degrees: "))
     angle = math.radians(angle)
-    Robot.rotate(angle)
+    Robot.calibrate(angle)
     print "Destination reached!"
 
 
