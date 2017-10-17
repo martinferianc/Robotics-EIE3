@@ -5,7 +5,7 @@ interface=brickpi.Interface()
 interface.initialize()
 
 motors = [0,1]
-speed = 6.0
+speed = 0.0
 
 interface.motorEnable(motors[0])
 interface.motorEnable(motors[1])
@@ -28,7 +28,7 @@ interface.setMotorRotationSpeedReferences(motors,[speed,speed])
 
 print "Press Ctrl+C to exit"
 while True:
-	time.sleep(1)
-
+	speed = int(input())
+	interface.setMotorRotationSpeedReferences(motors,[speed,speed])
 
 interface.terminate()
