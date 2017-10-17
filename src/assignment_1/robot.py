@@ -11,12 +11,12 @@ class Robot:
 		self.right_speed = 0
 
 		#Enabling the motors
-		self.interface.motorEnable(motors[0])
-		self.interface.motorEnable(motors[1])
+		self.interface.motorEnable(self.motors[0])
+		self.interface.motorEnable(self.motors[1])
 
 		#Open the config file
-		with open(file) as data_file:
-    		data = json.load(data_file)
+		data = None
+    	data = json.load(file)
 
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
@@ -63,11 +63,7 @@ class Robot:
 
 
 	def forward(self,distance, speed = None, delta = None):
-		start = time.time()
-		if speed is not None and delta is not None:
-
-		while distance
-		self.interface.setMotorRotationSpeedReferences(self.motors,[speed,speed])
+		pass
 
 
 	#Takes the distance in centimeters and moves it backwards
@@ -88,6 +84,6 @@ class Robot:
 		self.interface.increaseMotorAngleReferences(self.motors,[angle,angle])
     	while not self.interface.motorAngleReferencesReached(self.motors) :
 			motorAngles = self.interface.getMotorAngles(self.motors)
-		if motorAngles :
-		    print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
-		time.sleep(0.1)
+			if motorAngles:
+		    	print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
+			time.sleep(0.1)

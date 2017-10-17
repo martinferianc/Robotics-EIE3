@@ -1,27 +1,26 @@
-motorParams = {
-  "left" : {
-    "maxRotationAcceleration" : 6.0,
-    "maxRotationSpeed" : 12.0,
-    "feedForwardGain" : 255/20.0,
-    "minPWM" : 18.0,
-    "minOutput" : -255,
-    "maxOutput" : 255,
-    "k_p" : 100.0,
-    "k_i" : 0.0,
-    "k_d" : 0.0
-  
-  },
-  
-  "right" : {
-    "maxRotationAcceleration" : 6.0,
-    "maxRotationSpeed" : 12.0,
-    "feedForwardGain" : 255/20.0,
-    "minPWM" : 18.0,
-    "minOutput" : -255,
-    "maxOutput" : 255,
-    "k_p" : 100.0,
-    "k_i" : 0.0,
-    "k_d" : 0.0
-  }
-}
+{
+	"left": {
+		"maxRotationAcceleration": 6.0,
+		"maxRotationSpeed": 12.0,
+		"feedForwardGain": 12.75,
+		"minPWM": 18.0,
+		"minOutput": -255,
+		"maxOutput": 255,
+		"k_p": 100.0,
+		"k_i": 0.0,
+		"k_d": 0.0
 
+	},
+
+	"right": {
+		"maxRotationAcceleration": 6.0,
+		"maxRotationSpeed": 12.0,
+		"feedForwardGain": 12.75,
+		"minPWM": 18.0,
+		"minOutput": -255,
+		"maxOutput": 255,
+		"k_p": 100.0,
+		"k_i": 0.0,
+		"k_d": 0.0
+	}
+}

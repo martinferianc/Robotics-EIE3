@@ -10,7 +10,7 @@ interface.initialize()
 interface.startLogging("motor_position_1.log")
 
 #Initialize the Robot
-Robot = Motors(interface)
+Robot = Robot(interface)
 
 while True:
     angle = float(input("Enter a angle to rotate degrees: "))
