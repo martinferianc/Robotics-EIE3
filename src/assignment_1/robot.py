@@ -90,7 +90,7 @@ class Robot:
 				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
 			time.sleep(0.1)
 
-		self.interface.startLogging("motor_position_3_"+str(int(angle))+".log")
+		self.interface.startLogging("motor_position_4_"+str(int(angle))+".log")
 		self.interface.increaseMotorAngleReferences(self.motors,[radians,radians])
          	while not self.interface.motorAngleReferencesReached(self.motors):
 			motorAngles = self.interface.getMotorAngles(self.motors)
