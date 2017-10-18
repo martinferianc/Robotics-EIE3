@@ -6,7 +6,7 @@
 		"minPWM": 18.0,
 		"minOutput": -255,
 		"maxOutput": 255,
-		"k_p": 100.0,
+		"k_p": 750.0,
 		"k_i": 0.0,
 		"k_d": 0.0
 
@@ -19,7 +19,7 @@
 		"minPWM": 18.0,
 		"minOutput": -255,
 		"maxOutput": 255,
-		"k_p": 100.0,
+		"k_p": 750.0,
 		"k_i": 0.0,
 		"k_d": 0.0
 	}
