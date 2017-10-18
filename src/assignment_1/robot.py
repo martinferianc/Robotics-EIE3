@@ -64,12 +64,31 @@ class Robot:
 
 
 	def forward(self,distance, speed = None, delta = None):
-		pass
-
+		self.speed = -6
+		start = time.time()
+		distance_travelled = 0
+		duration = 0
+		self.interface.setMotorRotationSpeedReferences(self.motors,[self.speed,self.speed])
+		#So we have a threshold value
+		while abs(distance_travelled-distance)<0.1:
+			duration = time.time()-start
+			velocity = 0 #NEEDS CALCULATION
+			distance_travelled = velocity*duration
+		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0])
 
 	#Takes the distance in centimeters and moves it backwards
 	def backward(self, distance):
-		pass
+		self.speed = 6
+		start = time.time()
+		distance_travelled = 0
+		duration = 0
+		self.interface.setMotorRotationSpeedReferences(self.motors,[self.speed,self.speed])
+		#So we have a threshold value
+		while abs(distance_travelled-distance)<0.1:
+			duration = time.time()-start
+			velocity = 0  #NEEDS CALCULATION
+			distance_travelled = velocity*duration
+		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0])
 
 	#Takes the angle in degrees and rotates the robot right
 	def rotateRight(self, angle):

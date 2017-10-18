@@ -25,4 +25,6 @@ def main(logfile):
 
 
 if __name__ == '__main__':
-    main("motor_position_1.log")
+    #main("motor_position_1_60.0.log")
+    #main("motor_position_1_180.0.log")
+    main("motor_position_4_180.log")
