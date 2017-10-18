@@ -12,11 +12,10 @@ interface.initialize()
 #Initialize the Robot
 Robot = Robot(interface)
 
-while True:
-    angle = float(input("Enter a angle to rotate degrees: "))
-    angle = math.radians(angle)
-    Robot.calibrate(angle)
-    print "Destination reached!"
+angle = float(input("Enter a angle to rotate degrees: "))
+radians = math.radians(angle)
+Robot.calibrate(radians,angle)
+print "Destination reached!"
 
 
 interface.terminate()
