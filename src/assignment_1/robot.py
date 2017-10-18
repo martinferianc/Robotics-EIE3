@@ -80,8 +80,17 @@ class Robot:
 		pass
 
 	def calibrate(self, angle):
+		#So that we always start calibrating approximately at zero
+		motorAngles = self.interface.getMotorAngles(self.motors)
+		motorAngles_zero = (round(0-motorAngles[0][0],2), round(0-motorAngles[0][1],2))
+		self.interface.increaseMotorAngleReferences(self.motors,[motorAngles_zero[0],motorAngles_zero[1]])
+		while not self.interface.motorAngleReferencesReached(self.motors):
+			motorAngles = self.interface.getMotorAngles(self.motors)
+			print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
+			time.sleep(0.1)
+
 		self.interface.increaseMotorAngleReferences(self.motors,[angle,angle])
-    	while not self.interface.motorAngleReferencesReached(self.motors) :
+    	while not self.interface.motorAngleReferencesReached(self.motors):
 			motorAngles = self.interface.getMotorAngles(self.motors)
 			if motorAngles:
 		    	print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
