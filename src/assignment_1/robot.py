@@ -16,8 +16,8 @@ class Robot:
 
 		#Open the config file
 		data = None
-    	with open("config.json") as data_file:
-    		data = json.load(data_file)
+	    	with open("config.json") as data_file:
+    			data = json.load(data_file)
 
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
@@ -90,11 +90,11 @@ class Robot:
 				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
 			time.sleep(0.1)
 
-		interface.startLogging("motor_position_1_"+str(angle)+".log")
+		self.interface.startLogging("motor_position_1_"+str(angle)+".log")
 		self.interface.increaseMotorAngleReferences(self.motors,[radians,radians])
          	while not self.interface.motorAngleReferencesReached(self.motors):
 			motorAngles = self.interface.getMotorAngles(self.motors)
 			if motorAngles:
 		    	    print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
 			time.sleep(0.1)
-		interface.stopLogging()
+		self.interface.stopLogging()
