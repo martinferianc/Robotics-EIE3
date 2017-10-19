@@ -12,7 +12,6 @@ class Robot:
 		self.right_speed = 0
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
-		self.angle_calibration = 3.05
 
 		#Enabling the motors
 		self.interface.motorEnable(self.motors[0])
@@ -20,9 +19,12 @@ class Robot:
 
 		#Open the config file
 		data = None
-	    	with open("src/config.json") as data_file:
+	    	with open("config.json") as data_file:
     			data = json.load(data_file)
-
+		# Configure motor calibration constants
+		self.distance_calibration = data.get("distance_calibration", 3.05)
+		self.angle_calibration = data.get("angle_calibration", 0.13)
+		
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
 		self.motorParams["left"].maxRotationAcceleration = data["left"]["maxRotationAcceleration"]
@@ -75,7 +77,7 @@ class Robot:
 
 		print("Start Angles: {}".format(motorAngles_start))
 		# Set the reference angles to reach
-		circular_distances = [(2*x*self.angle_calibration)/self.circumference for x in distances]
+		circular_distances = [(2*x*self.distance_calibration)/self.circumference for x in distances]
 		print("Distance in radians: {}".format(circular_distances))
 		#motorAngles_end = [round(x[0]+((self.circumference/distances[i])/math.pi),2) for i, x in enumerate(motorAngles_start)]
 		#print("Angles to end at: {}".format(motorAngles_end))
@@ -89,9 +91,8 @@ class Robot:
 
 	#Takes the angle in degrees and rotates the robot right
 	def rotate_right(self, angle):
-		#Distance = 0.07413*angle
-		rad_dist = (math.pi*angle)/180
-		move_wheels([rad_dist,-rad_dist])
+		dist = self.angle_calibration*angle
+		self.move_wheels([-dist,dist])
 
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle):
