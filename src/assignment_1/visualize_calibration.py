@@ -4,7 +4,8 @@ import pandas as pd
 
 
 def main(logfile):
-    data = pd.read_csv(logfile, sep="\t", header=None)
+    logfile_path = './logs/' + logfile
+    data = pd.read_csv(logfile_path, sep="\t", header=None)
     fig = plt.figure(1)
 
     ax1 = plt.subplot(211)
