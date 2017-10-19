@@ -42,11 +42,7 @@ def draw_graph(logfile_path, logfile_name):
     graph_path = './graphs/' + logfile_name + '.png'
     plt.savefig(graph_path, dpi=140)
 
-    # do not show the plot, save instead
     # plt.show()
-
-    # close figure to prevent adding different axes on the same plot
-    plt.close()
 
 def main():
     """ generate calibration graphs using log files """
@@ -57,8 +53,10 @@ def main():
         for logfile_name in file_names:
             logfile_path = logfile_root + logfile_name
             draw_graph(logfile_path, logfile_name)
-            print("graph generated for", logfile_path)
+            print(logfile_path, "generated")
 
 if __name__ == '__main__':
+    #main("motor_position_1_60.0.log")
+    #main("motor_position_1_180.0.log")
     main()
 
