@@ -62,6 +62,24 @@ class Robot:
 		while not self.interface.motorAngleReferencesReached(self.motors):
 			motorAngles = self.interface.getMotorAngles(self.motors)
 
+	# Move specified wheel a certain distance
+	def move_wheels(self, distance=1, wheels=[0,1], speed=[2,2]):
+		# Set speed reference
+		#self.interface.setMotorRotationSpeedReferences(wheels)
+
+		# Retrieve start angle of motors
+		motorAngles_start = self.interface.getMotorAngles(wheels)
+
+		# Angle to rotate the wheels in radians
+		revolutions_radians = (self.circumference/distance)*2*math.pi
+
+		# Set the reference angles to reach
+		motorAngles_end = [round(x+revolutions_radians,2) for x in motorAngles_start]
+
+		self.interface.increaseMotorAngleReferences(wheels, motorAngles_end)
+
+
+
 	#Takes the angle in degrees and rotates the robot right
 	def rotateRight(self, angle):
 		pass
