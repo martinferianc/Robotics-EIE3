@@ -13,3 +13,8 @@ MAC Address: 44:33:4c:6c:c1:46
 [https://www.doc.ic.ac.uk/~jrj07/robotics](https://www.doc.ic.ac.uk/~jrj07/robotics)
 
 type in MAC address: 44:33:4c:6c:c1:46
+
+## Running scripts
+Run all scripts from the root directory.
+e.g.
+`python test_scripts/test_wheels.py 20 20`
