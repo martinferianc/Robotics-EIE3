@@ -12,8 +12,8 @@ def draw_graph(logfile_path, logfile_name):
     plt.suptitle(logfile_name)
 
     ax1 = plt.subplot(211)
-    ax1_line1 = plt.plot(data[0],data[2], "g")
-    ax1_line2 = plt.plot(data[0],data[1], "b")
+    ax1_line1 = plt.plot(data[0],data[2], "g", label="Actual angle")
+    ax1_line2 = plt.plot(data[0],data[1], "b", label ="Reference angle")
     ax1.set_title('Left motor', fontsize=12)
     plt.xlabel('Time [s]', fontsize=12)
     plt.ylabel('Angle [Radians]', fontsize=12)
@@ -24,10 +24,10 @@ def draw_graph(logfile_path, logfile_name):
 
     # place legends on the bottom right
     plt.legend(handles=[green_patch, blue_patch], loc=4)
- 
+
     ax2 = plt.subplot(212)
-    ax2_line1 = plt.plot(data[0],data[4], "g")
-    ax2_line2 = plt.plot(data[0],data[3], "b")
+    ax2_line1 = plt.plot(data[0],data[4], "g", label="Actual angle")
+    ax2_line2 = plt.plot(data[0],data[3], "b", label ="Reference angle")
     ax2.set_title('Right motor', fontsize=12)
     plt.xlabel('Time [s]', fontsize=12)
     plt.ylabel('Angle [Radians]', fontsize=12)
