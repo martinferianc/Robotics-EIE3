@@ -1,7 +1,7 @@
 import threading
 import time
 import sys
-from robot import Robot
+from src.robot import Robot
 import brickpi
 
 #Initialize the interface

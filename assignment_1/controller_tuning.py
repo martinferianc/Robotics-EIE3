@@ -1,6 +1,6 @@
 import threading
 import time
-from robot import Robot
+from src.robot import Robot
 import brickpi
 import math
 
