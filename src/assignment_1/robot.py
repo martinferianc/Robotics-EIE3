@@ -82,11 +82,14 @@ class Robot:
 
 	#Takes the angle in degrees and rotates the robot right
 	def rotateRight(self, angle):
-		pass
+		#Distance = 0.07413*angle
+		move_wheel(0, 0.07413*angle)
+		move_wheel(1, -0.07413*angle)
 
 	#Takes the angle in degrees and rotates the robot left
 	def rotateLeft(self, angle):
-		pass
+		move_wheel(0, -0.07413*angle)
+		move_wheel(1, 0.07413*angle)
 
 	def calibrate(self, radians,angle):
 		#So that we always start calibrating approximately at zero
