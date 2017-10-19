@@ -12,6 +12,7 @@ class Robot:
 		self.right_speed = 0
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
+		self.angle_calibration = 3.05
 
 		#Enabling the motors
 		self.interface.motorEnable(self.motors[0])
@@ -19,8 +20,8 @@ class Robot:
 
 		#Open the config file
 		data = None
-	    with open("config.json") as data_file:
-    		data = json.load(data_file)
+	    	with open("config.json") as data_file:
+    			data = json.load(data_file)
 
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
@@ -63,21 +64,27 @@ class Robot:
 			motorAngles = self.interface.getMotorAngles(self.motors)
 
 	# Move specified wheel a certain distance
-	def move_wheels(self, distance=1, wheels=[0,1], speed=[2,2]):
+	def move_wheels(self, distances=[1,1], wheels=[0,1], speed=[2,2]):
+		print("Distance to move wheels: {}".format(distances))
 		# Set speed reference
-		#self.interface.setMotorRotationSpeedReferences(wheels)
+		#self.interface.setMotorRotationSpeedReferences(wheels,speed)
 
 		# Retrieve start angle of motors
 		motorAngles_start = self.interface.getMotorAngles(wheels)
 
-		# Angle to rotate the wheels in radians
-		revolutions_radians = (self.circumference/distance)*2*math.pi
 
+		print("Start Angles: {}".format(motorAngles_start))
 		# Set the reference angles to reach
-		motorAngles_end = [round(x+revolutions_radians,2) for x in motorAngles_start]
-
-		self.interface.increaseMotorAngleReferences(wheels, motorAngles_end)
-
+		circular_distances = [(2*x*self.angle_calibration)/self.circumference for x in distances]
+		print("Distance in radians: {}".format(circular_distances))
+		#motorAngles_end = [round(x[0]+((self.circumference/distances[i])/math.pi),2) for i, x in enumerate(motorAngles_start)]
+		#print("Angles to end at: {}".format(motorAngles_end))
+		
+		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
+		while not self.interface.motorAngleReferencesReached(wheels):
+			time.sleep(0.1)
+			print(self.interface.getMotorAngles(wheels))	
+			#self.interface.increaseMotorAngleReferences(wheels,motorAngles_end)
 
 
 	#Takes the angle in degrees and rotates the robot right
