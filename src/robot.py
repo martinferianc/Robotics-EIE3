@@ -20,7 +20,7 @@ class Robot:
 
 		#Open the config file
 		data = None
-	    	with open("config.json") as data_file:
+	    	with open("src/config.json") as data_file:
     			data = json.load(data_file)
 
 		#Configuring the left motor
@@ -79,24 +79,23 @@ class Robot:
 		print("Distance in radians: {}".format(circular_distances))
 		#motorAngles_end = [round(x[0]+((self.circumference/distances[i])/math.pi),2) for i, x in enumerate(motorAngles_start)]
 		#print("Angles to end at: {}".format(motorAngles_end))
-		
+
 		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
 		while not self.interface.motorAngleReferencesReached(wheels):
 			time.sleep(0.1)
-			print(self.interface.getMotorAngles(wheels))	
+			print(self.interface.getMotorAngles(wheels))
 			#self.interface.increaseMotorAngleReferences(wheels,motorAngles_end)
 
 
 	#Takes the angle in degrees and rotates the robot right
-	def rotateRight(self, angle):
+	def rotate_right(self, angle):
 		#Distance = 0.07413*angle
-		move_wheel(0, 0.07413*angle)
-		move_wheel(1, -0.07413*angle)
+		rad_dist = (math.pi*angle)/180
+		move_wheels([rad_dist,-rad_dist])
 
 	#Takes the angle in degrees and rotates the robot left
-	def rotateLeft(self, angle):
-		move_wheel(0, -0.07413*angle)
-		move_wheel(1, 0.07413*angle)
+	def rotate_left(self, angle):
+		rotate_right(-angle)
 
 	def calibrate(self, radians,angle):
 		#So that we always start calibrating approximately at zero
