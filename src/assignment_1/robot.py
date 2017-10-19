@@ -1,6 +1,7 @@
 import brickpi
 import time
 import json
+import math
 
 class Robot:
 	def __init__(self, interface, config_file="config.json"):
@@ -9,6 +10,8 @@ class Robot:
 		self.interface = interface
 		self.left_speed = 0
 		self.right_speed = 0
+		self.wheel_diameter = 5.3 #cm
+		self.circumference = self.wheel_diameter * math.pi
 
 		#Enabling the motors
 		self.interface.motorEnable(self.motors[0])
@@ -16,8 +19,8 @@ class Robot:
 
 		#Open the config file
 		data = None
-	    	with open("config.json") as data_file:
-    			data = json.load(data_file)
+	    with open("config.json") as data_file:
+    		data = json.load(data_file)
 
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
@@ -50,45 +53,14 @@ class Robot:
 
 	#Takes the distance in centimeters and moves it forward
 
-	def __moveWheel(self,motor, speed, delta):
-		start = time.time()
-		duration = 0
-		while delta<duration:
-			if motor == 0:
-				self.interface.setMotorRotationSpeedReferences(1,self.right_speed)
-				self.left_speed = speed
-			else:
-				self.interface.setMotorRotationSpeedReferences(0,self.left_speed)
-				self.right_speed = speed
-			duration = start-time.time()
-
-
-	def forward(self,distance, speed = None, delta = None):
-		self.speed = -6
-		start = time.time()
-		distance_travelled = 0
-		duration = 0
-		self.interface.setMotorRotationSpeedReferences(self.motors,[self.speed,self.speed])
-		#So we have a threshold value
-		while abs(distance_travelled-distance)<0.1:
-			duration = time.time()-start
-			velocity = 0 #NEEDS CALCULATION
-			distance_travelled = velocity*duration
-		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0])
-
 	#Takes the distance in centimeters and moves it backwards
-	def backward(self, distance):
-		self.speed = 6
-		start = time.time()
-		distance_travelled = 0
-		duration = 0
-		self.interface.setMotorRotationSpeedReferences(self.motors,[self.speed,self.speed])
-		#So we have a threshold value
-		while abs(distance_travelled-distance)<0.1:
-			duration = time.time()-start
-			velocity = 0  #NEEDS CALCULATION
-			distance_travelled = velocity*duration
-		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0])
+	def travel_straight(self,distance):
+		motorAngles_start = self.interface.getMotorAngles(self.motors)
+		revolutions_radians = (self.circumference/distance)*2*math.pi
+		motorAngles_end = (-round(motorAngles_start[0][0] + revolutions_radians, 2), -round(motorAngles_start[1][0] + revolutions_radians, 2))
+		self.interface.increaseMotorAngleReferences(self.motors,[motorAngles_end[0],motorAngles_end[1]])
+		while not self.interface.motorAngleReferencesReached(self.motors):
+			motorAngles = self.interface.getMotorAngles(self.motors)
 
 	#Takes the angle in degrees and rotates the robot right
 	def rotateRight(self, angle):
