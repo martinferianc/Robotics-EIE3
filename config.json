@@ -22,5 +22,8 @@
 		"k_p": 450.0,
 		"k_i": 190.0,
 		"k_d": 229.0
-	}
+	},
+
+	"distance_calibration": 3.05,
+	"angle_calibration": 0.15
 }

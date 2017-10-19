@@ -19,9 +19,12 @@ class Robot:
 
 		#Open the config file
 		data = None
-	    with open("config.json") as data_file:
-    		data = json.load(data_file)
-
+	    	with open("config.json") as data_file:
+    			data = json.load(data_file)
+		# Configure motor calibration constants
+		self.distance_calibration = data.get("distance_calibration", 3.05)
+		self.angle_calibration = data.get("angle_calibration", 0.13)
+		
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
 		self.motorParams["left"].maxRotationAcceleration = data["left"]["maxRotationAcceleration"]
@@ -62,13 +65,38 @@ class Robot:
 		while not self.interface.motorAngleReferencesReached(self.motors):
 			motorAngles = self.interface.getMotorAngles(self.motors)
 
+	# Move specified wheel a certain distance
+	def move_wheels(self, distances=[1,1], wheels=[0,1], speed=[2,2]):
+		print("Distance to move wheels: {}".format(distances))
+		# Set speed reference
+		#self.interface.setMotorRotationSpeedReferences(wheels,speed)
+
+		# Retrieve start angle of motors
+		motorAngles_start = self.interface.getMotorAngles(wheels)
+
+
+		print("Start Angles: {}".format(motorAngles_start))
+		# Set the reference angles to reach
+		circular_distances = [(2*x*self.distance_calibration)/self.circumference for x in distances]
+		print("Distance in radians: {}".format(circular_distances))
+		#motorAngles_end = [round(x[0]+((self.circumference/distances[i])/math.pi),2) for i, x in enumerate(motorAngles_start)]
+		#print("Angles to end at: {}".format(motorAngles_end))
+
+		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
+		while not self.interface.motorAngleReferencesReached(wheels):
+			time.sleep(0.1)
+			print(self.interface.getMotorAngles(wheels))
+			#self.interface.increaseMotorAngleReferences(wheels,motorAngles_end)
+
+
 	#Takes the angle in degrees and rotates the robot right
-	def rotateRight(self, angle):
-		pass
+	def rotate_right(self, angle):
+		dist = self.angle_calibration*angle
+		self.move_wheels([-dist,dist])
 
 	#Takes the angle in degrees and rotates the robot left
-	def rotateLeft(self, angle):
-		pass
+	def rotate_left(self, angle):
+		rotate_right(-angle)
 
 	def calibrate(self, radians,angle):
 		#So that we always start calibrating approximately at zero
