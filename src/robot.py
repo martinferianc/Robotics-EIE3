@@ -54,46 +54,38 @@ class Robot:
 
 		self.interface.setMotorRotationSpeedReferences(self.motors,[self.left_speed,self.right_speed])
 
-	#Takes the distance in centimeters and moves it forward
-
-	#Takes the distance in centimeters and moves it backwards
-	def travel_straight(self,distance):
-		motorAngles_start = self.interface.getMotorAngles(self.motors)
-		revolutions_radians = (self.circumference/distance)*2*math.pi
-		motorAngles_end = (-round(motorAngles_start[0][0] + revolutions_radians, 2), -round(motorAngles_start[1][0] + revolutions_radians, 2))
-		self.interface.increaseMotorAngleReferences(self.motors,[motorAngles_end[0],motorAngles_end[1]])
-		while not self.interface.motorAngleReferencesReached(self.motors):
-			motorAngles = self.interface.getMotorAngles(self.motors)
-
 	# Move specified wheel a certain distance
-	def move_wheels(self, distances=[1,1], wheels=[0,1], speed=[2,2]):
+	def move_wheels(self, distances=[1,1], wheels=[0,1]):
 		print("Distance to move wheels: {}".format(distances))
-		# Set speed reference
-		#self.interface.setMotorRotationSpeedReferences(wheels,speed)
-
+		
 		# Retrieve start angle of motors
 		motorAngles_start = self.interface.getMotorAngles(wheels)
-
-
 		print("Start Angles: {}".format(motorAngles_start))
+		
 		# Set the reference angles to reach
 		circular_distances = [(2*x*self.distance_calibration)/self.circumference for x in distances]
 		print("Distance in radians: {}".format(circular_distances))
+		
 		#motorAngles_end = [round(x[0]+((self.circumference/distances[i])/math.pi),2) for i, x in enumerate(motorAngles_start)]
 		#print("Angles to end at: {}".format(motorAngles_end))
 
 		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
+		
+		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(wheels):
 			time.sleep(0.1)
 			print(self.interface.getMotorAngles(wheels))
-			#self.interface.increaseMotorAngleReferences(wheels,motorAngles_end)
-
-
+		return True
+	
+	#Takes the distance in centimeters and moves it forward
+	def travel_straight(self, distance):
+		return self.move_wheels([distance,distance], [0,1])
+	
 	#Takes the angle in degrees and rotates the robot right
 	def rotate_right(self, angle):
 		dist = self.angle_calibration*angle
-		self.move_wheels([-dist,dist])
-
+		return self.move_wheels([-dist,dist])
+	
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle):
 		rotate_right(-angle)
