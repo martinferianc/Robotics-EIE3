@@ -24,7 +24,7 @@ class Robot:
 		# Configure motor calibration constants
 		self.distance_calibration = data.get("distance_calibration", 3.05)
 		self.angle_calibration = data.get("angle_calibration", 0.13)
-		
+
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
 		self.motorParams["left"].maxRotationAcceleration = data["left"]["maxRotationAcceleration"]
@@ -57,35 +57,35 @@ class Robot:
 	# Move specified wheel a certain distance
 	def move_wheels(self, distances=[1,1], wheels=[0,1]):
 		print("Distance to move wheels: {}".format(distances))
-		
+
 		# Retrieve start angle of motors
 		motorAngles_start = self.interface.getMotorAngles(wheels)
 		print("Start Angles: {}".format(motorAngles_start))
-		
+
 		# Set the reference angles to reach
 		circular_distances = [(2*x*self.distance_calibration)/self.circumference for x in distances]
 		print("Distance in radians: {}".format(circular_distances))
-		
+
 		#motorAngles_end = [round(x[0]+((self.circumference/distances[i])/math.pi),2) for i, x in enumerate(motorAngles_start)]
 		#print("Angles to end at: {}".format(motorAngles_end))
 
 		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
-		
+
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(wheels):
 			time.sleep(0.1)
 			print(self.interface.getMotorAngles(wheels))
 		return True
-	
+
 	#Takes the distance in centimeters and moves it forward
 	def travel_straight(self, distance):
 		return self.move_wheels([distance,distance], [0,1])
-	
+
 	#Takes the angle in degrees and rotates the robot right
 	def rotate_right(self, angle):
 		dist = self.angle_calibration*angle
 		return self.move_wheels([-dist,dist])
-	
+
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle):
 		rotate_right(-angle)
@@ -101,7 +101,7 @@ class Robot:
 				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
 			time.sleep(0.1)
 
-		self.interface.startLogging("motor_position_6_"+str(int(angle))+".log")
+		self.interface.startLogging("motor_position_0_"+str(int(angle))+".log")
 		self.interface.increaseMotorAngleReferences(self.motors,[radians,radians])
          	while not self.interface.motorAngleReferencesReached(self.motors):
 			motorAngles = self.interface.getMotorAngles(self.motors)
