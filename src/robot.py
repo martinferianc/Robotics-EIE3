@@ -63,11 +63,13 @@ class Robot:
 		print("Start Angles: {}".format(motorAngles_start))
 
 		# Set the reference angles to reach
-		circular_distances = [(2*x*self.distance_calibration)/self.circumference for x in distances]
+		circular_distances = [round((2*x*self.distance_calibration)/self.circumference,2) for x in distances]
 		print("Distance in radians: {}".format(circular_distances))
+		motorAngles_end = []
 
-		#motorAngles_end = [round(x[0]+((self.circumference/distances[i])/math.pi),2) for i, x in enumerate(motorAngles_start)]
-		#print("Angles to end at: {}".format(motorAngles_end))
+		motorAngles_end.append(round(motorAngles_start[0][0] + circular_distances[0],2))
+		motorAngles_end.append(round(motorAngles_start[1][0] + circular_distances[1],2))
+		print("Angles to end at: {}".format(motorAngles_end))
 
 		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
 
@@ -75,6 +77,8 @@ class Robot:
 		while not self.interface.motorAngleReferencesReached(wheels):
 			time.sleep(0.1)
 			print(self.interface.getMotorAngles(wheels))
+			if (round(self.interface.getMotorAngles(wheels)[0][0],2)==motorAngles_end[0] or round(self.interface.getMotorAngles(wheels)[1][0],2)==motorAngles_end[1]):
+				return True
 		return True
 
 	#Takes the distance in centimeters and moves it forward
@@ -88,7 +92,7 @@ class Robot:
 
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle):
-		rotate_right(-angle)
+		self.rotate_right(-angle)
 
 	def calibrate(self, radians,angle):
 		#So that we always start calibrating approximately at zero
