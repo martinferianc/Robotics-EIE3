@@ -10,4 +10,4 @@ def main(logfile):
 
 
 if __name__ == '__main__':
-    main("/log/ending_points.txt")
+    main("logs/error.log")
