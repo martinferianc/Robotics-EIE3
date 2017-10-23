@@ -4,7 +4,8 @@ import json
 import math
 
 class Robot:
-	def __init__(self, interface, config_file="config.json"):
+	def __init__(self, interface, config_file="config.json", touch_ports = None, ultrasonic_port = None):
+		#Motor initialization
 		self.motors = [0,1]
 		self.motorParams = {}
 		self.interface = interface
@@ -21,6 +22,8 @@ class Robot:
 		data = None
 	    	with open("config.json") as data_file:
     			data = json.load(data_file)
+		if data is None:
+			raise Exception("Could not load configuration file!")
 		# Configure motor calibration constants
 		self.distance_calibration = data.get("distance_calibration", 3.05)
 		self.angle_calibration = data.get("angle_calibration", 0.13)
@@ -53,6 +56,33 @@ class Robot:
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 
 		self.interface.setMotorRotationSpeedReferences(self.motors,[self.left_speed,self.right_speed])
+
+		#Initialize the touch sensors
+		self.touch_ports = touch_ports
+		if len(self.touch_ports)>=1:
+			for i in touch_ports:
+				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
+
+		self.ultrasonic_port = ultrasonic_port
+		if len(self.ultrasonic_port)>=1:
+				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_ULTRASONIC)
+
+	#Read input from the touch sensors
+	def read_touch_sensor(self,port):
+		if self.touch_ports is not None:
+			result = self.interface.getSensorValue(port)
+			if result:
+  				return result[0]
+		else:
+			raise Exception("Touch sensors not initialized!")
+
+	def read_ultrasonic_sensor(self,port):
+		if self.ultrasonic_port is not None:
+			result = self.interface.getSensorValue(port)
+			if result:
+	  			return result
+		else:
+			raise Exception("Ultrasonic sensor not initialized!")
 
 	# Move specified wheel a certain distance
 	def move_wheels(self, distances=[1,1], wheels=[0,1]):
