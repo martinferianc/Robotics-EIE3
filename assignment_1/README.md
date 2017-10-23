@@ -49,6 +49,7 @@ As you can see from the images, we managed to from large oscillations to an almo
 
 ### 5.3 Distance and Rotation Calibration
 
+To calibrate the distance, we measured the diameter of the wheel. This would tell us how far the robot would move when the motor rotated through a set angle. We tested this out and found we needed to adjust this value slightly to account for small inconsistencies such as the tyre changing diameter when the weight of the robot was on it. After a small trial and error session we were able to accurately make the robot move the distance we would tell it.
 
 ### 5.4 Driving in a Square and Observing Drift
 
