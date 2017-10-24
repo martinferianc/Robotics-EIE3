@@ -10,7 +10,7 @@ interface.initialize()
 bumper_1_port = 0
 bumper_2_port = 1
 
-Robot = Robot(interface)
+Robot = Robot(interface, "carpet_config.json")
 bumpers = [None,None]
 
 while True:

@@ -7,7 +7,7 @@ import brickpi
 interface=brickpi.Interface()
 interface.initialize()
 
-Robot = Robot(interface)
+Robot = Robot(interface, "paper_config.json")
 for i in range(4):
     Robot.travel_straight(40)
     Robot.rotate_left(90)

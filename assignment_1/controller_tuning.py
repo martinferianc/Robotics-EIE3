@@ -10,7 +10,7 @@ interface.initialize()
 
 
 #Initialize the Robot
-Robot = Robot(interface)
+Robot = Robot(interface, "paper_config.json")
 
 angle = float(input("Enter a angle to rotate degrees: "))
 radians = math.radians(angle)

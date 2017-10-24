@@ -7,7 +7,7 @@ import brickpi
 interface=brickpi.Interface()
 interface.initialize()
 
-Robot = Robot(interface)
+Robot = Robot(interface, "paper_config.json")
 
 Robot.travel_straight(40)
 time.sleep(5)

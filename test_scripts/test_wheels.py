@@ -9,7 +9,7 @@ interface=brickpi.Interface()
 interface.initialize()
 interface.startLogging("motor_position_1.log")
 
-Robot = Robot(interface)
+Robot = Robot(interface, "paper_config.json")
 
 
 Robot.move_wheels([float(sys.argv[1]),float(sys.argv[2])])
