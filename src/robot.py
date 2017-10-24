@@ -59,12 +59,12 @@ class Robot:
 
 		#Initialize the touch sensors
 		self.touch_ports = touch_ports
-		if len(self.touch_ports)>=1:
+		if self.touch_ports is not None:
 			for i in touch_ports:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
 
 		self.ultrasonic_port = ultrasonic_port
-		if len(self.ultrasonic_port)>=1:
+		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_ULTRASONIC)
 
 	#Read input from the touch sensors
@@ -86,30 +86,35 @@ class Robot:
 
 	# Move specified wheel a certain distance
 	def move_wheels(self, distances=[1,1], wheels=[0,1]):
-		print("Distance to move wheels: {}".format(distances))
 
-		# Retrieve start angle of motors
-		motorAngles_start = self.interface.getMotorAngles(wheels)
-		print("Start Angles: {}".format(motorAngles_start))
+		if self.ultrasonic_port is not None:
+			print("Distance to move wheels: {}".format(distances))
 
-		# Set the reference angles to reach
-		circular_distances = [round((2*x*self.distance_calibration)/self.circumference,2) for x in distances]
-		print("Distance in radians: {}".format(circular_distances))
-		motorAngles_end = []
+			# Retrieve start angle of motors
+			motorAngles_start = self.interface.getMotorAngles(wheels)
+			print("Start Angles: {}".format(motorAngles_start))
 
-		motorAngles_end.append(round(motorAngles_start[0][0] + circular_distances[0],2))
-		motorAngles_end.append(round(motorAngles_start[1][0] + circular_distances[1],2))
-		print("Angles to end at: {}".format(motorAngles_end))
+			# Set the reference angles to reach
+			circular_distances = [round((2*x*self.distance_calibration)/self.circumference,2) for x in distances]
+			print("Distance in radians: {}".format(circular_distances))
+			motorAngles_end = []
 
-		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
+			motorAngles_end.append(round(motorAngles_start[0][0] + circular_distances[0],2))
+			motorAngles_end.append(round(motorAngles_start[1][0] + circular_distances[1],2))
+			print("Angles to end at: {}".format(motorAngles_end))
 
-		# This function does PID control until angle references are reached
-		while not self.interface.motorAngleReferencesReached(wheels):
-			time.sleep(0.1)
-			print(self.interface.getMotorAngles(wheels))
-			if (round(self.interface.getMotorAngles(wheels)[0][0],2)==motorAngles_end[0] or round(self.interface.getMotorAngles(wheels)[1][0],2)==motorAngles_end[1]):
-				return True
-		return True
+			self.interface.increaseMotorAngleReferences(wheels, circular_distances)
+
+			# This function does PID control until angle references are reached
+			while not self.interface.motorAngleReferencesReached(wheels):
+				time.sleep(0.1)
+				print(self.interface.getMotorAngles(wheels))
+				if (round(self.interface.getMotorAngles(wheels)[0][0],2)==motorAngles_end[0] or round(self.interface.getMotorAngles(wheels)[1][0],2)==motorAngles_end[1]):
+					return True
+			return True
+		else:
+			#velocity = k(distance-measured distance)
+
 
 	#Takes the distance in centimeters and moves it forward
 	def travel_straight(self, distance):
@@ -123,6 +128,11 @@ class Robot:
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle):
 		self.rotate_right(-angle)
+
+	#Does the immediate stop if it runs into an obstacle
+	def stop(self):
+		self.interface.setMotorPwm(self.motors[0],0)
+		self.interface.setMotorPwm(self.motors[1],0)
 
 	def calibrate(self, radians,angle):
 		#So that we always start calibrating approximately at zero
