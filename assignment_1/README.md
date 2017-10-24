@@ -59,16 +59,16 @@ To calibrate the distance, we measured the diameter of the wheel. This would tel
 #### Drift logs
 |  X-axis | Y-axis  |
 |:-------:|:-------:|
-|4.5      |-2.5     |
-|-6.5     |1        |
-|-6.25    |0.5      |
-|-3.5     |-5.5     |
-|-3.5     |-4       |
-|-5.5     |0.25     |
-|-8       |-0.75    |
-|-4.5     |-0.5     |
-|-1       |0        |
-|-5.5     |0        |
+|-0.7     |0.5     |
+|-0.4     |0.5        |
+|-0.1     |0.5      |
+|0.5      |0.3     |
+|0.9      |-0.1       |
+|1.1      |-0.2     |
+|1.5      |-0.1    |
+|1.7      |-0.3     |
+|1.6      |-0.5       |
+|1.8      |-0.9       |
 
 
 ### 5.5 Covariance Matrix
@@ -76,10 +76,12 @@ Once we were happy with how our robot was performing we then went about calculat
 
 |    |X           |Y           |
 |----|------------|------------|
-|X   |12.64513889 |-2.94027778 |
-|Y   |-2.94027778 |4.6         |
+|X   | 0.94277778 |-2.94027778 |
+|Y   | -0.42388889|0.22677778  |
 
-A Covariance Matrix allows us to clearly see the variance we observed in our x and y values along with the covariance between x and y. In our case the variance of `X` is `12.64`, the variance of `Y` is `4.6` and the covariance is `-2.94`.
+Our caulculated mean of X is `-0.75` and mean of Y is `0.3`
+
+A Covariance Matrix allows us to clearly see the variance we observed in our x and y values along with the covariance between x and y. In our case the variance of `X` is `0.94277778`, the variance of `Y` is `0.22677778` and the covariance is `-2.94`.
 
 ### Further Thought:
 
