@@ -4,7 +4,7 @@ import json
 import math
 
 class Robot:
-	def __init__(self, interface, config_file="paper_config.json", touch_ports = None, ultrasonic_port = None):
+	def __init__(self, interface, config_file="base_config.json", pid_config_file="paper_config.json", touch_ports = None, ultrasonic_port = None):
 		# Robot initilization
 		self.interface = interface
 		# self.left_speed = 0
@@ -34,40 +34,15 @@ class Robot:
 		self.interface.motorEnable(self.motors[1])
 		self.interface.motorEnable(self.motors[2])
 
-		#Open the config file
-		data = None
-	    	with open(config_file) as data_file:
-    			data = json.load(data_file)
+		# configure main settings
+		with open(config_file) as config_file:
+			data = json.load(config_file)
 		if data is None:
-			raise Exception("Could not load configuration file!")
+			raise Exception("Could not load main config file!")
 		# Configure motor calibration constants
-		self.distance_calibration = data.get("distance_calibration", 3.05)
-		self.angle_calibration = data.get("angle_calibration", 0.13)
-		self.ultra_angle_calibration = data.get("ultra_angle_calibration", 0.15)
-
-		#Configuring the left motor
-		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
-		self.motorParams["left"].maxRotationAcceleration = data["left"]["maxRotationAcceleration"]
-		self.motorParams["left"].maxRotationSpeed = data["left"]["maxRotationSpeed"]
-		self.motorParams["left"].feedForwardGain = data["left"]["feedForwardGain"]
-		self.motorParams["left"].minPWM = data["left"]["minPWM"]
-		self.motorParams["left"].pidParameters.minOutput = data["left"]["minOutput"]
-		self.motorParams["left"].pidParameters.maxOutput = data["left"]["maxOutput"]
-		self.motorParams["left"].pidParameters.k_p = data["left"]["k_p"]
-		self.motorParams["left"].pidParameters.k_i = data["left"]["k_i"]
-		self.motorParams["left"].pidParameters.k_d = data["left"]["k_d"]
-
-		#Configure the right motor
-		self.motorParams["right"] = self.interface.MotorAngleControllerParameters()
-		self.motorParams["right"].maxRotationAcceleration = data["right"]["maxRotationAcceleration"]
-		self.motorParams["right"].maxRotationSpeed = data["right"]["maxRotationSpeed"]
-		self.motorParams["right"].feedForwardGain = data["right"]["feedForwardGain"]
-		self.motorParams["right"].minPWM = data["right"]["minPWM"]
-		self.motorParams["right"].pidParameters.minOutput = data["right"]["minOutput"]
-		self.motorParams["right"].pidParameters.maxOutput = data["right"]["maxOutput"]
-		self.motorParams["right"].pidParameters.k_p = data["right"]["k_p"]
-		self.motorParams["right"].pidParameters.k_i = data["right"]["k_i"]
-		self.motorParams["right"].pidParameters.k_d = data["right"]["k_d"]
+		self.distance_calibration = PID.get("distance_calibration", 3.05)
+		self.angle_calibration = PID.get("angle_calibration", 0.13)
+		self.ultra_angle_calibration = PID.get("ultra_angle_calibration", 0.15)
 
 		#Configure the top motor
 		self.motorParams["top"] = self.interface.MotorAngleControllerParameters()
@@ -81,14 +56,13 @@ class Robot:
 		self.motorParams["top"].pidParameters.k_i = data["top"]["k_i"]
 		self.motorParams["top"].pidParameters.k_d = data["top"]["k_d"]
 
-		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
-		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 		self.interface.setMotorAngleControllerParameters(self.motors[2],self.motorParams["top"])
+
+		self.touch_ports = data["touch_ports"]
+		self.ultrasonic_port = data["ultrasonic_port"]
 
 		# Set the angle of the ultra motor to zero
 		self.calibrate_ultra_position()
-
-		# self.interface.setMotorRotationSpeedReferences(self.motors,[self.left_speed,self.right_speed, self.top_speed])
 
 		#Initialize the touch sensors
 		self.touch_ports = touch_ports
@@ -96,9 +70,42 @@ class Robot:
 			for i in touch_ports:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
 
-		self.ultrasonic_port = ultrasonic_port
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_ULTRASONIC)
+
+		#Open the PID config file
+		PID = None
+	    with open(pid_config_file) as PID_file:
+    		PID = json.load(PID_file)
+		if PID is None:
+			raise Exception("Could not load PID configuration file!")
+
+		#Configuring the left motor
+		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
+		self.motorParams["left"].maxRotationAcceleration = PID["left"]["maxRotationAcceleration"]
+		self.motorParams["left"].maxRotationSpeed = PID["left"]["maxRotationSpeed"]
+		self.motorParams["left"].feedForwardGain = PID["left"]["feedForwardGain"]
+		self.motorParams["left"].minPWM = PID["left"]["minPWM"]
+		self.motorParams["left"].pidParameters.minOutput = PID["left"]["minOutput"]
+		self.motorParams["left"].pidParameters.maxOutput = PID["left"]["maxOutput"]
+		self.motorParams["left"].pidParameters.k_p = PID["left"]["k_p"]
+		self.motorParams["left"].pidParameters.k_i = PID["left"]["k_i"]
+		self.motorParams["left"].pidParameters.k_d = PID["left"]["k_d"]
+
+		#Configure the right motor
+		self.motorParams["right"] = self.interface.MotorAngleControllerParameters()
+		self.motorParams["right"].maxRotationAcceleration = PID["right"]["maxRotationAcceleration"]
+		self.motorParams["right"].maxRotationSpeed = PID["right"]["maxRotationSpeed"]
+		self.motorParams["right"].feedForwardGain = PID["right"]["feedForwardGain"]
+		self.motorParams["right"].minPWM = PID["right"]["minPWM"]
+		self.motorParams["right"].pidParameters.minOutput = PID["right"]["minOutput"]
+		self.motorParams["right"].pidParameters.maxOutput = PID["right"]["maxOutput"]
+		self.motorParams["right"].pidParameters.k_p = PID["right"]["k_p"]
+		self.motorParams["right"].pidParameters.k_i = PID["right"]["k_i"]
+		self.motorParams["right"].pidParameters.k_d = PID["right"]["k_d"]
+
+		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
+		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 
 	def calibrate_ultra_position(self):
 		# Get current motor angle
@@ -264,6 +271,7 @@ class Robot:
 		self.save_state()
 		return True
 
+	# Interactive mode for the robot to control without writing a program each time
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
@@ -293,3 +301,13 @@ class Robot:
 				command = -1
 				self.stop()
 		return True
+
+
+	def approach_object(self, d=30, s_pose=0):
+		""" approach_object
+		Takes a distance and the direction in terms of s_pose for the camera to look in
+		Output: Approaches the object smoothly and stops at a distance of d
+		"""
+		self.set_ultra_pose(s_pose)
+		while True:
+			read_ultrasonic_sensor(self, 2)
