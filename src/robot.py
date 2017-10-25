@@ -4,7 +4,7 @@ import json
 import math
 
 class Robot:
-	def __init__(self, interface, config_file="config.json", touch_ports = None, ultrasonic_port = None):
+	def __init__(self, interface, config_file="paper_config.json", touch_ports = None, ultrasonic_port = None):
 		# Robot initilization
 		self.interface = interface
 		# self.left_speed = 0
