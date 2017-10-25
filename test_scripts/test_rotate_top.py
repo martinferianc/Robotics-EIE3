@@ -12,7 +12,7 @@ interface.startLogging("motor_position_1.log")
 Robot = Robot(interface)
 
 
-Robot.rotate_motor(float(sys.argv[1]))
+Robot.rotate_motor([float(sys.argv[1])])
 
 interface.stopLogging()
 interface.terminate()
