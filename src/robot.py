@@ -104,6 +104,26 @@ class Robot:
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
+	def calibrate(self, radians,angle):
+		#So that we always start calibrating approximately at zero
+		motorAngles = self.interface.getMotorAngles(self.motors)
+		motorAngles_zero = (round(0-motorAngles[0][0],2), round(0-motorAngles[1][0],2))
+		self.interface.increaseMotorAngleReferences(self.motors,[motorAngles_zero[0],motorAngles_zero[1]])
+		while not self.interface.motorAngleReferencesReached(self.motors):
+			motorAngles = self.interface.getMotorAngles(self.motors)
+			if motorAngles:
+				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
+			time.sleep(0.1)
+
+		self.interface.startLogging("motor_position_0_"+str(int(angle))+".log")
+		self.interface.increaseMotorAngleReferences(self.motors,[radians,radians])
+         	while not self.interface.motorAngleReferencesReached(self.motors):
+			motorAngles = self.interface.getMotorAngles(self.motors)
+			if motorAngles:
+		    	    print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
+			time.sleep(0.1)
+		self.interface.stopLogging()
+
 	# Move specified wheel a certain distance
 	def move_wheels(self, distances=[1,1], wheels=[0,1]):
 		print("Distance to move wheels: {}".format(distances))
@@ -139,10 +159,6 @@ class Robot:
 			pass
 		return True
 
-	#Takes the distance in centimeters and moves it forward
-	def travel_straight(self, distance):
-		return self.move_wheels([distance,distance], [0,1])
-
 	#Takes the angle in degrees and rotates the robot right
 	def rotate_right(self, angle):
 		dist = self.angle_calibration*angle
@@ -159,22 +175,31 @@ class Robot:
 		self.interface.setMotorPwm(self.motors[0],0)
 		self.interface.setMotorPwm(self.motors[1],0)
 
-	def calibrate(self, radians,angle):
-		#So that we always start calibrating approximately at zero
-		motorAngles = self.interface.getMotorAngles(self.motors)
-		motorAngles_zero = (round(0-motorAngles[0][0],2), round(0-motorAngles[1][0],2))
-		self.interface.increaseMotorAngleReferences(self.motors,[motorAngles_zero[0],motorAngles_zero[1]])
-		while not self.interface.motorAngleReferencesReached(self.motors):
-			motorAngles = self.interface.getMotorAngles(self.motors)
-			if motorAngles:
-				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
-			time.sleep(0.1)
+	#Takes the distance in centimeters and moves it forward
+	def travel_straight(self, distance):
+		return self.move_wheels([distance,distance], [0,1])
 
-		self.interface.startLogging("motor_position_0_"+str(int(angle))+".log")
-		self.interface.increaseMotorAngleReferences(self.motors,[radians,radians])
-         	while not self.interface.motorAngleReferencesReached(self.motors):
-			motorAngles = self.interface.getMotorAngles(self.motors)
-			if motorAngles:
-		    	    print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
-			time.sleep(0.1)
-		self.interface.stopLogging()
+	# Move the top camera to specified pose
+	def set_ultra_pose(self, pose):
+		print("Current ultra pose:{}".format(self.ultra_pose))
+
+		# Limits on pose settings so that it doesn't overrotate and stretch the cable
+		while pose > 360:
+			pose -= 360
+		while pose < -360:
+			pose += 360
+		if pose == 360:
+			pose = 0
+
+		if pose > 180:
+			# If greater than 180 e.g. 270, turn it into -90
+			pose -= 360
+		if pose < -180:
+			# If less than -180, e.g. -270, turn it into +90
+			pose += 360
+
+		
+		if rotate_motor(pose - self.ultra_pose):
+			self.ultra_pose = pose
+			return True
+		return False
