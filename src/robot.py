@@ -132,8 +132,8 @@ class Robot:
 		return True
 
 	# Rotate a motor by angle degrees (mainly for ultrasound motor)
-	def rotate_motor(self, angle, motors=[2]):
-		self.interface.increaseMotorAngleReferences(motors, angle*self.ultra_angle_calibration)
+	def rotate_motor(self, angles=[0], motors=[2]):
+		self.interface.increaseMotorAngleReferences(motors, [x*self.ultra_angle_calibration for x in angles])
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(wheels):
 			pass
