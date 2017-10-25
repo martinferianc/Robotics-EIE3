@@ -155,7 +155,7 @@ class Robot:
 	def rotate_motor(self, angles=[0], motors=[2]):
 		self.interface.increaseMotorAngleReferences(motors, [x*self.ultra_angle_calibration for x in angles])
 		# This function does PID control until angle references are reached
-		while not self.interface.motorAngleReferencesReached(wheels):
+		while not self.interface.motorAngleReferencesReached(motors):
 			pass
 		return True
 
