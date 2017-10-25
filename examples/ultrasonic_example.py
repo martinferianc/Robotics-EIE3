@@ -4,7 +4,7 @@ import time
 interface=brickpi.Interface()
 interface.initialize()
 
-port = 2 # port which ultrasoic sensor is plugged in to
+port = 3
 
 interface.sensorEnable(port, brickpi.SensorType.SENSOR_ULTRASONIC);
 

@@ -50,7 +50,7 @@ class Robot:
 		self.motorParams["top"].pidParameters.k_d = data["top"]["k_d"]
 
 		self.interface.setMotorAngleControllerParameters(self.motors[2],self.motorParams["top"])
-
+		
 		self.touch_ports = data["touch_ports"]
 		self.ultrasonic_port = data["ultrasonic_port"]
 
@@ -58,9 +58,9 @@ class Robot:
 		self.calibrate_ultra_position()
 
 		#Initialize the touch sensors
-		self.touch_ports = touch_ports
+		print("Ultrasound sensor at port: {0}\nTouch sensors at ports: {1}".format(self.ultrasonic_port,self.touch_ports))	
 		if self.touch_ports is not None:
-			for i in touch_ports:
+			for i in self.touch_ports:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
 
 		if self.ultrasonic_port is not None:
@@ -99,6 +99,7 @@ class Robot:
 
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
+		#self.interface.motorDisable(2)		
 
 	def calibrate_ultra_position(self):
 		# Get current motor angle
@@ -119,19 +120,27 @@ class Robot:
 	#Read input from the touch sensors
 	def read_touch_sensor(self,port):
 		if self.touch_ports is not None:
+			self.interface.sensorEnable(port,brickpi.SensorType.SENSOR_TOUCH)
 			result = self.interface.getSensorValue(port)
-			if result:
-  				return result[0]
+			return result[0]
 		else:
 			raise Exception("Touch sensors not initialized!")
 
-	def read_ultrasonic_sensor(self,port):
+	def read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
-			result = self.interface.getSensorValue(port)
-			if result:
-	  			return result
+			result = self.interface.getSensorValue(self.ultrasonic_port)			
+	  		return result[0]
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
+	
+	def median_filtered_ultrasonic(self,size=21):
+		l =  [0]*size
+		i = 0
+		while i < size:
+			l[i] = self.read_ultrasonic_sensor()
+			i +=1
+		l.sort()
+		return l[(size-1)/2]
 
 	def save_state(self, state_file="robot_state.json"):
 		with open("robot_state.json","w") as f:
