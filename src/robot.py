@@ -267,20 +267,28 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Move wheels.\n2: Set pose.")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.")
 			command = int(input())
-			if command==1:
+			if command == 1:
+				print("Enter distance to move straight: ")
+				distance = float(input())
+				self.travel_straight
+			elif command==2:
+				print("Enter pose to rotate to:")
+				s_pose = float(input())
+				self.set_robot_pose(s_pose)
+
+			elif command == 3:
 				distances = []
 				print("Enter left wheel distance:")
 				distances.append(float(input()))
 				print("Enter right wheel distance:")
 				distances.append(float(input()))
 				self.move_wheels(distances)
-			elif command==2:
-				print("Enter pose to rotate to:")
+			elif command == 4:
+				print("Enter desired camera pose:")
 				s_pose = float(input())
-				self.set_robot_pose(s_pose)
-
+				self.set_ultra_pose(s_pose)
 			else:
 				command = -1
 				self.stop()
