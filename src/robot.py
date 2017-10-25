@@ -4,7 +4,7 @@ import json
 import math
 
 class Robot:
-	def __init__(self, interface, config_file="base_config.json", pid_config_file="paper_config.json", touch_ports = None, ultrasonic_port = None):
+	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json", touch_ports = None, ultrasonic_port = None):
 		# Robot initilization
 		self.interface = interface
 		# self.left_speed = 0
@@ -40,10 +40,10 @@ class Robot:
 		if data is None:
 			raise Exception("Could not load main config file!")
 		# Configure motor calibration constants
-		self.distance_calibration = PID.get("distance_calibration", 3.05)
-		self.angle_calibration = PID.get("angle_calibration", 0.13)
-		self.ultra_angle_calibration = PID.get("ultra_angle_calibration", 0.15)
-
+		self.distance_calibration = data.get("distance_calibration", 3.05)
+		self.angle_calibration = data.get("angle_calibration", 0.13)
+		self.ultra_angle_calibration = data.get("ultra_angle_calibration", 0.15)
+		
 		#Configure the top motor
 		self.motorParams["top"] = self.interface.MotorAngleControllerParameters()
 		self.motorParams["top"].maxRotationAcceleration = data["top"]["maxRotationAcceleration"]
@@ -71,12 +71,12 @@ class Robot:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
 
 		if self.ultrasonic_port is not None:
-				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_ULTRASONIC)
+				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
 
 		#Open the PID config file
 		PID = None
-	    with open(pid_config_file) as PID_file:
-    		PID = json.load(PID_file)
+		with open(pid_config_file) as PID_file:
+    			PID = json.load(PID_file)
 		if PID is None:
 			raise Exception("Could not load PID configuration file!")
 
