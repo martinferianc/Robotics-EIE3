@@ -24,6 +24,19 @@
 		"k_d": 300.0
 	},
 
+	"top": {
+		"maxRotationAcceleration": 6.0,
+		"maxRotationSpeed": 12.0,
+		"feedForwardGain": 12.75,
+		"minPWM": 18.0,
+		"minOutput": -255,
+		"maxOutput": 255,
+		"k_p": 450.0,
+		"k_i": 500.0,
+		"k_d": 300.0
+	},
+
 	"distance_calibration": 3.05,
-	"angle_calibration": 0.1525
+	"angle_calibration": 0.1525,
+	"ultra_angle_calibration" : 0.15
 }
