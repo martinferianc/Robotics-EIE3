@@ -25,7 +25,7 @@ class Robot:
 
 		#Open the config file
 		data = None
-	    	with open("config.json") as data_file:
+	    	with open(config_file) as data_file:
     			data = json.load(data_file)
 		if data is None:
 			raise Exception("Could not load configuration file!")
