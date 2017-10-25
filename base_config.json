@@ -8,7 +8,7 @@
 		"maxOutput": 255,
 		"k_p": 425.0,
 		"k_i": 550.0,
-		"k_d": 350.0
+		"k_d": 375.0
 	},
 
 	"distance_calibration": 3.05,
