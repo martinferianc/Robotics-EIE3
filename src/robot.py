@@ -269,7 +269,18 @@ class Robot:
 
 		while (command!="stop"):
 			command = (str(input()))
-			args = []
 			if command=="move_wheels":
-				args.append(float(input()))
-				args.append(float(input()))
+				distances = []
+				print("Enter left wheel distance:")
+				distances.append(float(input()))
+				print("Enter right wheel distance:")
+				distances.append(float(input()))
+				self.move_wheels(distances)
+			elif command=="set_robot_pose":
+				print("Enter pose to rotate to:")
+				s_pose = float(input())
+				self.set_robot_pose(s_pose)
+
+			else:
+				command = "stop"
+				self.stop()
