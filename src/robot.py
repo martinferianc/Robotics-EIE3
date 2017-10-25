@@ -166,7 +166,7 @@ class Robot:
 		print("Start Angles: {}".format(motorAngles_start))
 
 		# Set the reference angles to reach
-		circular_distances = [round((2*x*self.distance_calibration)/self.circumference,2) for x in distances]
+		circular_distances = [-round((2*x*self.distance_calibration)/self.circumference,2) for x in distances]
 		print("Distance in radians: {}".format(circular_distances))
 		# Angles to end at
 		motorAngles_end = []
@@ -203,7 +203,7 @@ class Robot:
 		# Maybe only save state when the robot is shutting down?
 		self.save_state()
 
-		return self.move_wheels([-dist,dist])
+		return self.move_wheels([dist,-dist])
 
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle):
@@ -265,22 +265,23 @@ class Robot:
 		return True
 
 	def interactive_mode(self):
-		command = (str(input()))
-
-		while (command!="stop"):
-			command = (str(input()))
-			if command=="move_wheels":
+		command = 0
+		while command!=-1:
+			print("Available commands:\n-1: End session.\n1: Move wheels.\n2: Set pose.")
+			command = int(input())
+			if command==1:
 				distances = []
 				print("Enter left wheel distance:")
 				distances.append(float(input()))
 				print("Enter right wheel distance:")
 				distances.append(float(input()))
 				self.move_wheels(distances)
-			elif command=="set_robot_pose":
+			elif command==2:
 				print("Enter pose to rotate to:")
 				s_pose = float(input())
 				self.set_robot_pose(s_pose)
 
 			else:
-				command = "stop"
+				command = -1
 				self.stop()
+		return True
