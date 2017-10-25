@@ -12,9 +12,19 @@ class Robot:
 		# self.top_speed = 0
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
-		self.pose = 0
-		self.ultra_pose = 0
-
+		
+		self.ultra_calibration = {
+			-180 : -1.49, 
+			-90 : 0.035,
+			0 : 1.68,
+			90 : 3.25,
+			180 : 4.78
+		}
+		# Robot state
+		self.state = {}
+		with open("robot_state.json","r") as f:
+			self.state = json.load(f)		
+		
 		#Motor initialization
 		self.motors = [0,1,2]
 		self.motorParams = {}
@@ -74,6 +84,9 @@ class Robot:
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 		self.interface.setMotorAngleControllerParameters(self.motors[2],self.motorParams["top"])
+		
+		# Set the angle of the ultra motor to zero
+		self.calibrate_ultra_position()			
 
 		# self.interface.setMotorRotationSpeedReferences(self.motors,[self.left_speed,self.right_speed, self.top_speed])
 
@@ -86,7 +99,23 @@ class Robot:
 		self.ultrasonic_port = ultrasonic_port
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_ULTRASONIC)
-
+	
+	def calibrate_ultra_position(self):
+		# Get current motor angle	
+		motor_angle = self.interface.getMotorAngles([2])[0][0]
+		print("Calibration ultra position, motor angle = {}".format(motor_angle))
+		
+		# Could calibrate to the nearest angle instead of always to zero
+		# Right now, calculate difference between current and zero and rotate to there
+		rotation = round(self.ultra_calibration.get(0) - motor_angle,2)
+		
+		print("Rotation required: {}".format(rotation))
+		self.interface.increaseMotorAngleReferences([2],[rotation])
+		while not self.interface.motorAngleReferencesReached([2]):
+			pass
+		self.state["ultra_pose"]=0
+		return True	
+	
 	#Read input from the touch sensors
 	def read_touch_sensor(self,port):
 		if self.touch_ports is not None:
@@ -103,6 +132,10 @@ class Robot:
 	  			return result
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
+	
+	def save_state(self, state_file="robot_state.json"):
+		with open("robot_state.json","w") as f:
+			json.dump(self.state, f)
 
 	def calibrate(self, radians,angle):
 		#So that we always start calibrating approximately at zero
@@ -153,21 +186,27 @@ class Robot:
 
 	# Rotate a motor by angle degrees (mainly for ultrasound motor)
 	def rotate_motor(self, angles=[0], motors=[2]):
+		print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		self.interface.increaseMotorAngleReferences(motors, [x*self.ultra_angle_calibration for x in angles])
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(motors):
 			pass
+		print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		return True
 
 	#Takes the angle in degrees and rotates the robot right
 	def rotate_right(self, angle):
+		#print("Starting pose: {}".format(self.state.get("pose")))
 		dist = self.angle_calibration*angle
-		self.pose = self.pose + angle
+		self.state["pose"] = self.state.get("pose", 0) + angle
+		#print("New pose: {}".format(self.state.get("pose")))
+		# Maybe only save state when the robot is shutting down?
+		self.save_state()
+		
 		return self.move_wheels([-dist,dist])
 
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle):
-		self.pose = self.pose - angle
 		return self.rotate_right(-angle)
 
 	#Does the immediate stop if it runs into an obstacle
@@ -181,8 +220,7 @@ class Robot:
 
 	# Move the top camera to specified pose
 	def set_ultra_pose(self, pose):
-		print("Current ultra pose:{}".format(self.ultra_pose))
-
+		print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
 		# Limits on pose settings so that it doesn't overrotate and stretch the cable
 		while pose > 360:
 			pose -= 360
@@ -198,8 +236,32 @@ class Robot:
 			# If less than -180, e.g. -270, turn it into +90
 			pose += 360
 
-		
-		if rotate_motor(pose - self.ultra_pose):
-			self.ultra_pose = pose
+		rotation = pose - self.state.get("ultra_pose", 0)
+		if rotation:	
+			self.rotate_motor([rotation])
+			self.state["ultra_pose"] = pose
+			self.save_state()
+		else:
+			print("No rotation required.")
+		return True
+	
+	# Move the robot to the specified pose
+	def set_robot_pose(self, s_pose):
+		print("Starting pose: {}".format(self.state.get("pose",-1)))
+		while s_pose > 360:
+			s_pose-=360
+	
+		rotation = s_pose-self.state.get("pose", 0)
+		if rotation==0:
+			print("No rotation required.")
 			return True
-		return False
+		if rotation > 180:
+			self.rotate_right(rotation-360)
+		else:
+			self.rotate_right(rotation)
+		self.state["pose"] = s_pose
+		print("Ending pose: {}".format(s_pose))
+		self.save_state()
+		return True		
+
+

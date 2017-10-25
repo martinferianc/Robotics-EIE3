@@ -31,12 +31,12 @@
 		"minPWM": 18.0,
 		"minOutput": -255,
 		"maxOutput": 255,
-		"k_p": 450.0,
-		"k_i": 500.0,
-		"k_d": 300.0
+		"k_p": 425.0,
+		"k_i": 550.0,
+		"k_d": 350.0
 	},
 
 	"distance_calibration": 3.21,
 	"angle_calibration": 0.181,
-	"ultra_angle_calibration" : 0.15
+	"ultra_angle_calibration" : 0.0178
 }
