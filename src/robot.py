@@ -7,8 +7,9 @@ class Robot:
 	def __init__(self, interface, config_file="config.json", touch_ports = None, ultrasonic_port = None):
 		# Robot initilization
 		self.interface = interface
-		self.left_speed = 0
-		self.right_speed = 0
+		# self.left_speed = 0
+		# self.right_speed = 0
+		# self.top_speed = 0
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.pose = 0
@@ -74,7 +75,7 @@ class Robot:
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 		self.interface.setMotorAngleControllerParameters(self.motors[2],self.motorParams["top"])
 
-		self.interface.setMotorRotationSpeedReferences(self.motors,[self.left_speed,self.right_speed])
+		# self.interface.setMotorRotationSpeedReferences(self.motors,[self.left_speed,self.right_speed, self.top_speed])
 
 		#Initialize the touch sensors
 		self.touch_ports = touch_ports
