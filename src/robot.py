@@ -13,13 +13,6 @@ class Robot:
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 
-		self.ultra_calibration = {
-			-180 : -1.49,
-			-90 : 0.035,
-			0 : 1.68,
-			90 : 3.25,
-			180 : 4.78
-		}
 		# Robot state
 		self.state = {}
 		with open("robot_state.json","r") as f:
@@ -43,7 +36,7 @@ class Robot:
 		self.distance_calibration = data.get("distance_calibration", 3.05)
 		self.angle_calibration = data.get("angle_calibration", 0.13)
 		self.ultra_angle_calibration = data.get("ultra_angle_calibration", 0.15)
-		
+		self.ultra_zero = data.get("ultra_zero",0.1)
 		#Configure the top motor
 		self.motorParams["top"] = self.interface.MotorAngleControllerParameters()
 		self.motorParams["top"].maxRotationAcceleration = data["top"]["maxRotationAcceleration"]
@@ -114,7 +107,7 @@ class Robot:
 
 		# Could calibrate to the nearest angle instead of always to zero
 		# Right now, calculate difference between current and zero and rotate to there
-		rotation = round(self.ultra_calibration.get(0) - motor_angle,2)
+		rotation = round(self.ultra_zero - motor_angle,2)
 
 		print("Rotation required: {}".format(rotation))
 		self.interface.increaseMotorAngleReferences([2],[rotation])

@@ -14,6 +14,7 @@
 	"distance_calibration": 3.05,
 	"angle_calibration": 0.1525,
 	"ultra_angle_calibration" : 0.0178,
+	"ultra_zero" : 0.1,
 
 	"touch_ports" : [0,1],
 	"ultrasonic_port" : 2
