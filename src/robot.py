@@ -272,7 +272,7 @@ class Robot:
 			if command == 1:
 				print("Enter distance to move straight: ")
 				distance = float(input())
-				self.travel_straight
+				self.travel_straight(distance)
 			elif command==2:
 				print("Enter pose to rotate to:")
 				s_pose = float(input())
