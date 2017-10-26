@@ -50,15 +50,15 @@ class Robot:
 		self.motorParams["top"].pidParameters.k_d = data["top"]["k_d"]
 
 		self.interface.setMotorAngleControllerParameters(self.motors[2],self.motorParams["top"])
-		
+
 		self.touch_ports = data["touch_ports"]
 		self.ultrasonic_port = data["ultrasonic_port"]
 
 		# Set the angle of the ultra motor to zero
-		self.calibrate_ultra_position()
+		self.ultra_pose = 0
 
 		#Initialize the touch sensors
-		print("Ultrasound sensor at port: {0}\nTouch sensors at ports: {1}".format(self.ultrasonic_port,self.touch_ports))	
+		print("Ultrasound sensor at port: {0}\nTouch sensors at ports: {1}".format(self.ultrasonic_port,self.touch_ports))
 		if self.touch_ports is not None:
 			for i in self.touch_ports:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
@@ -99,23 +99,23 @@ class Robot:
 
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
-		#self.interface.motorDisable(2)		
+		#self.interface.motorDisable(2)
 
-	def calibrate_ultra_position(self):
-		# Get current motor angle
-		motor_angle = self.interface.getMotorAngles([2])[0][0]
-		print("Calibration ultra position, motor angle = {}".format(motor_angle))
+	#def calibrate_ultra_position(self):
+	#	# Get current motor angle
+	#	motor_angle = self.interface.getMotorAngles([2])[0][0]
+	#	print("Calibration ultra position, motor angle = {}".format(motor_angle))
 
-		# Could calibrate to the nearest angle instead of always to zero
-		# Right now, calculate difference between current and zero and rotate to there
-		rotation = round(self.ultra_zero - motor_angle,2)
+	#	# Could calibrate to the nearest angle instead of always to zero
+	#	# Right now, calculate difference between current and zero and rotate to there
+	#	rotation = round(self.ultra_zero - motor_angle,2)
 
-		print("Rotation required: {}".format(rotation))
-		self.interface.increaseMotorAngleReferences([2],[rotation])
-		while not self.interface.motorAngleReferencesReached([2]):
-			pass
-		self.state["ultra_pose"]=0
-		return True
+	#	print("Rotation required: {}".format(rotation))
+	#	self.interface.increaseMotorAngleReferences([2],[rotation])
+	#	while not self.interface.motorAngleReferencesReached([2]):
+	#		pass
+	#	self.state["ultra_pose"]=0
+	#	return True
 
 	#Read input from the touch sensors
 	def read_touch_sensor(self,port):
@@ -128,11 +128,11 @@ class Robot:
 
 	def read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
-			result = self.interface.getSensorValue(self.ultrasonic_port)			
+			result = self.interface.getSensorValue(self.ultrasonic_port)
 	  		return result[0]
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
-	
+
 	def median_filtered_ultrasonic(self,size=21):
 		l =  [0]*size
 		i = 0
