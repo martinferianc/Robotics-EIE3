@@ -15,6 +15,7 @@ class Robot:
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
+		self.threads = []
 		# Robot state
 		self.state = {}
 		with open("robot_state.json","r") as f:
@@ -149,13 +150,13 @@ class Robot:
 	def start_threading(self):
 		if self.touch_ports is not None:
 			touch_thread = threading.Thread(target=self.__read_touch_sensors)
-			threads.append(touch_thread)
+			self.threads.append(touch_thread)
 			touch_thread.start()
 		else:
 			raise Exception("Touch sensors not initialized!")
 		if self.ultrasonic_port is not None:
 			ultrasonic_thread = threading.Thread(target=self.__median_filtered_ultrasonic)
-			threads.append(ultrasonic_thread)
+			self.threads.append(ultrasonic_thread)
 			ultrasonic_thread.start()
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
