@@ -36,7 +36,6 @@ class Robot:
 		self.distance_calibration = data.get("distance_calibration", 3.05)
 		self.angle_calibration = data.get("angle_calibration", 0.13)
 		self.ultra_angle_calibration = data.get("ultra_angle_calibration", 0.15)
-		self.ultra_zero = data.get("ultra_zero",0.1)
 		#Configure the top motor
 		self.motorParams["top"] = self.interface.MotorAngleControllerParameters()
 		self.motorParams["top"].maxRotationAcceleration = data["top"]["maxRotationAcceleration"]
@@ -101,21 +100,12 @@ class Robot:
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 		#self.interface.motorDisable(2)
 
-	#def calibrate_ultra_position(self):
-	#	# Get current motor angle
-	#	motor_angle = self.interface.getMotorAngles([2])[0][0]
-	#	print("Calibration ultra position, motor angle = {}".format(motor_angle))
+	# Set ultra_pose variable to pose without moving the motor.
+	def calibrate_ultra_position(self, pose = 0):
+		self.state["ultra_pose"] = pose
+		self.save_state()
 
-	#	# Could calibrate to the nearest angle instead of always to zero
-	#	# Right now, calculate difference between current and zero and rotate to there
-	#	rotation = round(self.ultra_zero - motor_angle,2)
-
-	#	print("Rotation required: {}".format(rotation))
-	#	self.interface.increaseMotorAngleReferences([2],[rotation])
-	#	while not self.interface.motorAngleReferencesReached([2]):
-	#		pass
-	#	self.state["ultra_pose"]=0
-	#	return True
+		return True
 
 	#Read input from the touch sensors
 	def read_touch_sensor(self,port):
@@ -277,7 +267,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -299,6 +289,10 @@ class Robot:
 				print("Enter desired camera pose:")
 				s_pose = float(input())
 				self.set_ultra_pose(s_pose)
+			elif command == 5:
+				print("Enter recalibration value for ultrasound pose: ")
+				s_pose = float(input())
+				self.calibrate_ultra_position(s_pose)
 			else:
 				command = -1
 				self.stop()
