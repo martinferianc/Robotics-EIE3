@@ -218,9 +218,10 @@ class Robot:
 
 	#Sets a constant speed for motors [0,1,2]
 	def set_speed(self, speeds=[2,2], motors=[0,1]):
-		for i in speeds:
+		for index,i in enumerate(speeds):
 			if abs(i)>10:
 				raise Exception("Speed set too high, abort.")
+			speeds[index]=-i
 		self.interface.setMotorRotationSpeedReferences(motors,speeds)
 
 	#Does the immediate stop if it runs into an obstacle
