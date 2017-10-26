@@ -216,6 +216,13 @@ class Robot:
 	def rotate_left(self, angle):
 		return self.rotate_right(-angle)
 
+	#Sets a constant speed for motors [0,1,2]
+	def set_speed(self, speeds=[2,2], motors=[0,1]):
+		for i in speeds:
+			if abs(i)>10:
+				raise Exception("Speed set too high, abort.")
+		self.interface.setMotorRotationSpeedReferences(motors,speeds)
+
 	#Does the immediate stop if it runs into an obstacle
 	def stop(self):
 		self.interface.setMotorPwm(self.motors[0],0)

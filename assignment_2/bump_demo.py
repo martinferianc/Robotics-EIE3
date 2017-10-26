@@ -14,7 +14,7 @@ Robot = Robot(interface, pid_config_file="carpet_config.json")
 bumpers = [None,None]
 
 while True:
-    Robot.travel_straight(1)
+    Robot.set_speed(1)
     bumpers[0] = Robot.read_touch_sensor(left_bumper_port)
     bumpers[1] = Robot.read_touch_sensor(right_bumper_port)
 
