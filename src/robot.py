@@ -26,9 +26,15 @@ class Robot:
 		self.interface.motorEnable(self.motors[0])
 		self.interface.motorEnable(self.motors[1])
 		self.interface.motorEnable(self.motors[2])
+		self.config_file = config_file
+		self.pid_config_file = pid_config_file
 
+		self.load_base_config()
+		self.load_pid_config()
+
+	def load_base_config(self):
 		# configure main settings
-		with open(config_file) as config_file:
+		with open(self.config_file) as config_file:
 			data = json.load(config_file)
 		if data is None:
 			raise Exception("Could not load main config file!")
@@ -63,10 +69,11 @@ class Robot:
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
 
-		#Open the PID config file
+	#Load the PID config file
+	def load_pid_config(self):
 		PID = None
-		with open(pid_config_file) as PID_file:
-    			PID = json.load(PID_file)
+		with open(self.pid_config_file) as PID_file:
+			PID = json.load(PID_file)
 		if PID is None:
 			raise Exception("Could not load PID configuration file!")
 
@@ -100,7 +107,6 @@ class Robot:
 
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
-		#self.interface.motorDisable(2)
 
 	# Set ultra_pose variable to pose without moving the motor.
 	def calibrate_ultra_position(self, pose = 0):
@@ -295,6 +301,10 @@ class Robot:
 				print("Enter recalibration value for ultrasound pose: ")
 				s_pose = float(input())
 				self.calibrate_ultra_position(s_pose)
+			elif command == 6:
+				print("Reloading config files")
+				self.load_pid_config(self.pid_config_file)
+				self.load_base_config(self.config_file)
 			else:
 				command = -1
 				self.stop()
