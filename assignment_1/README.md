@@ -76,7 +76,7 @@ Once we were happy with how our robot was performing we then went about calculat
 
 |    |X           |Y           |
 |----|------------|------------|
-|X   | 0.94277778 |-2.94027778 |
+|X   | 0.94277778 |-0.42388889 |
 |Y   | -0.42388889|0.22677778  |
 
 Our caulculated mean of X is `-0.75` and mean of Y is `0.3`
