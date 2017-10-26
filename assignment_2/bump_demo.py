@@ -24,21 +24,24 @@ while True:
 
     if bumpers[0] and bumpers[1]:
         Robot.stop()
-	Robot.set_speed(zeros)
+        time.sleep(1)
+        Robot.set_speed(zeros)
         Robot.travel_straight(-3)
         Robot.rotate_right(30)
-	Robot.set_speed(speeds)
+        Robot.set_speed(speeds)
 
     if not bumpers[0] and bumpers[1]:
         Robot.stop()
-	Robot.set_speed(zeros)
+        time.sleep(1)
+        Robot.set_speed(zeros)
         Robot.rotate_left(30)
-	Robot.set_speed(speeds)
+        Robot.set_speed(speeds)
     if bumpers[0] and not bumpers[1]:
         Robot.stop()
-	Robot.set_speed(zeros)
+        time.sleep(1)
+        Robot.set_speed(zeros)
         Robot.rotate_right(30)
-	Robot.set_speed(speeds)
-	
+        Robot.set_speed(speeds)
+
 
 interface.terminate()
