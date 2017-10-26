@@ -275,7 +275,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -303,8 +303,8 @@ class Robot:
 				self.calibrate_ultra_position(s_pose)
 			elif command == 6:
 				print("Reloading config files")
-				self.load_pid_config(self.pid_config_file)
-				self.load_base_config(self.config_file)
+				self.load_pid_config()
+				self.load_base_config()
 			else:
 				command = -1
 				self.stop()
