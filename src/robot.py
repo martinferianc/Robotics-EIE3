@@ -222,7 +222,7 @@ class Robot:
 			if abs(i)>10:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
-		self.interface.setMotorRotationSpeedReferences(motors,speeds)
+		self.interface.setMotorRotationSpeedReferences([self.motors[0],self.motors[1]],speeds)
 
 	#Does the immediate stop if it runs into an obstacle
 	def stop(self):
