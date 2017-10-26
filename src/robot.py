@@ -122,7 +122,6 @@ class Robot:
 	#Read input from the touch sensors
 	def __read_touch_sensors(self):
 		if self.touch_ports is not None:
-			self.interface.sensorEnable(port,brickpi.SensorType.SENSOR_TOUCH)
 			self.bumpers["left"]["value"] = self.interface.getSensorValue(self.bumpers["left"]["port"])[0]
 			self.bumpers["right"]["value"] = self.interface.getSensorValue(self.bumpers["right"]["port"])[0]
 			return True
