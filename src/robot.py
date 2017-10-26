@@ -107,7 +107,7 @@ class Robot:
 
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
-
+		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0,0])
 	# Set ultra_pose variable to pose without moving the motor.
 	def calibrate_ultra_position(self, pose = 0):
 		self.state["ultra_pose"] = pose
