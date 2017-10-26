@@ -121,15 +121,23 @@ class Robot:
 		return True
 
 	#Read input from the touch sensors
-	def __read_touch_sensors(self):
+	def __update_touch_sensors(self):
+		if self.touch_ports is not None:
+			self.bumpers["left"]["value"] = self.interface.getSensorValue(self.bumpers["left"]["port"])[0]
+			self.bumpers["right"]["value"] = self.interface.getSensorValue(self.bumpers["right"]["port"])[0]
+			return True
+		else:
+			raise Exception("Touch sensors not initialized!")
+	
+	# Infinite loop updating the bumper values
+	def __touch_sensors_loop(self):
 		while True:
-			if self.touch_ports is not None:
-				self.bumpers["left"]["value"] = self.interface.getSensorValue(self.bumpers["left"]["port"])[0]
-				self.bumpers["right"]["value"] = self.interface.getSensorValue(self.bumpers["right"]["port"])[0]
-				#return True
-			else:
-				raise Exception("Touch sensors not initialized!")
-
+			try:
+				self.__update_touch_sensors()
+			except(IndexError):
+				for i in self.touch_ports:
+					self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
+			time.sleep(0.5)
 
 	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
@@ -139,25 +147,32 @@ class Robot:
 			raise Exception("Ultrasonic sensor not initialized!")
 
 	def __median_filtered_ultrasonic(self,size=15):
+		l = [0]*size
+		i = 0
+		while i < size:
+			l[i] = self.__read_ultrasonic_sensor()
+			i +=1
+		l.sort()
+		return l[(size-1)/2]
+	
+	# Infinite loop setting self.distance to self.__median_filtered_ultrasonic()
+	def __ultrasonic_loop(self):
 		while True:
-			l = [0]*size
-			i = 0
-			while i < size:
-				l[i] = self.__read_ultrasonic_sensor()
-				i +=1
-			l.sort()
-			self.distance = l[(size-1)/2]
-				#return l[(size-1)/2]
-
+			try:
+				self.distance = self.__median_filtered_ultrasonic()
+			except(IndexError) as e:
+				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
+			time.sleep(0.5)
+	
 	def start_threading(self):
 		if self.touch_ports is not None:
-			touch_thread = threading.Thread(target=self.__read_touch_sensors)
+			touch_thread = threading.Thread(target=self.__touch_sensors_loop)
 			self.threads.append(touch_thread)
 			touch_thread.start()
 		else:
 			raise Exception("Touch sensors not initialized!")
 		if self.ultrasonic_port is not None:
-			ultrasonic_thread = threading.Thread(target=self.__median_filtered_ultrasonic)
+			ultrasonic_thread = threading.Thread(target=self.__ultrasonic_loop)
 			self.threads.append(ultrasonic_thread)
 			ultrasonic_thread.start()
 		else:
