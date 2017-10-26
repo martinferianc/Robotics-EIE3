@@ -4,10 +4,6 @@ from src.robot import Robot
 import brickpi
 import sys
 
-#Initialize the interface
-interface=brickpi.Interface()
-interface.initialize()
-
 def bump():
     while True:
         bumpers[0] = Robot.get_bumper("left")
@@ -38,7 +34,9 @@ def bump():
             Robot.set_speed(speeds)
 
 if __name__=="__main__":
-
+    #Initialize the interface
+    interface=brickpi.Interface()
+    interface.initialize()
     config = str(sys.argv[1])
     Robot = Robot(interface, pid_config_file=config)
     bumpers = [None,None]
@@ -46,12 +44,17 @@ if __name__=="__main__":
     zeros = [0,0]
     Robot.set_speed(speeds)
     Robot.start_threading() 
-
-
-    threads = []
-    t = threading.Thread(target=bump)
-    threads.append(t)
-    t.start()
+    while True:
+        bumpers[0] = Robot.get_bumper("left")
+        bumpers[1] = Robot.get_bumper("right")
+        print(bumpers)
+        print(Robot.get_distance())
+        time.sleep(1)
+    #threads = []
+    #t = threading.Thread(target=bump)
+    #threads.append(t)
+    #t.start()
+    
     interface.terminate()
 
 
