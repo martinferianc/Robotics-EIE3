@@ -32,9 +32,7 @@ class Robot:
 			data = json.load(config_file)
 		if data is None:
 			raise Exception("Could not load main config file!")
-		# Configure motor calibration constants
-		self.distance_calibration = data.get("distance_calibration", 3.05)
-		self.angle_calibration = data.get("angle_calibration", 0.13)
+
 		self.ultra_angle_calibration = data.get("ultra_angle_calibration", 0.15)
 		#Configure the top motor
 		self.motorParams["top"] = self.interface.MotorAngleControllerParameters()
@@ -71,6 +69,10 @@ class Robot:
     			PID = json.load(PID_file)
 		if PID is None:
 			raise Exception("Could not load PID configuration file!")
+
+		# Configure motor calibration constants
+		self.distance_calibration = PID.get("distance_calibration", 3.05)
+		self.angle_calibration = PID.get("angle_calibration", 0.13)
 
 		#Configuring the left motor
 		self.motorParams["left"] = self.interface.MotorAngleControllerParameters()
