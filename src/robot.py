@@ -2,6 +2,8 @@ import brickpi
 import time
 import json
 import math
+import threading
+from collections import deque
 
 class Robot:
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
@@ -12,7 +14,7 @@ class Robot:
 		# self.top_speed = 0
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
-
+		self.distance = 0
 		# Robot state
 		self.state = {}
 		with open("robot_state.json","r") as f:
@@ -63,6 +65,7 @@ class Robot:
 		#Initialize the touch sensors
 		print("Ultrasound sensor at port: {0}\nTouch sensors at ports: {1}".format(self.ultrasonic_port,self.touch_ports))
 		if self.touch_ports is not None:
+			self.bumpers = data["bumpers"]
 			for i in self.touch_ports:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
 
@@ -116,29 +119,52 @@ class Robot:
 		return True
 
 	#Read input from the touch sensors
-	def read_touch_sensor(self,port):
+	def __read_touch_sensors(self):
 		if self.touch_ports is not None:
 			self.interface.sensorEnable(port,brickpi.SensorType.SENSOR_TOUCH)
-			result = self.interface.getSensorValue(port)
-			return result[0]
+			self.bumpers["left"]["value"] = self.interface.getSensorValue(self.bumpers["left"]["port"])[0]
+			self.bumpers["right"]["value"] = self.interface.getSensorValue(self.bumpers["right"]["port"])[0]
+			return True
 		else:
 			raise Exception("Touch sensors not initialized!")
 
-	def read_ultrasonic_sensor(self):
+
+	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
 			result = self.interface.getSensorValue(self.ultrasonic_port)
 	  		return result[0]
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
-	def median_filtered_ultrasonic(self,size=21):
-		l =  [0]*size
+	def __median_filtered_ultrasonic(self,size=15):
+		l = [0]*size
 		i = 0
 		while i < size:
-			l[i] = self.read_ultrasonic_sensor()
+			l[i] = self.__read_ultrasonic_sensor()
 			i +=1
 		l.sort()
+		self.distance = l[(size-1)/2]
 		return l[(size-1)/2]
+
+	def start_threading(self):
+		if self.touch_ports is not None:
+			touch_thread = threading.Thread(target=self.__read_touch_sensors)
+			threads.append(touch_thread)
+			touch_thread.start()
+		else:
+			raise Exception("Touch sensors not initialized!")
+		if self.ultrasonic_port is not None:
+			ultrasonic_thread = threading.Thread(target=self.__median_filtered_ultrasonic)
+			threads.append(ultrasonic_thread)
+			ultrasonic_thread.start()
+		else:
+			raise Exception("Ultrasonic sensor not initialized!")
+
+	def get_bumper(self, bumper):
+		return self.bumpers[bumper]["value"]
+
+	def get_distance(self):
+		return self.distance
 
 	def save_state(self, state_file="robot_state.json"):
 		with open("robot_state.json","w") as f:
@@ -326,4 +352,4 @@ class Robot:
 		"""
 		self.set_ultra_pose(s_pose)
 		while True:
-			read_ultrasonic_sensor(self, 2)
+			self.get_distance()
