@@ -14,16 +14,17 @@ config = str(sys.argv[1])
 Robot = Robot(interface, pid_config_file=config)
 bumpers = [None,None]
 Robot.set_speed([2,2])
+Robot.start_threading()
 
 while True:
-    bumpers[0] = Robot.read_touch_sensor(left_bumper_port)
-    bumpers[1] = Robot.read_touch_sensor(right_bumper_port)
+    bumpers[0] = Robot.get_bumper("left")
+    bumpers[1] = Robot.get_bumper("right")
 
     if bumpers[0] and bumpers[1]:
         Robot.stop()
         Robot.travel_straight(-3)
         Robot.rotate_right(30)
-	
+
     if not bumpers[0] and bumpers[1]:
         Robot.stop()
         Robot.rotate_left(30)
