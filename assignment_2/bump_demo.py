@@ -25,10 +25,10 @@ while True:
 
     if !bumpers[0] and bumpers[1]:
         Robot.stop()
-        Robot.rotate_right(30)
-
-    if !bumpers[0] and !bumpers[1]:
-        Robot.stop()
         Robot.rotate_left(30)
+
+    if bumpers[0] and !bumpers[1]:
+        Robot.stop()
+        Robot.rotate_right(30)
 
 interface.terminate()
