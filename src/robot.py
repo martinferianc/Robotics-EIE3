@@ -324,6 +324,7 @@ class Robot:
 		Takes a distance and the direction in terms of s_pose for the camera to look in
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
+
 		self.set_ultra_pose(s_pose)
 		while True:
 			read_ultrasonic_sensor(self, 2)
