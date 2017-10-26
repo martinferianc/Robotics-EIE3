@@ -121,12 +121,13 @@ class Robot:
 
 	#Read input from the touch sensors
 	def __read_touch_sensors(self):
-		if self.touch_ports is not None:
-			self.bumpers["left"]["value"] = self.interface.getSensorValue(self.bumpers["left"]["port"])[0]
-			self.bumpers["right"]["value"] = self.interface.getSensorValue(self.bumpers["right"]["port"])[0]
-			return True
-		else:
-			raise Exception("Touch sensors not initialized!")
+		while True:
+			if self.touch_ports is not None:
+				self.bumpers["left"]["value"] = self.interface.getSensorValue(self.bumpers["left"]["port"])[0]
+				self.bumpers["right"]["value"] = self.interface.getSensorValue(self.bumpers["right"]["port"])[0]
+				#return True
+			else:
+				raise Exception("Touch sensors not initialized!")
 
 
 	def __read_ultrasonic_sensor(self):
@@ -137,14 +138,15 @@ class Robot:
 			raise Exception("Ultrasonic sensor not initialized!")
 
 	def __median_filtered_ultrasonic(self,size=15):
-		l = [0]*size
-		i = 0
-		while i < size:
-			l[i] = self.__read_ultrasonic_sensor()
-			i +=1
-		l.sort()
-		self.distance = l[(size-1)/2]
-		return l[(size-1)/2]
+		while True:
+			l = [0]*size
+			i = 0
+			while i < size:
+				l[i] = self.__read_ultrasonic_sensor()
+				i +=1
+			l.sort()
+			self.distance = l[(size-1)/2]
+				#return l[(size-1)/2]
 
 	def start_threading(self):
 		if self.touch_ports is not None:
