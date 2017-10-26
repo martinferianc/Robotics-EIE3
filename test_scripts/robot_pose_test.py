@@ -12,7 +12,7 @@ interface.startLogging("motor_position_1.log")
 Robot = Robot(interface,'paper_config.json')
 
 
-Robot.rotate_right(float(sys.argv[1]))
+Robot.set_robot_pose(float(sys.argv[1]))
 
 interface.stopLogging()
 interface.terminate()

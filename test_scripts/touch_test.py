@@ -9,10 +9,13 @@ interface=brickpi.Interface()
 interface.initialize()
 interface.startLogging("motor_position_1.log")
 
-Robot = Robot(interface,'paper_config.json')
+Robot = Robot(interface)
 
 
-Robot.rotate_right(float(sys.argv[1]))
+
+while True:
+	print("Right sensor: {0}, Left sensor:{1}".format(Robot.read_touch_sensor(0), Robot.read_touch_sensor(2)))
+	time.sleep(0.5)
 
 interface.stopLogging()
 interface.terminate()

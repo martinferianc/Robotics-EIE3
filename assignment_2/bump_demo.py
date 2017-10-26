@@ -7,19 +7,16 @@ import brickpi
 interface=brickpi.Interface()
 interface.initialize()
 
-bumper_1_port = 0
-bumper_2_port = 1
+left_bumper_port = 2
+right_bumper_port = 0
 
-Robot = Robot(interface,
-              ultrasonic_port=ultra,
-              bumpers=[bumper_1_port,bumper_2_port],
-              config_file="carpet_config.json")
+Robot = Robot(interface, pid_config_file="carpet_config.json")
 bumpers = [None,None]
 
 while True:
     Robot.travel_straight(1)
-    bumpers[0] = Robot.read_touch_sensor(bumper_1_port)
-    bumpers[1] = Robot.read_touch_sensor(bumper_2_port)
+    bumpers[0] = Robot.read_touch_sensor(left_bumper_port)
+    bumpers[1] = Robot.read_touch_sensor(right_bumper_port)
 
     if bumpers[0] and bumpers[1]:
         Robot.stop()
