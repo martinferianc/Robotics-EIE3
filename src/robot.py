@@ -2,7 +2,7 @@ import brickpi
 import time
 import json
 import math
-import threading
+import multiprocessing
 from collections import deque
 
 class Robot:
@@ -165,19 +165,28 @@ class Robot:
 			time.sleep(0.5)
 	
 	def start_threading(self):
+		self.threads = []
 		if self.touch_ports is not None:
-			touch_thread = threading.Thread(target=self.__touch_sensors_loop)
+			touch_thread = multiprocessing.Process(target=self.__touch_sensors_loop)
 			self.threads.append(touch_thread)
 			touch_thread.start()
 		else:
 			raise Exception("Touch sensors not initialized!")
 		if self.ultrasonic_port is not None:
-			ultrasonic_thread = threading.Thread(target=self.__ultrasonic_loop)
+			ultrasonic_thread = multiprocessing.Process(target=self.__ultrasonic_loop)
 			self.threads.append(ultrasonic_thread)
 			ultrasonic_thread.start()
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
-
+	
+	def stop_threading(self):
+		result = True
+		for i in threads:
+			i.terminate()
+			i.join()
+			if i.is_alive():
+				result = False
+		return result
 	def get_bumper(self, bumper):
 		return self.bumpers[bumper]["value"]
 
