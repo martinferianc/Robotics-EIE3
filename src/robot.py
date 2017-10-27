@@ -410,7 +410,7 @@ class Robot:
 		print("current distance:", self.distance)
 		try:
 			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
-		except:
-			print(sys.exc_info()[0])
+		except Exception e:
+			print(str(e))
 
 
