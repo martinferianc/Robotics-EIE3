@@ -12,6 +12,8 @@ class Robot:
 		# self.left_speed = 0
 		# self.right_speed = 0
 		# self.top_speed = 0
+
+		self.print_thread = None
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
@@ -35,6 +37,7 @@ class Robot:
 		self.load_base_config()
 		self.load_pid_config()
 		self.start_threading()
+		self.start_debugging()
 
 	def load_base_config(self):
 		# configure main settings
@@ -110,6 +113,23 @@ class Robot:
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
 		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0,0])
+
+	def print_state(self):
+		print("---WALL-E STATE---")
+		print("MOTORS")
+		print("Angles: {}".format([x[0] for x in self.interface.getMotorAngles(self.motors)]))
+
+		print("SENSORS")
+		if self.touch_ports is not None:
+			print("Bumpers: Left - {0}, Right - {1}".format(self.get_bumper("left"), self.get_bumper("right")))
+		if self.ultrasonic_port is not None:
+			print("Distance: {}".format(self.distance))
+
+		print("POSITIONING")
+		print("Robot pose: {}".format(self.state["pose"]))
+		print("Camera pose: {}".format(self.state["ultra_pose"]))
+
+
 	# Set ultra_pose variable to pose without moving the motor.
 	def calibrate_ultra_position(self, pose = 0):
 		self.state["ultra_pose"] = pose
@@ -150,8 +170,16 @@ class Robot:
 	def __ultrasonic_loop(self):
 		self.distance = self.__median_filtered_ultrasonic()
 
+	def start_debugging(self):
+		self.print_thread = Poller(t=0.5, target=self.print_state)
+		self.print_thread.start()
+		return True
+
+	def stop_debugging(self):
+		self.print_thread.stop()
+		return True
+
 	def start_threading(self):
-		self.threads = []
 		if self.touch_ports is not None:
 			touch_thread = Poller(t=0.2,target=self.__touch_sensors_loop)
 			self.threads.append(touch_thread)
@@ -164,6 +192,7 @@ class Robot:
 			ultrasonic_thread.start()
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
+		return True
 
 	def stop_threading(self):
 		for i in self.threads:
