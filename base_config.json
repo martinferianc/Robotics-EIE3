@@ -21,6 +21,6 @@
     "ultrasonic_port": 3,
 
     "prop_ctl": {
-        "k_p": 0.1
+        "k_p": 0.01
     }
 }
