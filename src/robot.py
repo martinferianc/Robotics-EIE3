@@ -404,8 +404,8 @@ class Robot:
 		"""
 		# proportional control
 		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
-		leftMotor_speed = average_speed - speed_compensation)
-		rightMotor_speed = average_speed + speed_compensation
+		leftMotor_speed = average_speed + speed_compensation
+		rightMotor_speed = average_speed - speed_compensation
 		if(abs(leftMotor_speed) > 10):
 			leftMotor_speed = leftMotor_speed/abs(leftMotor_speed) * 9
 			rightMotor_speed = 2 * average_speed - leftMotor_speed
@@ -413,8 +413,8 @@ class Robot:
 			rightMotor_speed = rightMotor_speed/abs(rightMotor_speed) * 9
 			leftMotor_speed = 2 * average_speed - rightMotor_speed
 		print("speed compensation: {}".format(speed_compensation))
-		print("current distance: {}".format(self.distance))
-		print("motor speed set to: {}, {}".format(leftMotor_speed, rightMotor_speed))
+		print("\tcurrent distance: {}".format(self.distance))
+		print("\tmotor speed set to: {}, {}".format(leftMotor_speed, rightMotor_speed))
 		try:
 			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
 		except Exception, e:
