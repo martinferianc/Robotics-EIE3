@@ -14,7 +14,7 @@ Robot.set_speed(speeds)
 #Robot.start_debugging()
 
 while True:
-    Robot.keep_distance(70)
+    Robot.keep_distance(70, 6)
     time.sleep(1)
 
 interface.terminate()

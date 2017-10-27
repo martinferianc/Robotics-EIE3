@@ -399,13 +399,19 @@ class Robot:
 		while True:
 			self.get_distance()
 
-	def keep_distance(self, distance_to_keep):
+	def keep_distance(self, distance_to_keep, average_speed):
 		""" using ultrasonic sensor to keep a contant distance between the object and the robot
 		"""
 		# proportional control
 		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
-		leftMotor_speed = self.motor_speeds[0] - speed_compensation
-		rightMotor_speed = self.motor_speeds[1] + speed_compensation
+		leftMotor_speed = average_speed - speed_compensation)
+		rightMotor_speed = average_speed + speed_compensation
+		if(abs(leftMotor_speed) > 10):
+			leftMotor_speed = leftMotor_speed/abs(leftMotor_speed) * 9
+			rightMotor_speed = 2 * average_speed - leftMotor_speed
+		if(abs(rightMotor_speed) > 10):
+			rightMotor_speed = rightMotor_speed/abs(rightMotor_speed) * 9
+			leftMotor_speed = 2 * average_speed - rightMotor_speed
 		print("speed compensation: {}".format(speed_compensation))
 		print("current distance: {}".format(self.distance))
 		print("motor speed set to: {}, {}".format(leftMotor_speed, rightMotor_speed))
