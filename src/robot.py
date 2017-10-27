@@ -399,25 +399,38 @@ class Robot:
 		while True:
 			self.get_distance()
 
-	def keep_distance(self, distance_to_keep, average_speed):
+	def keep_distance(self, distance_to_keep, average_speed, wall_location):
 		""" using ultrasonic sensor to keep a contant distance between the object and the robot
+		args:
+			distance_to_keep: int
+			average_speed	: int
+			wall_location	: int, 1 for Left side, 2 for Right side
 		"""
 		# proportional control
 		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
+		if(wall_location == 1):
+			pass
+		elif(wall_location == 2):
+			speed_compensation = -speed_compensation
+		else
+			raise Exception("Not a valid wall location!")
+		# calculate motor speeds
 		leftMotor_speed = average_speed + speed_compensation
 		rightMotor_speed = average_speed - speed_compensation
+		# limit motor speeds
 		if(abs(leftMotor_speed) > 10):
 			leftMotor_speed = leftMotor_speed/abs(leftMotor_speed) * 9
 			rightMotor_speed = 2 * average_speed - leftMotor_speed
 		if(abs(rightMotor_speed) > 10):
 			rightMotor_speed = rightMotor_speed/abs(rightMotor_speed) * 9
 			leftMotor_speed = 2 * average_speed - rightMotor_speed
+		# print info
 		print("speed compensation: {}".format(speed_compensation))
 		print("\tcurrent distance: {}".format(self.distance))
 		print("\tmotor speed set to: {}, {}".format(leftMotor_speed, rightMotor_speed))
 		try:
 			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
 		except Exception, e:
-			print(str(e))
+			print("There is some problem setting motor speed, {}".format(str(e)))
 
 
