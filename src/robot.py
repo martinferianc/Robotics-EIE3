@@ -37,7 +37,6 @@ class Robot:
 		self.load_base_config()
 		self.load_pid_config()
 		self.start_threading()
-		self.start_debugging()
 
 	def load_base_config(self):
 		# configure main settings
