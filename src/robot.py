@@ -412,11 +412,11 @@ class Robot:
 			pass
 		elif(wall_location == 2):
 			speed_compensation = -speed_compensation
-		else
+		else:
 			raise Exception("Not a valid wall location!")
 		# calculate motor speeds
-		leftMotor_speed = average_speed + speed_compensation
-		rightMotor_speed = average_speed - speed_compensation
+		leftMotor_speed = average_speed - speed_compensation
+		rightMotor_speed = average_speed + speed_compensation
 		# limit motor speeds
 		if(abs(leftMotor_speed) > 10):
 			leftMotor_speed = leftMotor_speed/abs(leftMotor_speed) * 9
