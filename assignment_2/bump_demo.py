@@ -13,34 +13,26 @@ bumpers = [None,None]
 speeds = [6,6]
 zeros = [0,0]
 Robot.set_speed(speeds)
-Robot.start_debugging()
+#Robot.start_debugging()
 
 while True:
     bumpers[0] = Robot.get_bumper("left")
     bumpers[1] = Robot.get_bumper("right")
 
-    #print(bumpers)
-    #print(Robot.get_distance())
-
     if bumpers[0] and bumpers[1]:
         Robot.stop()
-        #time.sleep(1)
-        Robot.set_speed(zeros)
         Robot.travel_straight(-3)
         Robot.rotate_right(30)
-        Robot.set_speed(speeds)
+        Robot.set_speed([-x for x in speeds])
 
     if not bumpers[0] and bumpers[1]:
         Robot.stop()
-        #time.sleep(1)
-        Robot.set_speed(zeros)
         Robot.rotate_left(30)
-        Robot.set_speed(speeds)
+        Robot.set_speed([-x for x in speeds])
+
     if bumpers[0] and not bumpers[1]:
         Robot.stop()
-        #time.sleep(1)
-        Robot.set_speed(zeros)
         Robot.rotate_right(30)
-        Robot.set_speed(speeds)
+        Robot.set_speed([-x for x in speeds])
 
 interface.terminate()
