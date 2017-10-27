@@ -35,7 +35,7 @@ class Robot:
 		self.load_base_config()
 		self.load_pid_config()
 		self.start_threading()
-		
+
 	def load_base_config(self):
 		# configure main settings
 		with open(self.config_file) as config_file:
@@ -60,9 +60,6 @@ class Robot:
 
 		self.touch_ports = data["touch_ports"]
 		self.ultrasonic_port = data["ultrasonic_port"]
-
-		# Set the angle of the ultra motor to zero
-		self.ultra_pose = 0
 
 		#Initialize the touch sensors
 		print("Ultrasound sensor at port: {0}\nTouch sensors at ports: {1}".format(self.ultrasonic_port,self.touch_ports))
@@ -128,7 +125,7 @@ class Robot:
 			return True
 		else:
 			raise Exception("Touch sensors not initialized!")
-	
+
 	# Infinite loop updating the bumper values
 	def __touch_sensors_loop(self):
 		while True:
@@ -154,7 +151,7 @@ class Robot:
 			i +=1
 		l.sort()
 		return l[(size-1)/2]
-	
+
 	# Infinite loop setting self.distance to self.__median_filtered_ultrasonic()
 	def __ultrasonic_loop(self):
 		while True:
@@ -163,7 +160,7 @@ class Robot:
 			except(IndexError) as e:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
 			time.sleep(0.5)
-	
+
 	def start_threading(self):
 		self.threads = []
 		if self.touch_ports is not None:
@@ -178,7 +175,7 @@ class Robot:
 			ultrasonic_thread.start()
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
-	
+
 	def stop_threading(self):
 		result = True
 		for i in threads:
@@ -187,6 +184,7 @@ class Robot:
 			if i.is_alive():
 				result = False
 		return result
+	
 	def get_bumper(self, bumper):
 		return self.bumpers[bumper]["value"]
 
