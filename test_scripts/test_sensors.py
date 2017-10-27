@@ -3,9 +3,6 @@ from src.robot import Robot
 import brickpi
 import sys
 
-bumpers[0] = Robot.get_bumper("left")
-bumpers[1] = Robot.get_bumper("right")
-
 #Initialize the interface
 interface=brickpi.Interface()
 interface.initialize()
