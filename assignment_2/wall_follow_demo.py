@@ -15,6 +15,6 @@ Robot.set_speed(speeds)
 
 while True:
     Robot.keep_distance(70)
-    time.sleep(0.5)
+    time.sleep(1)
 
 interface.terminate()

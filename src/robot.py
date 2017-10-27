@@ -406,8 +406,9 @@ class Robot:
 		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
 		leftMotor_speed = self.motor_speeds[0] - speed_compensation
 		rightMotor_speed = self.motor_speeds[1] + speed_compensation
-		print("speed compensation: ", speed_compensation)
-		print("current distance:", self.distance)
+		print("speed compensation: {}".format(speed_compensation))
+		print("current distance: {}".format(self.distance))
+		print("motor speed set to: {}, {}".format(leftMotor_speed, rightMotor_speed))
 		try:
 			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
 		except Exception, e:
