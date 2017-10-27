@@ -2,17 +2,22 @@ import brickpi
 import time
 import json
 import math
+from collections import deque
+from thread import Poller
 
 class Robot:
-	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json", touch_ports = None, ultrasonic_port = None):
+	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
 		# Robot initilization
 		self.interface = interface
 		# self.left_speed = 0
 		# self.right_speed = 0
 		# self.top_speed = 0
+
+		self.print_thread = None
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
-
+		self.distance = 0
+		self.threads = []
 		# Robot state
 		self.state = {}
 		with open("robot_state.json","r") as f:
@@ -26,9 +31,16 @@ class Robot:
 		self.interface.motorEnable(self.motors[0])
 		self.interface.motorEnable(self.motors[1])
 		self.interface.motorEnable(self.motors[2])
+		self.config_file = config_file
+		self.pid_config_file = pid_config_file
 
+		self.load_base_config()
+		self.load_pid_config()
+		self.start_threading()
+
+	def load_base_config(self):
 		# configure main settings
-		with open(config_file) as config_file:
+		with open(self.config_file) as config_file:
 			data = json.load(config_file)
 		if data is None:
 			raise Exception("Could not load main config file!")
@@ -51,22 +63,21 @@ class Robot:
 		self.touch_ports = data["touch_ports"]
 		self.ultrasonic_port = data["ultrasonic_port"]
 
-		# Set the angle of the ultra motor to zero
-		self.ultra_pose = 0
-
 		#Initialize the touch sensors
 		print("Ultrasound sensor at port: {0}\nTouch sensors at ports: {1}".format(self.ultrasonic_port,self.touch_ports))
 		if self.touch_ports is not None:
+			self.bumpers = data["bumpers"]
 			for i in self.touch_ports:
 				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
 
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
 
-		#Open the PID config file
+	#Load the PID config file
+	def load_pid_config(self):
 		PID = None
-		with open(pid_config_file) as PID_file:
-    			PID = json.load(PID_file)
+		with open(self.pid_config_file) as PID_file:
+			PID = json.load(PID_file)
 		if PID is None:
 			raise Exception("Could not load PID configuration file!")
 
@@ -100,7 +111,23 @@ class Robot:
 
 		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
-		#self.interface.motorDisable(2)
+		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0,0])
+
+	def print_state(self):
+		print("---WALL-E STATE---")
+		print("MOTORS")
+		print("Angles: {}".format([x[0] for x in self.interface.getMotorAngles(self.motors)]))
+
+		print("SENSORS")
+		if self.touch_ports is not None:
+			print("Bumpers: Left - {0}, Right - {1}".format(self.get_bumper("left"), self.get_bumper("right")))
+		if self.ultrasonic_port is not None:
+			print("Distance: {}".format(self.distance))
+
+		print("POSITIONING")
+		print("Robot pose: {}".format(self.state["pose"]))
+		print("Camera pose: {}".format(self.state["ultra_pose"]))
+
 
 	# Set ultra_pose variable to pose without moving the motor.
 	def calibrate_ultra_position(self, pose = 0):
@@ -110,29 +137,72 @@ class Robot:
 		return True
 
 	#Read input from the touch sensors
-	def read_touch_sensor(self,port):
+	def __update_touch_sensors(self):
 		if self.touch_ports is not None:
-			self.interface.sensorEnable(port,brickpi.SensorType.SENSOR_TOUCH)
-			result = self.interface.getSensorValue(port)
-			return result[0]
+			self.bumpers["left"]["value"] = self.interface.getSensorValue(self.bumpers["left"]["port"])[0]
+			self.bumpers["right"]["value"] = self.interface.getSensorValue(self.bumpers["right"]["port"])[0]
+			return True
 		else:
 			raise Exception("Touch sensors not initialized!")
 
-	def read_ultrasonic_sensor(self):
+	# Infinite loop updating the bumper values
+	def __touch_sensors_loop(self):
+		self.__update_touch_sensors()
+
+	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
 			result = self.interface.getSensorValue(self.ultrasonic_port)
 	  		return result[0]
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
-	def median_filtered_ultrasonic(self,size=21):
-		l =  [0]*size
+	def __median_filtered_ultrasonic(self,size=15):
+		l = [0]*size
 		i = 0
 		while i < size:
-			l[i] = self.read_ultrasonic_sensor()
+			l[i] = self.__read_ultrasonic_sensor()
 			i +=1
 		l.sort()
 		return l[(size-1)/2]
+
+	# Infinite loop setting self.distance to self.__median_filtered_ultrasonic()
+	def __ultrasonic_loop(self):
+		self.distance = self.__median_filtered_ultrasonic()
+
+	def start_debugging(self):
+		self.print_thread = Poller(t=1, target=self.print_state)
+		self.print_thread.start()
+		return True
+
+	def stop_debugging(self):
+		self.print_thread.stop()
+		return True
+
+	def start_threading(self):
+		if self.touch_ports is not None:
+			touch_thread = Poller(t=0.2,target=self.__touch_sensors_loop)
+			self.threads.append(touch_thread)
+			touch_thread.start()
+		else:
+			raise Exception("Touch sensors not initialized!")
+		if self.ultrasonic_port is not None:
+			ultrasonic_thread = Poller(t=0.2,target=self.__ultrasonic_loop)
+			self.threads.append(ultrasonic_thread)
+			ultrasonic_thread.start()
+		else:
+			raise Exception("Ultrasonic sensor not initialized!")
+		return True
+
+	def stop_threading(self):
+		for i in self.threads:
+			i.stop()
+		return True
+
+	def get_bumper(self, bumper):
+		return self.bumpers[bumper]["value"]
+
+	def get_distance(self):
+		return self.distance
 
 	def save_state(self, state_file="robot_state.json"):
 		with open("robot_state.json","w") as f:
@@ -210,6 +280,14 @@ class Robot:
 	def rotate_left(self, angle):
 		return self.rotate_right(-angle)
 
+	#Sets a constant speed for motors [0,1,2]
+	def set_speed(self, speeds=[2,2], motors=[0,1]):
+		for index,i in enumerate(speeds):
+			if abs(i)>10:
+				raise Exception("Speed set too high, abort.")
+			speeds[index]=-i
+		self.interface.setMotorRotationSpeedReferences([self.motors[0],self.motors[1]],speeds)
+
 	#Does the immediate stop if it runs into an obstacle
 	def stop(self):
 		self.interface.setMotorPwm(self.motors[0],0)
@@ -269,7 +347,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -295,6 +373,10 @@ class Robot:
 				print("Enter recalibration value for ultrasound pose: ")
 				s_pose = float(input())
 				self.calibrate_ultra_position(s_pose)
+			elif command == 6:
+				print("Reloading config files")
+				self.load_pid_config()
+				self.load_base_config()
 			else:
 				command = -1
 				self.stop()
@@ -308,4 +390,4 @@ class Robot:
 		"""
 		self.set_ultra_pose(s_pose)
 		while True:
-			read_ultrasonic_sensor(self, 2)
+			self.get_distance()
