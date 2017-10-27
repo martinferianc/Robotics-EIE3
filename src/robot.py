@@ -76,6 +76,7 @@ class Robot:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
 		
 		# load proportional control param
+		self.proportional_control = {}
 		self.proportional_control["k_p"] = data["prop_ctl"]["k_p"]
 
 	#Load the PID config file
