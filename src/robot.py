@@ -403,10 +403,11 @@ class Robot:
 		""" using ultrasonic sensor to keep a contant distance between the object and the robot
 		"""
 		# proportional control
-
 		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
 		leftMotor_speed = self.motor_speeds[0] - speed_compensation
 		rightMotor_speed = self.motor_speeds[1] + speed_compensation
+		print("speed compensation: ", speed_compensation)
+		print("current distance:", self.distance)
 		self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
 
 
