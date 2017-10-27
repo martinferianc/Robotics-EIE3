@@ -131,9 +131,11 @@ class Robot:
 		while True:
 			try:
 				self.__update_touch_sensors()
-			except(IndexError):
+			except(IndexError) as e:
+				print(str(e))
 				for i in self.touch_ports:
 					self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
+
 			time.sleep(0.5)
 
 	def __read_ultrasonic_sensor(self):
@@ -158,6 +160,7 @@ class Robot:
 			try:
 				self.distance = self.__median_filtered_ultrasonic()
 			except(IndexError) as e:
+				print(str(e))
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
 			time.sleep(0.5)
 
@@ -184,7 +187,7 @@ class Robot:
 			if i.is_alive():
 				result = False
 		return result
-	
+
 	def get_bumper(self, bumper):
 		return self.bumpers[bumper]["value"]
 
