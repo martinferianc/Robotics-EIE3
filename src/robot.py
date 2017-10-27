@@ -408,6 +408,9 @@ class Robot:
 		rightMotor_speed = self.motor_speeds[1] + speed_compensation
 		print("speed compensation: ", speed_compensation)
 		print("current distance:", self.distance)
-		self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
+		try:
+			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
+		except:
+			print(sys.exc_info()[0])
 
 
