@@ -2,8 +2,8 @@ import brickpi
 import time
 import json
 import math
-import multiprocessing
 from collections import deque
+from thread import Poller
 
 class Robot:
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
@@ -128,15 +128,7 @@ class Robot:
 
 	# Infinite loop updating the bumper values
 	def __touch_sensors_loop(self):
-		while True:
-			try:
-				self.__update_touch_sensors()
-			except(IndexError) as e:
-				print(str(e))
-				for i in self.touch_ports:
-					self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
-
-			time.sleep(0.5)
+		self.__update_touch_sensors()
 
 	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
@@ -156,37 +148,27 @@ class Robot:
 
 	# Infinite loop setting self.distance to self.__median_filtered_ultrasonic()
 	def __ultrasonic_loop(self):
-		while True:
-			try:
-				self.distance = self.__median_filtered_ultrasonic()
-			except(IndexError) as e:
-				print(str(e))
-				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
-			time.sleep(0.5)
+		self.distance = self.__median_filtered_ultrasonic()
 
 	def start_threading(self):
 		self.threads = []
 		if self.touch_ports is not None:
-			touch_thread = multiprocessing.Process(target=self.__touch_sensors_loop)
+			touch_thread = Poller(t=0.2,target=self.__touch_sensors_loop)
 			self.threads.append(touch_thread)
 			touch_thread.start()
 		else:
 			raise Exception("Touch sensors not initialized!")
 		if self.ultrasonic_port is not None:
-			ultrasonic_thread = multiprocessing.Process(target=self.__ultrasonic_loop)
+			ultrasonic_thread = Poller(t=0.2,target=self.__ultrasonic_loop)
 			self.threads.append(ultrasonic_thread)
 			ultrasonic_thread.start()
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
 	def stop_threading(self):
-		result = True
-		for i in threads:
-			i.terminate()
-			i.join()
-			if i.is_alive():
-				result = False
-		return result
+		for i in self.threads:
+			i.stop()
+		return True
 
 	def get_bumper(self, bumper):
 		return self.bumpers[bumper]["value"]
