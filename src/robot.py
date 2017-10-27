@@ -170,7 +170,7 @@ class Robot:
 		self.distance = self.__median_filtered_ultrasonic()
 
 	def start_debugging(self):
-		self.print_thread = Poller(t=0.5, target=self.print_state)
+		self.print_thread = Poller(t=1, target=self.print_state)
 		self.print_thread.start()
 		return True
 
