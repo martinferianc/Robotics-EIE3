@@ -17,6 +17,8 @@ class Robot:
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
+		# robot travel speed
+		self.motor_speeds = [0,0]
 		self.threads = []
 		# Robot state
 		self.state = {}
@@ -72,6 +74,9 @@ class Robot:
 
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
+		
+		# load proportional control param
+		self.proportional_control["k_p"] = data["prop_ctl"]["k_p"]
 
 	#Load the PID config file
 	def load_pid_config(self):
@@ -287,6 +292,7 @@ class Robot:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
 		self.interface.setMotorRotationSpeedReferences([self.motors[0],self.motors[1]],speeds)
+		self.motor_speeds = speeds
 
 	#Does the immediate stop if it runs into an obstacle
 	def stop(self):
@@ -391,3 +397,15 @@ class Robot:
 		self.set_ultra_pose(s_pose)
 		while True:
 			self.get_distance()
+
+	def keep_distance(self, distance_to_keep):
+		""" using ultrasonic sensor to keep a contant distance between the object and the robot
+		"""
+		# proportional control
+
+		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
+		leftMotor_speed = self.motor_speeds[0] - speed_compensation
+		rightMotor_speed = self.motor_speeds[1] + speed_compensation
+		self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
+
+

@@ -1,22 +1,26 @@
 {
-	"top": {
-		"maxRotationAcceleration": 6.0,
-		"maxRotationSpeed": 12.0,
-		"feedForwardGain": 12.75,
-		"minPWM": 18.0,
-		"minOutput": -255,
-		"maxOutput": 255,
-		"k_p": 425.0,
-		"k_i": 550.0,
-		"k_d": 375.0
-	},
+    "top": {
+        "maxRotationAcceleration": 6.0,
+        "maxRotationSpeed": 12.0,
+        "feedForwardGain": 12.75,
+        "minPWM": 18.0,
+        "minOutput": -255,
+        "maxOutput": 255,
+        "k_p": 425.0,
+        "k_i": 550.0,
+        "k_d": 375.0
+    },
 
-	"ultra_angle_calibration" : 0.0178,
+    "ultra_angle_calibration": 0.0178,
 
-	"touch_ports" : [0,2],
-	"bumpers" : {
-		"left":{"port": 2, "value":0},
-		"right":{"port": 0, "value":0}
-	},
-	"ultrasonic_port" : 3
+    "touch_ports": [0, 2],
+    "bumpers": {
+        "left": { "port": 2, "value": 0 },
+        "right": { "port": 0, "value": 0 }
+    },
+    "ultrasonic_port": 3,
+
+    "prop_ctl": {
+        "k_p": 0.1
+    }
 }
