@@ -14,13 +14,8 @@ bumpers = [None,None]
 speeds = [5,5]
 zeros = [0,0]
 Robot.set_speed(speeds)
-Robot.start_threading()
+Robot.start_debugging()
 
 while True:
-    bumpers[0] = Robot.get_bumper("left")
-    bumpers[1] = Robot.get_bumper("right")
-    print(bumpers)
-    print(Robot.get_distance())
-    time.sleep(1)
-
+    pass
 interface.terminate()
