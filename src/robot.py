@@ -399,15 +399,14 @@ class Robot:
 		distance_to_travel = self.get_distance()-d
 		print "Distance: " + str(self.get_distance())
 		while (distance_to_travel != 0):
-			motor_speed = int(round(distance_to_travel*0.6))
+			motor_speed = int(round(distance_to_travel*0.4))
 			if(motor_speed > 8):
 				motor_speed = 8 
 			elif(motor_speed < -8):
 				motor_speed = -8
-			print "Motor Speed: " + str(motor_speed) + "\n"
-			self.set_speed([motor_speed,motor_speed])
+			set_speed([motor_speed,motor_speed])
+			time.sleep(0.1)
 			distance_to_travel = self.get_distance()-d
-			print "Distance: " + str(self.get_distance())
 		self.set_speed([0,0])
 
 
