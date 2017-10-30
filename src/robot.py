@@ -396,7 +396,7 @@ class Robot:
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
 		self.set_ultra_pose(s_pose)
-		distance_to_travel = self.get_distance()-d
+		distance_to_travel = self.get_distance()-d-1
 		print "Distance: " + str(self.get_distance())
 		while (distance_to_travel != 0):
 			motor_speed = int(round(distance_to_travel*0.4))
@@ -404,9 +404,8 @@ class Robot:
 				motor_speed = 8 
 			elif(motor_speed < -8):
 				motor_speed = -8
-			set_speed([motor_speed,motor_speed])
-			time.sleep(0.1)
-			distance_to_travel = self.get_distance()-d
+			self.set_speed([motor_speed,motor_speed])
+			distance_to_travel = self.get_distance()-d-1
 		self.set_speed([0,0])
 
 
