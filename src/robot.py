@@ -396,17 +396,19 @@ class Robot:
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
 		self.set_ultra_pose(s_pose)
-		distance_to_travel = (self.get_distance()+1) - d
+		distance_to_travel = self.get_distance()-d
 		print "Distance: " + str(self.get_distance())
 		while (distance_to_travel != 0):
 			motor_speed = int(round(distance_to_travel*0.6))
 			if(motor_speed > 8):
 				motor_speed = 8 
+			elif(motor_speed < -8):
+				motor_speed = -8
 			print "Motor Speed: " + str(motor_speed) + "\n"
 			self.set_speed([motor_speed,motor_speed])
-			distance_to_travel = (self.get_distance()+1) -d
-			print "Distance" + str(self.get_distance())
-		self.set_speed(0)
+			distance_to_travel = self.get_distance()-d
+			print "Distance: " + str(self.get_distance())
+		self.set_speed([0,0])
 
 
 	def keep_distance(self, distance_to_keep, average_speed, wall_location):
