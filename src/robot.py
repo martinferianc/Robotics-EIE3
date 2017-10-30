@@ -17,6 +17,8 @@ class Robot:
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
+		# robot travel speed
+		self.motor_speeds = [0,0]
 		self.threads = []
 		# Robot state
 		self.state = {}
@@ -72,6 +74,10 @@ class Robot:
 
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
+		
+		# load proportional control param
+		self.proportional_control = {}
+		self.proportional_control["k_p"] = data["prop_ctl"]["k_p"]
 
 	#Load the PID config file
 	def load_pid_config(self):
@@ -287,6 +293,7 @@ class Robot:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
 		self.interface.setMotorRotationSpeedReferences([self.motors[0],self.motors[1]],speeds)
+		self.motor_speeds = speeds
 
 	#Does the immediate stop if it runs into an obstacle
 	def stop(self):
@@ -389,5 +396,51 @@ class Robot:
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
 		self.set_ultra_pose(s_pose)
-		while True:
-			self.get_distance()
+		distance_to_travel = self.get_distance()-d-1
+		print "Distance: " + str(self.get_distance())
+		while (distance_to_travel != 0):
+			motor_speed = int(round(distance_to_travel*0.4))
+			if(motor_speed > 8):
+				motor_speed = 8 
+			elif(motor_speed < -8):
+				motor_speed = -8
+			self.set_speed([motor_speed,motor_speed])
+			distance_to_travel = self.get_distance()-d-1
+		self.set_speed([0,0])
+
+
+	def keep_distance(self, distance_to_keep, average_speed, wall_location):
+		""" using ultrasonic sensor to keep a contant distance between the object and the robot
+		args:
+			distance_to_keep: int
+			average_speed	: int
+			wall_location	: int, 1 for Left side, 2 for Right side
+		"""
+		# proportional control
+		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
+		if(wall_location == 1):
+			pass
+		elif(wall_location == 2):
+			speed_compensation = -speed_compensation
+		else:
+			raise Exception("Not a valid wall location!")
+		# calculate motor speeds
+		leftMotor_speed = average_speed - speed_compensation
+		rightMotor_speed = average_speed + speed_compensation
+		# limit motor speeds
+		if(abs(leftMotor_speed) > 10):
+			leftMotor_speed = leftMotor_speed/abs(leftMotor_speed) * 9
+			rightMotor_speed = 2 * average_speed - leftMotor_speed
+		if(abs(rightMotor_speed) > 10):
+			rightMotor_speed = rightMotor_speed/abs(rightMotor_speed) * 9
+			leftMotor_speed = 2 * average_speed - rightMotor_speed
+		# print info
+		print("speed compensation: {}".format(speed_compensation))
+		print("\tcurrent distance: {}".format(self.distance))
+		print("\tmotor speed set to: {}, {}".format(leftMotor_speed, rightMotor_speed))
+		try:
+			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
+		except Exception, e:
+			print("There is some problem setting motor speed, {}".format(str(e)))
+
+
