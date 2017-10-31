@@ -457,7 +457,12 @@ class Robot:
 			samples[i] = {'weight':weighting,'x':0,'y':0,'theta':0}
 		return samples
 
-	def update_projected_points(self, direction, mu = 0, sigma = 0, number_particles = 100, samples):
+	def update_projected_points(self, direction, samples, mu = 0, sigma = 0, number_particles = 100):
 		for i in range(number_particles):
 			samples[i][direction] = samples[i][direction] + random.gauss(mu,sigma)
 		return samples
+
+	def draw_square(self):
+		pass
+		line
+		print "drawLine:"
