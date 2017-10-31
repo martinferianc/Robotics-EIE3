@@ -10,7 +10,7 @@ port = 3
 interface.sensorEnable(port, brickpi.SensorType.SENSOR_ULTRASONIC);
 
 while True:
-	raw_input("Measure")
+	#raw_input("Measure")
 	data = []
 	while len(data)<1000:
 		usReading = interface.getSensorValue(port)
