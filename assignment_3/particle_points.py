@@ -7,12 +7,13 @@ interface = brickpi.Interface()
 interface.initialize()
 config = str(sys.argv[1])
 Robot = Robot(interface, pid_config_file = config)
+Robot.set_speed([0,0])
 
 NUMBER_OF_SAMPLES = 100
-samples[NUMBER_OF_SAMPLES] = []
+samples = [NUMBER_OF_SAMPLES]
 
 Robot.draw_square()
-samples = Robot.generate_uncertainty_dict(NUMBER_OF_SAMPLES)
+samples = Robot.initialize_uncertainty_points(NUMBER_OF_SAMPLES)
 samples = Robot.update_projected_points("x", 10, 0.5, NUMBER_OF_SAMPLES, samples)
 Robot.plot_points(samples)
 samples = Robot.update_projected_points("x", 10, 0.5, NUMBER_OF_SAMPLES, samples)

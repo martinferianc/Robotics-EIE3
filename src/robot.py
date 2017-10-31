@@ -449,7 +449,7 @@ class Robot:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
 ################### UNCERTAINTIY IN MOVEMENT ##########################
-	def generate_uncertainty_points(self, number_particles = 100):
+	def initialize_uncertainty_points(self, number_particles = 100):
 		samples = [number_particles]
 		for i in range(number_particles):
 			samples[i] = (0,0,0);
