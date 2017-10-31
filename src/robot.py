@@ -4,6 +4,7 @@ import json
 import math
 from collections import deque
 from thread import Poller
+import os
 
 class Robot:
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
@@ -21,12 +22,16 @@ class Robot:
 		self.motor_speeds = [0,0]
 		self.threads = []
 		# Robot state
-		self.state = {}
-		with open("robot_state.json","r") as f:
-			self.state = json.load(f)
+		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
+		if(os.path.isfile("robot_state.json")):
+			try:
+				with open("robot_state.json","r") as f:
+					self.state = json.load(f)
+			except Exception as e:
+				print "Error reading from the JSON file."
 
 		#Motor initialization
-		self.motors = [0,1,2]
+		self.motors = [0,3,2]
 		self.motorParams = {}
 
 		#Enabling the motors
@@ -74,7 +79,7 @@ class Robot:
 
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
-		
+
 		# load proportional control param
 		self.proportional_control = {}
 		self.proportional_control["k_p"] = data["prop_ctl"]["k_p"]
@@ -131,7 +136,7 @@ class Robot:
 			print("Distance: {}".format(self.distance))
 
 		print("POSITIONING")
-		print("Robot pose: {}".format(self.state["pose"]))
+		print("Robot pose: {}".format(self.state["pose"]["theta"]))
 		print("Camera pose: {}".format(self.state["ultra_pose"]))
 
 
@@ -275,7 +280,7 @@ class Robot:
 	def rotate_right(self, angle):
 		#print("Starting pose: {}".format(self.state.get("pose")))
 		dist = self.angle_calibration*angle
-		self.state["pose"] = self.state.get("pose", 0) + angle
+		self.state["pose"]["theta"] = self.state.get("pose", 0) + angle
 		#print("New pose: {}".format(self.state.get("pose")))
 		# Maybe only save state when the robot is shutting down?
 		self.save_state()
@@ -345,7 +350,7 @@ class Robot:
 			self.rotate_right(rotation-360)
 		else:
 			self.rotate_right(rotation)
-		self.state["pose"] = s_pose
+		self.state["pose"]["theta"] = s_pose
 		print("Ending pose: {}".format(s_pose))
 		self.save_state()
 		return True
@@ -395,19 +400,19 @@ class Robot:
 		Takes a distance and the direction in terms of s_pose for the camera to look in
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
+
 		self.set_ultra_pose(s_pose)
 		distance_to_travel = self.get_distance()-d-1
 		print "Distance: " + str(self.get_distance())
 		while (distance_to_travel != 0):
 			motor_speed = int(round(distance_to_travel*0.4))
 			if(motor_speed > 8):
-				motor_speed = 8 
+				motor_speed = 8
 			elif(motor_speed < -8):
 				motor_speed = -8
 			self.set_speed([motor_speed,motor_speed])
 			distance_to_travel = self.get_distance()-d-1
 		self.set_speed([0,0])
-
 
 	def keep_distance(self, distance_to_keep, average_speed, wall_location):
 		""" using ultrasonic sensor to keep a contant distance between the object and the robot
@@ -443,4 +448,34 @@ class Robot:
 		except Exception, e:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
+################### UNCERTAINTIY IN MOVEMENT ##########################
+	def generate_uncertainty_points(self, number_particles = 100):
+		samples = [number_particles]
+		for i in range(number_particles):
+			samples[i] = (0,0,0);
+		return samples
 
+	def update_projected_points(self, direction, samples, mu = 0, sigma = 0, number_particles = 100):
+		if(direction = "x"):
+			for i in range(number_particles):
+				samples[i] = (samples[i][0] + random.gauss(mu,sigma), samples[i][1], samples[i][2]);
+		elif(direction = "y"):
+			for i in range(number_particles):
+				samples[i] = (samples[i][0], samples[i][1] + random.gauss(mu,sigma), samples[i][2]);
+		elif(direction = "theta"):
+			for i in range(number_particles):
+				samples[i] = (samples[i][0], samples[i][1], samples[i][2] + random.gauss(mu,sigma));
+		return samples
+
+	def plot_points(samples, number_particles = 100):
+		print "drawParticles:" + str(samples)
+
+	def draw_square(self):
+		bottom_line = (0,0,40,0)
+		right_line = (40,0,40,40)
+		top_line = (40,40,0,40)
+		left_line = (0,40,0,0)
+		print "drawLine:" + str(bottom_line)
+		print "drawLine:" + str(right_line)
+		print "drawLine:" + str(top_line)
+		print "drawLine:" + str(left_line)
