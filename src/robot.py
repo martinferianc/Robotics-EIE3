@@ -449,10 +449,14 @@ class Robot:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
 ################### UNCERTAINTIY IN MOVEMENT ##########################
-	def generate_uncertainty_dict(self, number_particles):
-		samples = []
+	def generate_uncertainty_dict(self, number_particles = 100):
+		samples = [number_particles]
 		weighting = 1/number_particles
 		for i in range(number_particles):
 			samples[i] = {'weight':weighting,'x':0,'y':0,'theta':0}
+		return samples
 
-	def update_projected_points(self, x = 0, y = 0, theta = 0, )
+	def update_projected_points(self, direction, mu = 0, sigma = 0, number_particles = 100, samples):
+		for i in range(number_particles):
+			samples[i][direction] = samples[i][direction] + random.gauss(mu,sigma)
+		return samples
