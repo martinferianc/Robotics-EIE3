@@ -449,11 +449,10 @@ class Robot:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
 ################### UNCERTAINTIY IN MOVEMENT ##########################
-	def generate_uncertainty_dict(self, number_particles = 100):
+	def generate_uncertainty_points(self, number_particles = 100):
 		samples = [number_particles]
-		weighting = 1/number_particles
 		for i in range(number_particles):
-			samples[i] = {'weight':weighting,'x':0,'y':0,'theta':0}
+			samples[i] = (0,0,0)
 		return samples
 
 	def update_projected_points(self, direction, samples, mu = 0, sigma = 0, number_particles = 100):
@@ -462,9 +461,7 @@ class Robot:
 		return samples
 
 	def plot_points(samples, number_particles = 100):
-		for i in range(number_particles):
-			point = (samples[i]["x"], samples[i]["y"], samples[i]["theta"])
-			print "drawParticles:" + str(point)
+		print "drawParticles:" + str(samples)
 
 	def draw_square(self):
 		bottom_line = (0,0,40,0)
