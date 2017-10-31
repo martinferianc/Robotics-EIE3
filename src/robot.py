@@ -27,7 +27,6 @@ class Robot:
 			try:
 				with open("robot_state.json","r") as f:
 					self.state = json.load(f)
-				break
 			except Exception as e:
 				print "Error reading from the JSON file."
 
