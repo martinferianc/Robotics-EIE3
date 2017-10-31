@@ -32,7 +32,7 @@ class Robot:
 				print "Error reading from the JSON file."
 
 		#Motor initialization
-		self.motors = [0,1,2]
+		self.motors = [0,3,2]
 		self.motorParams = {}
 
 		#Enabling the motors
