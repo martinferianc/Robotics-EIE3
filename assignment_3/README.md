@@ -22,12 +22,54 @@ As a rule of thumb one can assume that objects that are within an angle 15 degre
 up the sensor at a range of hand-measured depths (20cm, 40cm, 60cm, 80cm, 100cm) from a wall
 and record depth readings. Are they consistently above or below what they should be?
 
-We have observed a deviation of approximately +/- 3cm which agrees with the datasheet of the US sensor.
+We were measuring the distance 10 times for each distance and these are the results:
+
+|  Distance | Mean |
+|:-------:|:-------:|
+|20    |22    |
+|40     |41        |
+|60     |60     |
+|80      |79.7     |
+|100      |101       |
+
+The 10 consecutive measurements had variance and standard deviation of 0 - did not change.
+
+We have observed a deviation of approximately +/- 2cm which almost agrees with the datasheet of the US sensor. The datasheet suggests values up to +/-3 cm.
 
 #### _4:_ What is the the accuracy of the sonar sensor and does it depend on depth? At each of two chosen
 hand-measured depths (40cm and 100cm), make 10 separate depth measurements (each time
 picking up and replacing the sensor) and record the values. Do you observe the same level of
 scatter in each case?
+
+We have started first with the distance of 40 cm.
+
+|  Measurement | Mean | Variance | Standard deviation |
+|:-------:|:-------:||:-------:|
+|1   |43   |0 | 0|
+|2   |43   |0 | 0|
+|3   |43   |0 | 0|
+|4   |42    |0 | 0|
+|5   |42    |0 | 0|
+|6   |42    |0 | 0|
+|7   |42    |0 | 0|
+|8   |42    |0 | 0|
+|9   |42    |0 | 0|
+|10   |42    |0 | 0|
+
+Then we have measured scatter with the distance of 100 cm.
+
+|  Measurement | Mean | Variance | Standard deviation |
+|:-------:|:-------:||:-------:|
+|1   |103.8  |0.16 | 0.4|
+|2   |104   |0 | 0|
+|3   |104   |0 | 0|
+|4   |104   |0 | 0|
+|5   |104    |0 | 0|
+|6   |104    |0 | 0|
+|7   |104    |0 | 0|
+|8   |104    |0 | 0|
+|9   |104    |0 | 0|
+|10   |104    |0 | 0|
 
 #### _5:_ In a range of general conditions for robot navigation, what fraction of the time do you think your
 sonar gives garbage readings very far from ground truth?

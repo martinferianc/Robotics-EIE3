@@ -10,18 +10,19 @@ port = 3
 interface.sensorEnable(port, brickpi.SensorType.SENSOR_ULTRASONIC);
 
 while True:
-	distance = int(input("What is the distance being measured?"))
+	raw_input("Measure")
 	data = []
-	for i in range(10):
+	while len(data)<1000:
 		usReading = interface.getSensorValue(port)
-		if usReading and usReading[0]!=255:
+		if usReading:
 			data.append(usReading[0])
 		else:
-			print "Failed US reading"
 		time.sleep(0.05)
 	data = np.array(data)
-	print("Mean: "+str(np.mean(data))+
-		  " Variance: "+str(np.var(data))+
-		  " Standard deviation: "+str(np.std(data)))
+	unique, counts = numpy.unique(data, return_counts=True)
+	print(" Measurements: "+str(len(data)))
+	data = dict(zip(unique, counts))
+	print(" Data: ")
+	print(data)
 
 interface.terminate()
