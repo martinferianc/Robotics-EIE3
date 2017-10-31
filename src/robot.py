@@ -452,12 +452,19 @@ class Robot:
 	def generate_uncertainty_points(self, number_particles = 100):
 		samples = [number_particles]
 		for i in range(number_particles):
-			samples[i] = (0,0,0)
+			samples[i] = (0,0,0);
 		return samples
 
 	def update_projected_points(self, direction, samples, mu = 0, sigma = 0, number_particles = 100):
-		for i in range(number_particles):
-			samples[i][direction] = samples[i][direction] + random.gauss(mu,sigma)
+		if(direction = "x"):
+			for i in range(number_particles):
+				samples[i] = (samples[i][0] + random.gauss(mu,sigma), samples[i][1], samples[i][2]);
+		elif(direction = "y"):
+			for i in range(number_particles):
+				samples[i] = (samples[i][0], samples[i][1] + random.gauss(mu,sigma), samples[i][2]);
+		elif(direction = "theta"):
+			for i in range(number_particles):
+				samples[i] = (samples[i][0], samples[i][1], samples[i][2] + random.gauss(mu,sigma));
 		return samples
 
 	def plot_points(samples, number_particles = 100):
