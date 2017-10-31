@@ -401,6 +401,7 @@ class Robot:
 		Takes a distance and the direction in terms of s_pose for the camera to look in
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
+
 		self.set_ultra_pose(s_pose)
 		distance_to_travel = self.get_distance()-d-1
 		print "Distance: " + str(self.get_distance())
