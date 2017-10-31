@@ -18,7 +18,7 @@ while True:
 			data.append(usReading[0])
 		time.sleep(0.05)
 	data = np.array(data)
-	unique, counts = np.unique(data,True)
+	unique, counts = np.unique(data, return_counts = True)
 	print(" Measurements: " + str(len(data)))
 	data = dict(zip(unique, counts))
 	print(" Data: ")
