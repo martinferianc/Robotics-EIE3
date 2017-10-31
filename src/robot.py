@@ -4,6 +4,7 @@ import json
 import math
 from collections import deque
 from thread import Poller
+import os
 
 class Robot:
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
@@ -21,9 +22,14 @@ class Robot:
 		self.motor_speeds = [0,0]
 		self.threads = []
 		# Robot state
-		self.state = {}
-		with open("robot_state.json","r") as f:
-			self.state = json.load(f)
+		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
+		if(os.path.isfile("robot_state.json")):
+			try:
+				with open("robot_state.json","r") as f:
+					self.state = json.load(f)
+				break
+			except Exception as e:
+				print "Error reading from the JSON file."
 
 		#Motor initialization
 		self.motors = [0,1,2]
@@ -74,7 +80,7 @@ class Robot:
 
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
-		
+
 		# load proportional control param
 		self.proportional_control = {}
 		self.proportional_control["k_p"] = data["prop_ctl"]["k_p"]
@@ -131,7 +137,7 @@ class Robot:
 			print("Distance: {}".format(self.distance))
 
 		print("POSITIONING")
-		print("Robot pose: {}".format(self.state["pose"]))
+		print("Robot pose: {}".format(self.state["pose"]["theta"]))
 		print("Camera pose: {}".format(self.state["ultra_pose"]))
 
 
@@ -275,7 +281,7 @@ class Robot:
 	def rotate_right(self, angle):
 		#print("Starting pose: {}".format(self.state.get("pose")))
 		dist = self.angle_calibration*angle
-		self.state["pose"] = self.state.get("pose", 0) + angle
+		self.state["pose"]["theta"] = self.state.get("pose", 0) + angle
 		#print("New pose: {}".format(self.state.get("pose")))
 		# Maybe only save state when the robot is shutting down?
 		self.save_state()
@@ -345,7 +351,7 @@ class Robot:
 			self.rotate_right(rotation-360)
 		else:
 			self.rotate_right(rotation)
-		self.state["pose"] = s_pose
+		self.state["pose"]["theta"] = s_pose
 		print("Ending pose: {}".format(s_pose))
 		self.save_state()
 		return True
@@ -401,7 +407,7 @@ class Robot:
 		while (distance_to_travel != 0):
 			motor_speed = int(round(distance_to_travel*0.4))
 			if(motor_speed > 8):
-				motor_speed = 8 
+				motor_speed = 8
 			elif(motor_speed < -8):
 				motor_speed = -8
 			self.set_speed([motor_speed,motor_speed])
@@ -442,5 +448,3 @@ class Robot:
 			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
 		except Exception, e:
 			print("There is some problem setting motor speed, {}".format(str(e)))
-
-
