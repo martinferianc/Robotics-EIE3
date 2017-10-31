@@ -461,7 +461,17 @@ class Robot:
 			samples[i][direction] = samples[i][direction] + random.gauss(mu,sigma)
 		return samples
 
+	def plot_points(samples, number_particles = 100):
+		for i in range(number_particles):
+			point = (samples[i]["x"], samples[i]["y"], samples[i]["theta"])
+			print "drawParticles:" + str(point)
+
 	def draw_square(self):
-		pass
-		line
-		print "drawLine:"
+		bottom_line = (0,0,40,0)
+		right_line = (40,0,40,40)
+		top_line = (40,40,0,40)
+		left_line = (0,40,0,0)
+		print "drawLine:" + str(bottom_line)
+		print "drawLine:" + str(right_line)
+		print "drawLine:" + str(top_line)
+		print "drawLine:" + str(left_line)

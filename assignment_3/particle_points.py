@@ -11,11 +11,11 @@ Robot = Robot(interface, pid_config_file = config)
 NUMBER_OF_SAMPLES = 100
 samples[NUMBER_OF_SAMPLES]
 
+Robot.draw_square()
 samples = Robot.generate_uncertainty_dict(NUMBER_OF_SAMPLES)
-print(samples)
 samples = Robot.update_projected_points("x", 10, 0.5, NUMBER_OF_SAMPLES, samples)
-print(samples)
+Robot.plot_points(samples)
 samples = Robot.update_projected_points("x", 10, 0.5, NUMBER_OF_SAMPLES, samples)
-print(samples)
+Robot.plot_points(samples)
 
 interface.terminate()
