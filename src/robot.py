@@ -450,8 +450,9 @@ class Robot:
 
 ################### UNCERTAINTIY IN MOVEMENT ##########################
 	def initialize_uncertainty_points(self, number_particles = 100):
+		samples=[number_particles]
 		for i in range(number_particles):
-			samples[i].append((0,0,0))
+			samples.append((0,0,0))
 		return samples
 
 	def update_projected_points(self, direction, samples, mu = 0, sigma = 0, number_particles = 100):

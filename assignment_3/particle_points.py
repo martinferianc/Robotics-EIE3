@@ -14,9 +14,9 @@ samples = [NUMBER_OF_SAMPLES]
 
 Robot.draw_square()
 samples = Robot.initialize_uncertainty_points(NUMBER_OF_SAMPLES)
-samples = Robot.update_projected_points("x", 10, 0.5, NUMBER_OF_SAMPLES, samples)
+samples = Robot.update_projected_points("x", samples, 10, 0.5, NUMBER_OF_SAMPLES)
 Robot.plot_points(samples)
-samples = Robot.update_projected_points("x", 10, 0.5, NUMBER_OF_SAMPLES, samples)
+samples = Robot.update_projected_points("x", samples, 10, 0.5, NUMBER_OF_SAMPLES)
 Robot.plot_points(samples)
 
 interface.terminate()
