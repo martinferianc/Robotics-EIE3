@@ -414,7 +414,6 @@ class Robot:
 			distance_to_travel = self.get_distance()-d-1
 		self.set_speed([0,0])
 
-
 	def keep_distance(self, distance_to_keep, average_speed, wall_location):
 		""" using ultrasonic sensor to keep a contant distance between the object and the robot
 		args:
@@ -448,3 +447,12 @@ class Robot:
 			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
 		except Exception, e:
 			print("There is some problem setting motor speed, {}".format(str(e)))
+
+################### UNCERTAINTIY IN MOVEMENT ##########################
+	def generate_uncertainty_dict(self, number_particles):
+		samples = []
+		weighting = 1/number_particles
+		for i in range(number_particles):
+			samples[i] = {'weight':weighting,'x':0,'y':0,'theta':0}
+
+	def update_projected_points(self, x = 0, y = 0, theta = 0, )
