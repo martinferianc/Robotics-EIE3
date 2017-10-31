@@ -9,7 +9,7 @@ config = str(sys.argv[1])
 Robot = Robot(interface, pid_config_file = config)
 
 NUMBER_OF_SAMPLES = 100
-samples[NUMBER_OF_SAMPLES]
+samples[NUMBER_OF_SAMPLES] = []
 
 Robot.draw_square()
 samples = Robot.generate_uncertainty_dict(NUMBER_OF_SAMPLES)
