@@ -71,5 +71,7 @@ Then we have measured scatter with the distance of 100 cm.
 |9   |104    |0 | 0|
 |10   |104    |0 | 0|
 
+In the second case we have observed double the error for the shorter distance. Therefore we assume that the depth definitely matters and with increasing depth the error increases. 
+
 #### _5:_ In a range of general conditions for robot navigation, what fraction of the time do you think your
 sonar gives garbage readings very far from ground truth?
