@@ -16,10 +16,9 @@ while True:
 		usReading = interface.getSensorValue(port)
 		if usReading:
 			data.append(usReading[0])
-		else:
 		time.sleep(0.05)
 	data = np.array(data)
-	unique, counts = numpy.unique(data, return_counts=True)
+	unique, counts = np.unique(data, return_counts=True)
 	print(" Measurements: "+str(len(data)))
 	data = dict(zip(unique, counts))
 	print(" Data: ")
