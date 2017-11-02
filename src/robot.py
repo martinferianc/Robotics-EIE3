@@ -36,7 +36,7 @@ class Robot:
 				print "Error reading from the JSON file."
 
 		#Motor initialization
-		self.motors = [0,3,2]
+		self.motors = [0,1,2]
 		self.motorParams = {}
 
 		#Enabling the motors
@@ -319,10 +319,10 @@ class Robot:
 
 	#Takes the angle in degrees and rotates the robot right
 	def rotate_right(self, angle, update_particles = False):
-		#print("Starting pose: {}".format(self.state.get("pose")))
+		#print("Starting pose: {}".format(self.state["pose"].get("theta")))
 		dist = self.angle_calibration*angle
-		self.state["pose"]["theta"] = self.state.get("pose", 0) + angle
-		#print("New pose: {}".format(self.state.get("pose")))
+		self.state["pose"]["theta"] = self.state["pose"].get("theta", 0) + angle
+		#print("New pose: {}".format(self.state["pose"].get("theta")))
 		# Maybe only save state when the robot is shutting down?
 		self.save_state()
 
@@ -379,11 +379,11 @@ class Robot:
 
 	# Move the robot to the specified pose
 	def set_robot_pose(self, s_pose):
-		print("Starting pose: {}".format(self.state.get("pose",-1)))
+		print("Starting pose: {}".format(self.state["pose"].get("theta",-1)))
 		while s_pose > 360:
 			s_pose-=360
 
-		rotation = s_pose-self.state.get("pose", 0)
+		rotation = s_pose-self.state["pose"].get("theta", 0)
 		if rotation==0:
 			print("No rotation required.")
 			return True
