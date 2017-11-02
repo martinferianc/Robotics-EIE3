@@ -261,8 +261,8 @@ class Robot:
 		diff_Y = (Y*100)-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 
-		angle = math.atan2(diff_Y,diff_X)
-		self.set_robot_pose(math.degrees(angle))
+		angle = math.degrees(math.atan2(diff_Y,diff_X))
+		self.set_robot_pose(angle)
 		return self.travel_straight(distance,update_particles=True)
 
 
