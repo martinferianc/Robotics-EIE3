@@ -3,7 +3,15 @@
 
 ### 2.1 Representing and Displaying Uncertain Miton with a Particle Set.
 
+We have created a list of 100 lists representing the particles. Each list contains (x,y,tetha) coordinates.
+
+Each time the roboot moves straight X is updated `X+=X+(D+e)cos(tetha)` and Y is updated as `Y+=Y+(D+g)sin(tetha)` and tetha as: `Tetha+=tetha+f` where e,f,g are error terms created from random gaussian distribution with mean 0 and standard deviation found from the previous assignment in the covariance matrix.
+
+And in each turn we update all the particles with new Tetha values as : `Tetha+=tetha+f+angle`
+
+
 ### 2.2 Waypoint Navigation
+NEEDS DOING
 
 ### 2.3 Sonar investigation
 
