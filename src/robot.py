@@ -25,8 +25,8 @@ class Robot:
 
 		# Robot state
 		self.particle_state = None
-		self.standard_deviation_x = 0.971
-		self.standard_deviation_y = 0.476
+		self.standard_deviation_x = 0.4855
+		self.standard_deviation_y = 0.238
 		self.standard_deviation_tetha = 0.01
 
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
@@ -299,8 +299,8 @@ class Robot:
 			if rotation is False:
 		       	    for point in self.particle_state:
 		                e_x=random.gauss(0,self.standard_deviation_x)
-						e_y=random.gauss(0,self.standard_deviation_y)
-						e_tetha=random.gauss(0,self.standard_deviation_tetha)
+				e_y=random.gauss(0,self.standard_deviation_y)
+				e_tetha=random.gauss(0,self.standard_deviation_tetha)
 		                point[0][2]+=e_tetha
 		                point[0][0]+=(distances[0] + e_x)*math.cos(point[0][2])
 		                point[0][1]+=(distances[0] + e_y)*math.sin(point[0][2])
@@ -404,7 +404,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -434,9 +434,12 @@ class Robot:
 				print("Reloading config files")
 				self.load_pid_config()
 				self.load_base_config()
+			elif command ==7:
+				print("Left bumper: {0}, Right bumper: {1}, Ultrasound: {2}".format(self.get_bumper("left"),self.get_bumper("right"), self.distance))
 			else:
 				command = -1
 				self.stop()
+				self.stop_threading()
 		return True
 
 

@@ -15,7 +15,7 @@
 
     "touch_ports": [0, 2],
     "bumpers": {
-        "left": { "port": 2, "value": 0 },
+        "left": { "port": 2,"value": 0 },
         "right": { "port": 0, "value": 0 }
     },
     "ultrasonic_port": 3,
