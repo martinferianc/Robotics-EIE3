@@ -5,7 +5,7 @@ import math
 from collections import deque
 from thread import Poller
 import numpy as np
-
+import random
 class Robot:
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
 		# Robot initilization
@@ -294,7 +294,7 @@ class Robot:
 		                point[0][0]+=(distances[0] + e)*math.cos(point[0][2])
 		                point[0][1]+=(distances[0] + e)*math.sin(point[0][2])
 			else:
-		            for point in self.particle_state:
+		            for point in self.particle_state:		    
 				point[0][2]+=math.radians(angle) + random.gauss(0,self.standard_deviation)
 			return self.particle_state
 
@@ -341,7 +341,7 @@ class Robot:
 
 	#Takes the distance in centimeters and moves it forward
 	def travel_straight(self, distance,update_particles=False):
-		return self.move_wheels([distance,distance], [0,1],update_particles=update_particles)
+		return self.move_wheels(distances=[distance,distance],wheels=[0,1],update_particles=update_particles)
 
 	# Move the top camera to specified pose
 	def set_ultra_pose(self, pose):
