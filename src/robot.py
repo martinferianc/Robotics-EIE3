@@ -25,7 +25,9 @@ class Robot:
 
 		# Robot state
 		self.particle_state = None
-		self.standard_deviation = 0.01
+		self.standard_deviation_x = 0.971
+		self.standard_deviation_y = 0.476
+		self.standard_deviation_tetha = 0.01
 
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
@@ -296,13 +298,15 @@ class Robot:
 		if update_particles:
 			if rotation is False:
 		       	    for point in self.particle_state:
-		                e=random.gauss(0,self.standard_deviation)
-		                point[0][2]+=random.gauss(0,self.standard_deviation)
-		                point[0][0]+=(distances[0] + e)*math.cos(point[0][2])
-		                point[0][1]+=(distances[0] + e)*math.sin(point[0][2])
+		                e_x=random.gauss(0,self.standard_deviation_x)
+						e_y=random.gauss(0,self.standard_deviation_y)
+						e_tetha=random.gauss(0,self.standard_deviation_tetha)
+		                point[0][2]+=e_tetha
+		                point[0][0]+=(distances[0] + e_x)*math.cos(point[0][2])
+		                point[0][1]+=(distances[0] + e_y)*math.sin(point[0][2])
 			else:
 		            for point in self.particle_state:
-				point[0][2]+=math.radians(angle) + random.gauss(0,self.standard_deviation)
+				point[0][2]+=math.radians(angle) + random.gauss(0,self.standard_deviation_tetha)
 			return self.particle_state
 
 		return True

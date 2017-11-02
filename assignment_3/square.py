@@ -10,7 +10,7 @@ interface.initialize()
 NUMBER_OF_PARTICLES = None
 
 OFFSET = 100
-DISTANCE_TO_PIXEL = 15
+DISTANCE_TO_PIXEL = 10
 
 #Draw the square
 print "drawLine:" + str((OFFSET,OFFSET,40*DISTANCE_TO_PIXEL+OFFSET,OFFSET))
