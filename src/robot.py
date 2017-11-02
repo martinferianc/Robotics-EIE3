@@ -4,8 +4,11 @@ import json
 import math
 from collections import deque
 from thread import Poller
+
 import numpy as np
 import random
+import os
+
 class Robot:
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
 		# Robot initilization
@@ -24,12 +27,16 @@ class Robot:
 		self.particle_state = None
 		self.standard_deviation = 0.01
 
-		self.state = []
-		with open("robot_state.json","r") as f:
-			self.state = json.load(f)
+		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
+		if(os.path.isfile("robot_state.json")):
+			try:
+				with open("robot_state.json","r") as f:
+					self.state = json.load(f)
+			except Exception as e:
+				print "Error reading from the JSON file."
 
 		#Motor initialization
-		self.motors = [0,1,2]
+		self.motors = [0,3,2]
 		self.motorParams = {}
 
 		#Enabling the motors
@@ -139,7 +146,7 @@ class Robot:
 			print("Distance: {}".format(self.distance))
 
 		print("POSITIONING")
-		print("Robot pose: {}".format(self.state["pose"]))
+		print("Robot pose: {}".format(self.state["pose"]["theta"]))
 		print("Camera pose: {}".format(self.state["ultra_pose"]))
 
 
@@ -314,7 +321,7 @@ class Robot:
 	def rotate_right(self, angle, update_particles = False):
 		#print("Starting pose: {}".format(self.state.get("pose")))
 		dist = self.angle_calibration*angle
-		self.state["pose"] = self.state.get("pose", 0) + angle
+		self.state["pose"]["theta"] = self.state.get("pose", 0) + angle
 		#print("New pose: {}".format(self.state.get("pose")))
 		# Maybe only save state when the robot is shutting down?
 		self.save_state()
@@ -384,7 +391,7 @@ class Robot:
 			self.rotate_right(rotation-360)
 		else:
 			self.rotate_right(rotation)
-		self.state["pose"] = s_pose
+		self.state["pose"]["theta"] = s_pose
 		print("Ending pose: {}".format(s_pose))
 		self.save_state()
 		return True
@@ -434,6 +441,7 @@ class Robot:
 		Takes a distance and the direction in terms of s_pose for the camera to look in
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
+
 		self.set_ultra_pose(s_pose)
 		distance_to_travel = self.get_distance()-d-1
 		print "Distance: " + str(self.get_distance())
@@ -446,7 +454,6 @@ class Robot:
 			self.set_speed([motor_speed,motor_speed])
 			distance_to_travel = self.get_distance()-d-1
 		self.set_speed([0,0])
-
 
 	def keep_distance(self, distance_to_keep, average_speed, wall_location):
 		""" using ultrasonic sensor to keep a contant distance between the object and the robot
