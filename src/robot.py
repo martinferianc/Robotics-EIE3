@@ -261,7 +261,7 @@ class Robot:
 		diff_Y = (Y*100)-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 
-		angle = math.atan2(diff_Y/diff_X)
+		angle = math.atan2(diff_Y,diff_X)
 		diff_angle = angle - current_theta
 		if diff_angle<0:
 			self.rotate_right(math.degrees(diff_angle),update_particles=True)
@@ -405,7 +405,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -435,8 +435,12 @@ class Robot:
 				print("Reloading config files")
 				self.load_pid_config()
 				self.load_base_config()
-			elif command ==7:
+			elif command == 7:
 				print("Left bumper: {0}, Right bumper: {1}, Ultrasound: {2}".format(self.get_bumper("left"),self.get_bumper("right"), self.distance))
+			elif command == 8:
+				x = float(input("Enter X value:"))
+				y = float(input("Enter Y value:"))
+				self.navigate_to_waypoint(x,y)
 			else:
 				command = -1
 				self.stop()
