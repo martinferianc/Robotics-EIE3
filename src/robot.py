@@ -294,7 +294,7 @@ class Robot:
 		                point[0][0]+=(distances[0] + e)*math.cos(point[0][2])
 		                point[0][1]+=(distances[0] + e)*math.sin(point[0][2])
 			else:
-		            for point in self.particle_state:		    
+		            for point in self.particle_state:
 				point[0][2]+=math.radians(angle) + random.gauss(0,self.standard_deviation)
 			return self.particle_state
 
