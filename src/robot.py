@@ -5,25 +5,37 @@ import math
 from collections import deque
 from thread import Poller
 
+import numpy as np
+import random
+import os
+
 class Robot:
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
 		# Robot initilization
 		self.interface = interface
-		# self.left_speed = 0
-		# self.right_speed = 0
-		# self.top_speed = 0
 
 		self.print_thread = None
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
-		# robot travel speed
+
+		# Robot travel speed
 		self.motor_speeds = [0,0]
 		self.threads = []
+
 		# Robot state
-		self.state = {}
-		with open("robot_state.json","r") as f:
-			self.state = json.load(f)
+		self.particle_state = None
+		self.standard_deviation_x = 0.4855
+		self.standard_deviation_y = 0.238
+		self.standard_deviation_tetha = 0.01
+
+		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
+		if(os.path.isfile("robot_state.json")):
+			try:
+				with open("robot_state.json","r") as f:
+					self.state = json.load(f)
+			except Exception as e:
+				print "Error reading from the JSON file."
 
 		#Motor initialization
 		self.motors = [0,1,2]
@@ -39,6 +51,11 @@ class Robot:
 		self.load_base_config()
 		self.load_pid_config()
 		self.start_threading()
+		self.initialize_particle_state()
+
+	def initialize_particle_state(self, number_of_particles=100):
+		self.particle_state = [([0,0,0],1/number_of_particles) for x in xrange(number_of_particles)]
+
 
 	def load_base_config(self):
 		# configure main settings
@@ -74,7 +91,7 @@ class Robot:
 
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
-		
+
 		# load proportional control param
 		self.proportional_control = {}
 		self.proportional_control["k_p"] = data["prop_ctl"]["k_p"]
@@ -131,7 +148,7 @@ class Robot:
 			print("Distance: {}".format(self.distance))
 
 		print("POSITIONING")
-		print("Robot pose: {}".format(self.state["pose"]))
+		print("Robot pose: {}".format(self.state["pose"]["theta"]))
 		print("Camera pose: {}".format(self.state["ultra_pose"]))
 
 
@@ -234,8 +251,27 @@ class Robot:
 			time.sleep(0.1)
 		self.interface.stopLogging()
 
+	def move_to(self,X,Y):
+		current_x = np.mean(np.array([point[0][0] for point in self.particle_state]))
+		current_y = np.mean(np.array([point[0][1] for point in self.particle_state]))
+		current_tetha = np.mean(np.array([point[0][2] for point in self.particle_state]))
+
+		diff_X = X-current_x
+		diff_Y = Y-current_y
+		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
+
+		angle = math.atan(diff_X/diff_Y)
+		diff_angle = angle - current_tetha
+		if diff_angle<0:
+			self.rotate_right(math.degrees(diff_angle),update_particles=True)
+		else:
+			self.rotate_left(math.degrees(diff_angle),update_particles=True)
+
+		return self.travel_straight(distance,update_particles=True)
+
+
 	# Move specified wheel a certain distance
-	def move_wheels(self, distances=[1,1], wheels=[0,1]):
+	def move_wheels(self, distances=[1,1],rotation=False,angle=None, wheels=[0,1],update_particles=False):
 		print("Distance to move wheels: {}".format(distances))
 
 		# Retrieve start angle of motors
@@ -258,7 +294,21 @@ class Robot:
 			#time.sleep(0.1)
 			#print(self.interface.getMotorAngles(wheels))
 			if (round(self.interface.getMotorAngles(wheels)[0][0],2)==motorAngles_end[0] or round(self.interface.getMotorAngles(wheels)[1][0],2)==motorAngles_end[1]):
-				return True
+				break
+		if update_particles:
+			if rotation is False:
+		       	    for point in self.particle_state:
+		                e_x=random.gauss(0,self.standard_deviation_x)
+				e_y=random.gauss(0,self.standard_deviation_y)
+				e_tetha=random.gauss(0,self.standard_deviation_tetha)
+		                point[0][2]+=e_tetha
+		                point[0][0]+=(distances[0] + e_x)*math.cos(point[0][2])
+		                point[0][1]+=(distances[0] + e_y)*math.sin(point[0][2])
+			else:
+		            for point in self.particle_state:
+				point[0][2]+=math.radians(angle) + random.gauss(0,self.standard_deviation_tetha)
+			return self.particle_state
+
 		return True
 
 	# Rotate a motor by angle degrees (mainly for ultrasound motor)
@@ -272,19 +322,19 @@ class Robot:
 		return True
 
 	#Takes the angle in degrees and rotates the robot right
-	def rotate_right(self, angle):
-		#print("Starting pose: {}".format(self.state.get("pose")))
+	def rotate_right(self, angle, update_particles = False):
+		#print("Starting pose: {}".format(self.state["pose"].get("theta")))
 		dist = self.angle_calibration*angle
-		self.state["pose"] = self.state.get("pose", 0) + angle
-		#print("New pose: {}".format(self.state.get("pose")))
+		self.state["pose"]["theta"] = self.state["pose"].get("theta", 0) + angle
+		#print("New pose: {}".format(self.state["pose"].get("theta")))
 		# Maybe only save state when the robot is shutting down?
 		self.save_state()
 
-		return self.move_wheels([dist,-dist])
+		return self.move_wheels([dist,-dist],angle=angle,rotation=True,update_particles=update_particles)
 
 	#Takes the angle in degrees and rotates the robot left
-	def rotate_left(self, angle):
-		return self.rotate_right(-angle)
+	def rotate_left(self, angle, update_particles = False):
+		return self.rotate_right(-angle,update_particles=update_particles)
 
 	#Sets a constant speed for motors [0,1,2]
 	def set_speed(self, speeds=[2,2], motors=[0,1]):
@@ -301,8 +351,8 @@ class Robot:
 		self.interface.setMotorPwm(self.motors[1],0)
 
 	#Takes the distance in centimeters and moves it forward
-	def travel_straight(self, distance):
-		return self.move_wheels([distance,distance], [0,1])
+	def travel_straight(self, distance,update_particles=False):
+		return self.move_wheels(distances=[distance,distance],wheels=[0,1],update_particles=update_particles)
 
 	# Move the top camera to specified pose
 	def set_ultra_pose(self, pose):
@@ -333,11 +383,11 @@ class Robot:
 
 	# Move the robot to the specified pose
 	def set_robot_pose(self, s_pose):
-		print("Starting pose: {}".format(self.state.get("pose",-1)))
+		print("Starting pose: {}".format(self.state["pose"].get("theta",-1)))
 		while s_pose > 360:
 			s_pose-=360
 
-		rotation = s_pose-self.state.get("pose", 0)
+		rotation = s_pose-self.state["pose"].get("theta", 0)
 		if rotation==0:
 			print("No rotation required.")
 			return True
@@ -345,7 +395,7 @@ class Robot:
 			self.rotate_right(rotation-360)
 		else:
 			self.rotate_right(rotation)
-		self.state["pose"] = s_pose
+		self.state["pose"]["theta"] = s_pose
 		print("Ending pose: {}".format(s_pose))
 		self.save_state()
 		return True
@@ -354,7 +404,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -384,9 +434,12 @@ class Robot:
 				print("Reloading config files")
 				self.load_pid_config()
 				self.load_base_config()
+			elif command ==7:
+				print("Left bumper: {0}, Right bumper: {1}, Ultrasound: {2}".format(self.get_bumper("left"),self.get_bumper("right"), self.distance))
 			else:
 				command = -1
 				self.stop()
+				self.stop_threading()
 		return True
 
 
@@ -395,19 +448,19 @@ class Robot:
 		Takes a distance and the direction in terms of s_pose for the camera to look in
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
+
 		self.set_ultra_pose(s_pose)
 		distance_to_travel = self.get_distance()-d-1
 		print "Distance: " + str(self.get_distance())
 		while (distance_to_travel != 0):
 			motor_speed = int(round(distance_to_travel*0.4))
 			if(motor_speed > 8):
-				motor_speed = 8 
+				motor_speed = 8
 			elif(motor_speed < -8):
 				motor_speed = -8
 			self.set_speed([motor_speed,motor_speed])
 			distance_to_travel = self.get_distance()-d-1
 		self.set_speed([0,0])
-
 
 	def keep_distance(self, distance_to_keep, average_speed, wall_location):
 		""" using ultrasonic sensor to keep a contant distance between the object and the robot
@@ -442,5 +495,3 @@ class Robot:
 			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
 		except Exception, e:
 			print("There is some problem setting motor speed, {}".format(str(e)))
-
-
