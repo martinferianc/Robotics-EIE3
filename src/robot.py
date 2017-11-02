@@ -255,11 +255,11 @@ class Robot:
 		current_y = np.mean(np.array([point[0][1] for point in self.particle_state]))
 		current_theta = np.mean(np.array([point[0][2] for point in self.particle_state]))
 
-		diff_X = X*100-current_x
-		diff_Y = Y*100-current_y
+		diff_X = (X*100)-current_x
+		diff_Y = (Y*100)-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 
-		angle = math.atan2(diff_X/diff_Y)
+		angle = math.atan2(diff_Y/diff_X)
 		diff_angle = angle - current_theta
 		if diff_angle<0:
 			self.rotate_right(math.degrees(diff_angle),update_particles=True)
