@@ -13,7 +13,7 @@ OFFSET = 100
 DISTANCE_TO_PIXEL = 15
 
 #Draw the Grid
-for j in range(4):
+for j in range(5):
     print "drawLine:" + str((OFFSET,OFFSET*10*i,40*DISTANCE_TO_PIXEL+OFFSET,OFFSET*10*i))
     print "drawLine:" + str((OFFSET*i*10,40*DISTANCE_TO_PIXEL+OFFSET,OFFSET*i*10,OFFSET))
 
