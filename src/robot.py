@@ -243,15 +243,15 @@ class Robot:
 		self.interface.stopLogging()
 
 	def move_to(self,X,Y):
-		current_x = np.mean(np.array([point[0][0] for point in self.state]))
-		current_y = np.mean(np.array([point[0][1] for point in self.state]))
-		current_tetha = np.mean(np.array([point[0][2] for point in self.state]))
+		current_x = np.mean(np.array([point[0][0] for point in self.particle_state]))
+		current_y = np.mean(np.array([point[0][1] for point in self.particle_state]))
+		current_tetha = np.mean(np.array([point[0][2] for point in self.particle_state]))
 
 		diff_X = X-current_x
 		diff_Y = Y-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 
-		angle = math.atan(diff_X,diff_Y)
+		angle = math.atan(diff_X/diff_Y)
 		diff_angle = angle - current_tetha
 		if diff_angle<0:
 			self.rotate_right(math.degrees(diff_angle),update_particles=True)
@@ -319,7 +319,7 @@ class Robot:
 		# Maybe only save state when the robot is shutting down?
 		self.save_state()
 
-		return self.move_wheels([dist,-dist],degrees=angle,rotation=True,update_particles=update_particles)
+		return self.move_wheels([dist,-dist],angle=angle,rotation=True,update_particles=update_particles)
 
 	#Takes the angle in degrees and rotates the robot left
 	def rotate_left(self, angle, update_particles = False):
