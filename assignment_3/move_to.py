@@ -21,7 +21,8 @@ Robot = Robot(interface, pid_config_file="carpet_config.json")
 while True:
     X = float(input("Type in the X coordinate: "))
     Y = float(input("Type in the Y coordinate: "))
-    NUMBER_OF_PARTICLES = Robot.navigate_to_waypoint(X,Y)
+    Robot.navigate_to_waypoint(X,Y)
+    NUMBER_OF_PARTICLES = Robot.get_state()
     NUMBER_OF_PARTICLES = [point[0] for point in NUMBER_OF_PARTICLES]
     print "drawParticles:" + str(NUMBER_OF_PARTICLES)
 
