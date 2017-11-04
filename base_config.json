@@ -19,7 +19,12 @@
         "right": { "port": 0, "value": 0 }
     },
     "ultrasonic_port": 3,
-
+    "motor_ports": {
+      "left": 0,
+      "right": 1,
+      "top" : 2
+    },
+    
     "prop_ctl": {
         "k_p": 0.07
     }

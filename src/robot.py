@@ -10,6 +10,7 @@ import random
 import os
 
 class Robot:
+	## INTITIALIZATION FUNCTIONS
 	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
 		# Robot initilization
 		self.interface = interface
@@ -27,7 +28,7 @@ class Robot:
 		self.particle_state = None
 		self.standard_deviation_x = 0.4855
 		self.standard_deviation_y = 0.238
-		self.standard_deviation_tetha = 0.01
+		self.standard_deviation_theta = 0.01
 
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
@@ -37,14 +38,6 @@ class Robot:
 			except Exception as e:
 				print "Error reading from the JSON file."
 
-		#Motor initialization
-		self.motors = [0,1,2]
-		self.motorParams = {}
-
-		#Enabling the motors
-		self.interface.motorEnable(self.motors[0])
-		self.interface.motorEnable(self.motors[1])
-		self.interface.motorEnable(self.motors[2])
 		self.config_file = config_file
 		self.pid_config_file = pid_config_file
 
@@ -56,7 +49,6 @@ class Robot:
 	def initialize_particle_state(self, number_of_particles=100):
 		self.particle_state = [([0,0,0],1/number_of_particles) for x in xrange(number_of_particles)]
 
-
 	def load_base_config(self):
 		# configure main settings
 		with open(self.config_file) as config_file:
@@ -65,6 +57,25 @@ class Robot:
 			raise Exception("Could not load main config file!")
 
 		self.ultra_angle_calibration = data.get("ultra_angle_calibration", 0.15)
+	
+		self.touch_ports = data["touch_ports"]
+		self.ultrasonic_port = data["ultrasonic_port"]
+		self.motor_ports = data["motor_ports"]
+		
+		#Motor initialization
+		# self.wheels IS JUST THE WHEEL MOTORS
+		self.wheels = [self.motor_ports.get("left"), self.motor_ports.get("right")]
+		# self.motors IS ALL OF THE MOTORS (BOTH WHEELS AND TOP MOTOR)
+		self.motors = self.wheels + [self.motor_ports["top"]]
+		self.motorParams = {}
+
+		#Enabling the motors
+		# wheels[0] and wheels[1] are the left and right wheels
+		self.interface.motorEnable(self.wheels[0])
+		self.interface.motorEnable(self.wheels[1])
+		# motor_ports["top"] is the top motor
+		self.interface.motorEnable(self.motor_ports["top"])
+		
 		#Configure the top motor
 		self.motorParams["top"] = self.interface.MotorAngleControllerParameters()
 		self.motorParams["top"].maxRotationAcceleration = data["top"]["maxRotationAcceleration"]
@@ -77,11 +88,8 @@ class Robot:
 		self.motorParams["top"].pidParameters.k_i = data["top"]["k_i"]
 		self.motorParams["top"].pidParameters.k_d = data["top"]["k_d"]
 
-		self.interface.setMotorAngleControllerParameters(self.motors[2],self.motorParams["top"])
-
-		self.touch_ports = data["touch_ports"]
-		self.ultrasonic_port = data["ultrasonic_port"]
-
+		self.interface.setMotorAngleControllerParameters(self.motor_ports["top"],self.motorParams["top"])
+		
 		#Initialize the touch sensors
 		print("Ultrasound sensor at port: {0}\nTouch sensors at ports: {1}".format(self.ultrasonic_port,self.touch_ports))
 		if self.touch_ports is not None:
@@ -132,33 +140,14 @@ class Robot:
 		self.motorParams["right"].pidParameters.k_i = PID["right"]["k_i"]
 		self.motorParams["right"].pidParameters.k_d = PID["right"]["k_d"]
 
-		self.interface.setMotorAngleControllerParameters(self.motors[0],self.motorParams["left"])
-		self.interface.setMotorAngleControllerParameters(self.motors[1],self.motorParams["right"])
+		self.interface.setMotorAngleControllerParameters(self.wheels[0], self.motorParams["left"])
+		self.interface.setMotorAngleControllerParameters(self.wheels[1], self.motorParams["right"])
 		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0,0])
-
-	def print_state(self):
-		print("---WALL-E STATE---")
-		print("MOTORS")
-		print("Angles: {}".format([x[0] for x in self.interface.getMotorAngles(self.motors)]))
-
-		print("SENSORS")
-		if self.touch_ports is not None:
-			print("Bumpers: Left - {0}, Right - {1}".format(self.get_bumper("left"), self.get_bumper("right")))
-		if self.ultrasonic_port is not None:
-			print("Distance: {}".format(self.distance))
-
-		print("POSITIONING")
-		print("Robot pose: {}".format(self.state["pose"]["theta"]))
-		print("Camera pose: {}".format(self.state["ultra_pose"]))
-
-
-	# Set ultra_pose variable to pose without moving the motor.
-	def calibrate_ultra_position(self, pose = 0):
-		self.state["ultra_pose"] = pose
-		self.save_state()
-
-		return True
-
+	
+	## END OF INITIALIZATION FUNCTIONS
+	
+	## PRIVATE FUNCTIONS
+	## SENSORS
 	#Read input from the touch sensors
 	def __update_touch_sensors(self):
 		if self.touch_ports is not None:
@@ -167,10 +156,6 @@ class Robot:
 			return True
 		else:
 			raise Exception("Touch sensors not initialized!")
-
-	# Infinite loop updating the bumper values
-	def __touch_sensors_loop(self):
-		self.__update_touch_sensors()
 
 	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
@@ -189,85 +174,12 @@ class Robot:
 		return l[(size-1)/2]
 
 	# Infinite loop setting self.distance to self.__median_filtered_ultrasonic()
-	def __ultrasonic_loop(self):
-		self.distance = self.__median_filtered_ultrasonic()
-
-	def start_debugging(self):
-		self.print_thread = Poller(t=1, target=self.print_state)
-		self.print_thread.start()
+	def __update_distance(self):
+		self.distance = self.__median_filtered_ultrasonic()	
 		return True
-
-	def stop_debugging(self):
-		self.print_thread.stop()
-		return True
-
-	def start_threading(self):
-		if self.touch_ports is not None:
-			touch_thread = Poller(t=0.2,target=self.__touch_sensors_loop)
-			self.threads.append(touch_thread)
-			touch_thread.start()
-		else:
-			raise Exception("Touch sensors not initialized!")
-		if self.ultrasonic_port is not None:
-			ultrasonic_thread = Poller(t=0.2,target=self.__ultrasonic_loop)
-			self.threads.append(ultrasonic_thread)
-			ultrasonic_thread.start()
-		else:
-			raise Exception("Ultrasonic sensor not initialized!")
-		return True
-
-	def stop_threading(self):
-		for i in self.threads:
-			i.stop()
-		return True
-
-	def get_bumper(self, bumper):
-		return self.bumpers[bumper]["value"]
-
-	def get_distance(self):
-		return self.distance
-
-	def save_state(self, state_file="robot_state.json"):
-		with open("robot_state.json","w") as f:
-			json.dump(self.state, f)
-
-	def calibrate(self, radians,angle):
-		#So that we always start calibrating approximately at zero
-		motorAngles = self.interface.getMotorAngles(self.motors)
-		motorAngles_zero = (round(0-motorAngles[0][0],2), round(0-motorAngles[1][0],2))
-		self.interface.increaseMotorAngleReferences(self.motors,[motorAngles_zero[0],motorAngles_zero[1]])
-		while not self.interface.motorAngleReferencesReached(self.motors):
-			motorAngles = self.interface.getMotorAngles(self.motors)
-			if motorAngles:
-				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
-			time.sleep(0.1)
-
-		self.interface.startLogging("motor_position_0_"+str(int(angle))+".log")
-		self.interface.increaseMotorAngleReferences(self.motors,[radians,radians])
-         	while not self.interface.motorAngleReferencesReached(self.motors):
-			motorAngles = self.interface.getMotorAngles(self.motors)
-			if motorAngles:
-		    	    print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
-			time.sleep(0.1)
-		self.interface.stopLogging()
-
-
-	def navigate_to_waypoint(self,X,Y):
-		current_x = np.mean(np.array([point[0][0] for point in self.particle_state]))
-		current_y = np.mean(np.array([point[0][1] for point in self.particle_state]))
-		current_theta = np.mean(np.array([point[0][2] for point in self.particle_state]))
-
-		diff_X = (X*100)-current_x
-		diff_Y = (Y*100)-current_y
-		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
-
-		angle = math.degrees(math.atan2(diff_Y,diff_X))
-		self.set_robot_pose(angle)
-		return self.travel_straight(distance,update_particles=True)
-
-
+	
 	# Move specified wheel a certain distance
-	def move_wheels(self, distances=[1,1],rotation=False,angle=None, wheels=[0,1],update_particles=False):
+	def __move_wheels(self, distances=[1,1],wheels=self.wheels):
 		print("Distance to move wheels: {}".format(distances))
 
 		# Retrieve start angle of motors
@@ -281,77 +193,154 @@ class Robot:
 		motorAngles_end = []
 		motorAngles_end.append(round(motorAngles_start[0][0] + circular_distances[0],2))
 		motorAngles_end.append(round(motorAngles_start[1][0] + circular_distances[1],2))
+		
 		print("Angles to end at: {}".format(motorAngles_end))
-
 		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
 
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(wheels):
-			#time.sleep(0.1)
-			#print(self.interface.getMotorAngles(wheels))
 			if (round(self.interface.getMotorAngles(wheels)[0][0],2)==motorAngles_end[0] or round(self.interface.getMotorAngles(wheels)[1][0],2)==motorAngles_end[1]):
 				break
-		if update_particles:
-			if rotation is False:
-		       	    for point in self.particle_state:
-		                e_x=random.gauss(0,self.standard_deviation_x)
-				e_y=random.gauss(0,self.standard_deviation_y)
-				e_tetha=random.gauss(0,self.standard_deviation_tetha)
-		                point[0][2]+=e_tetha
-		                point[0][0]+=(distances[0] + e_x)*math.cos(point[0][2])
-		                point[0][1]+=(distances[0] + e_y)*math.sin(point[0][2])
-			else:
-		            for point in self.particle_state:
-				point[0][2]+=math.radians(angle) + random.gauss(0,self.standard_deviation_tetha)
-			return self.particle_state
-
 		return True
+	
+	#Takes the angle in degrees and rotates the robot right
+	def __rotate_right(self, angle):
+		#print("Starting pose: {}".format(self.state["pose"].get("theta")))
+		dist = self.angle_calibration*angle
+		self.state["pose"]["theta"] = self.state["pose"].get("theta", 0) + angle
+		#print("New pose: {}".format(self.state["pose"].get("theta")))
+		# Maybe only save state when the robot is shutting down?
+		return self.__move_wheels([dist,-dist],angle=angle)
 
+	#Takes the angle in degrees and rotates the robot left
+	def __rotate_left(self, angle):
+		return self.__rotate_right(-angle)
+	
 	# Rotate a motor by angle degrees (mainly for ultrasound motor)
-	def rotate_motor(self, angles=[0], motors=[2]):
+	def __rotate_top_motor(self, angles=[0], motors=[self.motor_ports["top"]]):
 		print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		self.interface.increaseMotorAngleReferences(motors, [x*self.ultra_angle_calibration for x in angles])
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(motors):
 			pass
 		print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
+		return True	
+	
+	### END OF PRIVATE FUNCTIONS
+	
+	### PUBLIC FUNCTIONS
+	def start_threading(self, touch=True, ultrasonic=True, interval = 0.2):
+		# If threads already exist, stop them and delete them.
+		if self.threads:
+			for i in self.threads:
+				i.stop()
+			self.threads = []
+			
+		if touch:
+			if self.touch_ports is not None:
+				touch_thread = Poller(t=interval,target=self.__update_touch_sensors)
+				self.threads.append(touch_thread)
+				touch_thread.start()
+			else:
+				raise Exception("Touch sensors not initialized!")
+		if ultrasonic:
+			if self.ultrasonic_port is not None:
+				distance_thread = Poller(t=interval,target=self.__update_distance)
+				self.threads.append(ultrasonic_thread)
+				ultrasonic_thread.start()
+			else:
+				raise Exception("Ultrasonic sensor not initialized!")
+		return True
+	
+	def stop_threading(self):
+		for i in self.threads:
+			i.stop()
 		return True
 
-	#Takes the angle in degrees and rotates the robot right
-	def rotate_right(self, angle, update_particles = False):
-		#print("Starting pose: {}".format(self.state["pose"].get("theta")))
-		dist = self.angle_calibration*angle
-		self.state["pose"]["theta"] = self.state["pose"].get("theta", 0) + angle
-		#print("New pose: {}".format(self.state["pose"].get("theta")))
-		# Maybe only save state when the robot is shutting down?
-		self.save_state()
+	def get_bumper(self, bumper):
+		return self.bumpers[bumper]["value"]
 
-		return self.move_wheels([dist,-dist],angle=angle,rotation=True,update_particles=update_particles)
+	def get_distance(self):
+		return self.distance
+	
+	def start_debugging(self):
+		self.print_thread = Poller(t=3, target=self.print_state)
+		self.print_thread.start()
+		return True
 
-	#Takes the angle in degrees and rotates the robot left
-	def rotate_left(self, angle, update_particles = False):
-		return self.rotate_right(-angle,update_particles=update_particles)
+	def stop_debugging(self):
+		self.print_thread.stop()
+		return True
+	
+	def print_state(self):
+		print("---WALL-E STATE---")
+		print("MOTORS")
+		print("Angles: {}".format([x[0] for x in self.interface.getMotorAngles(self.motors)]))
 
-	#Sets a constant speed for motors [0,1,2]
-	def set_speed(self, speeds=[2,2], motors=[0,1]):
+		print("SENSORS")
+		if self.touch_ports is not None:
+			print("Bumpers: Left - {0}, Right - {1}".format(self.get_bumper("left"), self.get_bumper("right")))
+		if self.ultrasonic_port is not None:
+			print("Distance: {}".format(self.distance))
+
+		print("POSITIONING")
+		print("Robot pose: {}".format(self.state["pose"]["theta"]))
+		print("Camera pose: {}".format(self.state["ultra_pose"]))
+
+	# Set ultra_pose variable to pose without moving the motor.
+	def calibrate_ultra_position(self, pose = 0):
+		self.state["ultra_pose"] = pose
+		return True
+	
+	def save_state(self, state_file="robot_state.json"):
+		with open("robot_state.json","w") as f:
+			json.dump(self.state, f)
+
+	def navigate_to_waypoint(self,X,Y):
+		current_x = np.mean(np.array([point[0][0] for point in self.particle_state]))
+		current_y = np.mean(np.array([point[0][1] for point in self.particle_state]))
+		current_theta = np.mean(np.array([point[0][2] for point in self.particle_state]))
+
+		diff_X = (X*100)-current_x
+		diff_Y = (Y*100)-current_y
+		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
+
+		angle = math.degrees(math.atan2(diff_Y,diff_X))
+		self.set_robot_pose(angle, update_particles=True)
+		return self.travel_straight(distance, update_particles=True)
+
+	#Sets a constant speed for specified motors
+	def set_speed(self, speeds=[2,2], wheels=self.wheels):
 		for index,i in enumerate(speeds):
 			if abs(i)>10:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
-		self.interface.setMotorRotationSpeedReferences([self.motors[0],self.motors[1]],speeds)
+		self.interface.setMotorRotationSpeedReferences(wheels,speeds)
 		self.motor_speeds = speeds
+		return True
 
 	#Does the immediate stop if it runs into an obstacle
 	def stop(self):
-		self.interface.setMotorPwm(self.motors[0],0)
-		self.interface.setMotorPwm(self.motors[1],0)
+		self.interface.setMotorPwm(self.wheels[0],0)
+		self.interface.setMotorPwm(self.wheels[1],0)
+		return True
 
 	#Takes the distance in centimeters and moves it forward
-	def travel_straight(self, distance,update_particles=False):
-		return self.move_wheels(distances=[distance,distance],wheels=[0,1],update_particles=update_particles)
+	def travel_straight(self, distance, update_particles=False):
+		success = self.__move_wheels(distances=[distance,distance])
+		if update_particles:
+			for point in self.particle_state:
+				e_x=random.gauss(0,self.standard_deviation_x)
+				e_y=random.gauss(0,self.standard_deviation_y)
+				e_theta=random.gauss(0,self.standard_deviation_theta)
+				point[0][2]+=e_theta
+				point[0][0]+=(distance + e_x)*math.cos(point[0][2])
+				point[0][1]+=(distance + e_y)*math.sin(point[0][2])
+		return success
 
 	# Move the top camera to specified pose
 	def set_ultra_pose(self, pose):
+		success = True
 		print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
 		# Limits on pose settings so that it doesn't overrotate and stretch the cable
 		while pose > 360:
@@ -370,31 +359,38 @@ class Robot:
 
 		rotation = pose - self.state.get("ultra_pose", 0)
 		if rotation:
-			self.rotate_motor([rotation])
-			self.state["ultra_pose"] = pose
-			self.save_state()
+			success = self.__rotate_top_motor([rotation])
+			if success:
+				self.state["ultra_pose"] = pose
 		else:
 			print("No rotation required.")
-		return True
+		return success
 
 	# Move the robot to the specified pose
-	def set_robot_pose(self, s_pose):
+	def set_robot_pose(self, s_pose, update_particles = False):
+		success = True
 		print("Starting pose: {}".format(self.state["pose"].get("theta",-1)))
+		
 		while s_pose > 360:
 			s_pose-=360
 
 		rotation = s_pose-self.state["pose"].get("theta", 0)
+		
 		if rotation==0:
 			print("No rotation required.")
 			return True
+		
 		if rotation > 180:
-			self.rotate_right(rotation-360)
+			success = self.__rotate_right(rotation-360)
 		else:
-			self.rotate_right(rotation)
+			success = self.__rotate_right(rotation)
 		self.state["pose"]["theta"] = s_pose
 		print("Ending pose: {}".format(s_pose))
-		self.save_state()
-		return True
+		
+		if update_particles:
+			for point in self.particle_state:
+				point[0][2] += math.radians(rotation) + random.gauss(0,self.standard_deviation_theta)
+		return sucess
 
 	# Interactive mode for the robot to control without writing a program each time
 	def interactive_mode(self):
@@ -417,7 +413,7 @@ class Robot:
 				distances.append(float(input()))
 				print("Enter right wheel distance:")
 				distances.append(float(input()))
-				self.move_wheels(distances)
+				self.__move_wheels(distances)
 			elif command == 4:
 				print("Enter desired camera pose:")
 				s_pose = float(input())
@@ -448,7 +444,6 @@ class Robot:
 		Takes a distance and the direction in terms of s_pose for the camera to look in
 		Output: Approaches the object smoothly and stops at a distance of d
 		"""
-
 		self.set_ultra_pose(s_pose)
 		distance_to_travel = self.get_distance()-d-1
 		print "Distance: " + str(self.get_distance())
@@ -471,9 +466,9 @@ class Robot:
 		"""
 		# proportional control
 		speed_compensation = - self.proportional_control["k_p"] * (distance_to_keep - self.distance)
-		if(wall_location == 1):
+		if (wall_location == 1):
 			pass
-		elif(wall_location == 2):
+		elif (wall_location == 2):
 			speed_compensation = -speed_compensation
 		else:
 			raise Exception("Not a valid wall location!")
@@ -492,6 +487,29 @@ class Robot:
 		print("\tcurrent distance: {}".format(self.distance))
 		print("\tmotor speed set to: {}, {}".format(leftMotor_speed, rightMotor_speed))
 		try:
-			self.set_speed([leftMotor_speed, rightMotor_speed], self.motors)
+			self.set_speed([leftMotor_speed, rightMotor_speed], self.wheels)
 		except Exception, e:
 			print("There is some problem setting motor speed, {}".format(str(e)))
+
+
+	### DEPRECATED
+	def calibrate(self, radians, angle):
+		
+		#So that we always start calibrating approximately at zero
+		motorAngles = self.interface.getMotorAngles(self.wheels)
+		motorAngles_zero = (round(0-motorAngles[0][0],2), round(0-motorAngles[1][0],2))
+		self.interface.increaseMotorAngleReferences(self.wheels,[motorAngles_zero[0],motorAngles_zero[1]])
+		while not self.interface.motorAngleReferencesReached(self.wheels):
+			motorAngles = self.interface.getMotorAngles(self.wheels)
+			if motorAngles:
+				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
+			time.sleep(0.1)
+
+		self.interface.startLogging("motor_position_0_"+str(int(angle))+".log")
+		self.interface.increaseMotorAngleReferences(self.wheels,[radians,radians])
+         	while not self.interface.motorAngleReferencesReached(self.wheels):
+			motorAngles = self.interface.getMotorAngles(self.wheels)
+			if motorAngles:
+		    	    print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
+			time.sleep(0.1)
+		self.interface.stopLogging()
