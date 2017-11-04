@@ -4,6 +4,7 @@ import json
 import math
 from collections import deque
 from thread import Poller
+from particle import ParticleState
 
 import numpy as np
 import random
@@ -26,9 +27,11 @@ class Robot:
 
 		# Robot state
 		self.particle_state = None
-		self.standard_deviation_x = 0.4855
-		self.standard_deviation_y = 0.238
-		self.standard_deviation_theta = 0.01
+		self.standard_deviation = {}
+		self.standard_deviation["x"] = 0.4855
+		self.standard_deviation["y"] = 0.238
+		self.standard_deviation["theta"] = 0.01
+		self.particle_state = ParticleState(sd,number_of_particles)
 
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
@@ -44,10 +47,7 @@ class Robot:
 		self.load_base_config()
 		self.load_pid_config()
 		self.start_threading()
-		self.initialize_particle_state()
-
-	def initialize_particle_state(self, number_of_particles=100):
-		self.particle_state = [([0,0,0],1/number_of_particles) for x in xrange(number_of_particles)]
+		
 
 	def load_base_config(self):
 		# configure main settings
@@ -163,7 +163,8 @@ class Robot:
 	  		return result[0]
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
-
+	
+	# Take the median value out of the past {size} readings
 	def __median_filtered_ultrasonic(self,size=15):
 		l = [0]*size
 		i = 0
@@ -173,7 +174,7 @@ class Robot:
 		l.sort()
 		return l[(size-1)/2]
 
-	# Infinite loop setting self.distance to self.__median_filtered_ultrasonic()
+	# Update self.distance to self.__median_filtered_ultrasonic()
 	def __update_distance(self):
 		self.distance = self.__median_filtered_ultrasonic()	
 		return True
@@ -304,7 +305,6 @@ class Robot:
 		diff_X = (X*100)-current_x
 		diff_Y = (Y*100)-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
-
 		angle = math.degrees(math.atan2(diff_Y,diff_X))
 		self.set_robot_pose(angle, update_particles=True)
 		return self.travel_straight(distance, update_particles=True)
@@ -329,13 +329,7 @@ class Robot:
 	def travel_straight(self, distance, update_particles=False):
 		success = self.__move_wheels(distances=[distance,distance])
 		if update_particles:
-			for point in self.particle_state:
-				e_x=random.gauss(0,self.standard_deviation_x)
-				e_y=random.gauss(0,self.standard_deviation_y)
-				e_theta=random.gauss(0,self.standard_deviation_theta)
-				point[0][2]+=e_theta
-				point[0][0]+=(distance + e_x)*math.cos(point[0][2])
-				point[0][1]+=(distance + e_y)*math.sin(point[0][2])
+			self.particle_state.updateState("straight", distance)
 		return success
 
 	# Move the top camera to specified pose
@@ -388,8 +382,7 @@ class Robot:
 		print("Ending pose: {}".format(s_pose))
 		
 		if update_particles:
-			for point in self.particle_state:
-				point[0][2] += math.radians(rotation) + random.gauss(0,self.standard_deviation_theta)
+			self.particle_state.updateState("rotation", rotation)
 		return sucess
 
 	# Interactive mode for the robot to control without writing a program each time
