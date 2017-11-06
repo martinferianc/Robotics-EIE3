@@ -47,7 +47,7 @@ We observed a deviation of approximately +/- 2cm which almost agrees with the da
 
 We started with the distance set to 40 cm. We took 10 measurements and recorded the mean, variance and standard deviation.
 
-|  Measurement | Mean | Variance | Standard deviation |
+| Trial | Mean | Variance | Standard deviation |
 |:-------:|:-------:|:-------:|:-----:|
 |1   |43    |0 | 0|
 |2   |43    |0 | 0|
@@ -62,7 +62,7 @@ We started with the distance set to 40 cm. We took 10 measurements and recorded 
 
 Then we measured scatter with the distance of 100 cm.
 
-|  Measurement | Mean | Variance | Standard deviation |
+| Trial | Mean | Variance | Standard deviation |
 |:-------:|:-------:|:-------:|:-----:|
 |1   |103.8  |0.16 | 0.4|
 |2   |104    |0    | 0|
