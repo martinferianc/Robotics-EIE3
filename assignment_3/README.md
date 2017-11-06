@@ -48,32 +48,32 @@ We observed a deviation of approximately +/- 2cm which almost agrees with the da
 We started with the distance set to 40 cm. We took 10 measurements and recorded the mean, variance and standard deviation.
 
 |  Measurement | Mean | Variance | Standard deviation |
-|:-------:|:-------:||:-------:|
-|1   |43   |0 | 0|
-|2   |43   |0 | 0|
-|3   |43   |0 | 0|
+|:-------:|:-------:|:-------:|:-----:|
+|1   |43    |0 | 0|
+|2   |43    |0 | 0|
+|3   |43    |0 | 0|
 |4   |42    |0 | 0|
 |5   |42    |0 | 0|
 |6   |42    |0 | 0|
 |7   |42    |0 | 0|
 |8   |42    |0 | 0|
 |9   |42    |0 | 0|
-|10   |42    |0 | 0|
+|10  |42    |0 | 0|
 
 Then we measured scatter with the distance of 100 cm.
 
 |  Measurement | Mean | Variance | Standard deviation |
-|:-------:|:-------:||:-------:|
+|:-------:|:-------:|:-------:|:-----:|
 |1   |103.8  |0.16 | 0.4|
-|2   |104   |0 | 0|
-|3   |104   |0 | 0|
-|4   |104   |0 | 0|
-|5   |104    |0 | 0|
-|6   |104    |0 | 0|
-|7   |104    |0 | 0|
-|8   |104    |0 | 0|
-|9   |104    |0 | 0|
-|10   |104    |0 | 0|
+|2   |104    |0    | 0|
+|3   |104    |0    | 0|
+|4   |104    |0    | 0|
+|5   |104    |0    | 0|
+|6   |104    |0    | 0|
+|7   |104    |0    | 0|
+|8   |104    |0    | 0|
+|9   |104    |0    | 0|
+|10  |104   |0    | 0|
 
 In the second case we saw double the error for the shorter distance. Therefore we assume that the depth definitely matters and the error increases proportionally to the depth being measured.
 
