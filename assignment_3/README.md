@@ -5,6 +5,10 @@
 
 ### 2.2 Waypoint Navigation
 
+Once we had the array set up containing all the projected points of the robot based on it's probable deviation from the prescribed path, it would be useful to have a function which will allow us to move to a particular point in 2D space, with the robot automatically adjusting it's position based on how far it expects to deviate from where it thinks it is. To do this we have implemented a function navigate_to_waypoint which takes an X and Y point as arguments (in meters). The robot looks at where it thinks it is based upon it's mean position, and calculates how far it needs to travel in order to reach the point assigned to it. To make the most direct route we turn by calling set_robot_pose which changes the angle of the robot based upon a starting reference of 0. The robot can then travel the hypotenuse of the X and Y values to allow it to reach the prescribed point (via the shortest route possible).
+
+We managed to implement this correctly and have a video of the robot moving half a meter in the X direction and -0.7 in the Y direction.
+
 ### 2.3 Sonar investigation
 
 #### 1: When placed facing and perpendicular to a smooth surface such as a wall, what are the minimum and maximum depths that the sensor can reliably measure?
