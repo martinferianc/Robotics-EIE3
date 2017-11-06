@@ -380,18 +380,20 @@ class Robot:
 		success = True
 		print("Starting pose: {}".format(self.state["pose"].get("theta",-1)))
 
-		while s_pose > 360:
+		while s_pose >= 360:
 			s_pose-=360
+		while s_pose <= -360:
+			s_pose+=360
 
-		rotation = s_pose-self.state["pose"].get("theta", 0)
+		rotation = -(s_pose-self.state["pose"].get("theta", 0))
 
 		if rotation==0:
 			print("No rotation required.")
 			return True
 
 		if rotation > 180:
-			success = self.rotate_right(rotation-360)
 			rotation-=360
+			success = self.rotate_right(rotation)
 		else:
 			success = self.rotate_right(rotation)
 		self.state["pose"]["theta"] = s_pose
