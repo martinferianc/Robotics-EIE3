@@ -5,9 +5,9 @@
 
 We have created a list of 100 lists representing each of the particles. Each list contains (x,y,theta) coordinates.
 
-Each time the robot moves straight, the X coordinate is updated with: `X+=X+(D+e)cos(theta)`, the Y coordinate with: `Y+=Y+(D+g)sin(theta)` and theta with: `Theta+=theta+f` where `e`, `f` and `g` are error terms created from a random sample of a Gaussian distribution with a mean of 0 (as on average the robot should end up in the same place) and standard deviation of 1/16 as we found this value to closest reflect the deviation of +/- 3cm we are experiencing.
+Each time the robot moves straight, the X coordinate is updated with: `X+=X+(D+e)cos(theta)`, the Y coordinate with: `Y+=Y+(D+g)sin(theta)` and theta with: `theta+=theta+f` where `e`, `f` and `g` are error terms created from a random sample of a Gaussian distribution with a mean of 0 (as on average the robot should end up in the same place) and standard deviation of 1/16 as we found this value to closest reflect the deviation of +/- 3cm we are experiencing.
 
-In each turn we update all the particles with new Theta values as : `Theta+=theta+f+angle`
+In each turn we update all the particles with new theta values as : `theta+=theta+f+angle`
 
 
 ### 2.2 Waypoint Navigation
