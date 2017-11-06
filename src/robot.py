@@ -29,7 +29,7 @@ class Robot:
 		# Robot state
 		self.particle_state = None
 		self.standard_deviation = {}
-		self.standard_deviation["x"] = 0.4855
+		self.standard_deviation["x"] = 0.2427
 		self.standard_deviation["y"] = 0.238
 		self.standard_deviation["theta"] = 0.01
 		self.particle_state = ParticleState(self.standard_deviation,100)
