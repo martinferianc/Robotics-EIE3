@@ -3,17 +3,16 @@ import brickpi
 import time
 import json
 import math
-from collections import deque
 from thread import Poller
 from particle import ParticleState
-
+from collections import deque
 import numpy as np
 import random
 import os
 
 class Robot:
 	## INTITIALIZATION FUNCTIONS
-	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json"):
+	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json", threading=False):
 		# Robot initilization
 		self.interface = interface
 
@@ -21,8 +20,8 @@ class Robot:
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
+		self.distance_stack = deque(maxlen=15)
 
-		# Robot travel speed
 		self.motor_speeds = [0,0]
 		self.threads = []
 
@@ -47,7 +46,8 @@ class Robot:
 
 		self.load_base_config()
 		self.load_pid_config()
-		self.start_threading()
+		if threading:
+			self.start_threading()
 
 
 	def load_base_config(self):
@@ -165,40 +165,32 @@ class Robot:
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
-	# Take the median value out of the past {size} readings
-	def __median_filtered_ultrasonic(self,size=15):
-		l = [0]*size
-		i = 0
-		while i < size:
-			l[i] = self.__read_ultrasonic_sensor()
-			i +=1
-		l.sort()
-		return l[int((size-1)/2)]
-
 	# Update self.distance to self.__median_filtered_ultrasonic()
 	def __update_distance(self):
-		self.distance = self.__median_filtered_ultrasonic()
+		self.distance_stack.append(self.__read_ultrasonic_sensor())
+		q_copy = self.distance_stack
+		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)]
 		return True
 
 	# Move specified wheel a certain distance
 	def __move_wheels(self, distances=[1,1],wheels=None):
 		if wheels is None:
 			wheels = self.wheels
-		print("Distance to move wheels: {}".format(distances))
+		#print("Distance to move wheels: {}".format(distances))
 
 		# Retrieve start angle of motors
 		motorAngles_start = self.interface.getMotorAngles(wheels)
-		print("Start Angles: {}".format(motorAngles_start))
+		#print("Start Angles: {}".format(motorAngles_start))
 
 		# Set the reference angles to reach
 		circular_distances = [-round((2*x*self.distance_calibration)/self.circumference,2) for x in distances]
-		print("Distance in radians: {}".format(circular_distances))
+		#print("Distance in radians: {}".format(circular_distances))
 		# Angles to end at
 		motorAngles_end = []
 		motorAngles_end.append(round(motorAngles_start[0][0] + circular_distances[0],2))
 		motorAngles_end.append(round(motorAngles_start[1][0] + circular_distances[1],2))
 
-		print("Angles to end at: {}".format(motorAngles_end))
+		#print("Angles to end at: {}".format(motorAngles_end))
 		self.interface.increaseMotorAngleReferences(wheels, circular_distances)
 
 		# This function does PID control until angle references are reached
@@ -237,7 +229,7 @@ class Robot:
 	### END OF PRIVATE FUNCTIONS
 
 	### PUBLIC FUNCTIONS
-	def start_threading(self, touch=True, ultrasonic=True, interval = 0.2):
+	def start_threading(self, touch=True, ultrasonic=True, interval = 0.05):
 		# If threads already exist, stop them and delete them.
 		if self.threads:
 			for i in self.threads:
@@ -295,30 +287,30 @@ class Robot:
 			print("Distance: {}".format(self.distance))
 
 		print("POSITIONING")
-		print("Robot pose: {}".format(self.state["pose"]["theta"]))
+		print("Robot theta: {}".format(self.state["pose"]["theta"]))
 		print("Camera pose: {}".format(self.state["ultra_pose"]))
+		current_x, current_y, current_theta = self.particle_state.get_coordinates()
+
+		print("Particle state: x: {0}, y: {1}, theta: {2}".format(current_x, current_y, current_theta))
 
 	# Set ultra_pose variable to pose without moving the motor.
 	def calibrate_ultra_position(self, pose = 0):
 		self.state["ultra_pose"] = pose
 		return True
-
 	def save_state(self, state_file="robot_state.json"):
 		with open("robot_state.json","w") as f:
 			json.dump(self.state, f)
 	def reset_state(self):
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
+		self.particle_state.reset()
 		return True
 	def navigate_to_waypoint(self,X,Y):
-		particle_state = self.particle_state.get_state()
-		current_x = np.mean(np.array([point[0][0] for point in particle_state]))
-		current_y = np.mean(np.array([point[0][1] for point in particle_state]))
-		current_theta = np.mean(np.array([point[0][2] for point in particle_state]))
-
+                current_x, current_y, current_theta = self.particle_state.get_coordinates()
 		diff_X = (X*100)-current_x
 		diff_Y = (Y*100)-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
-		angle = math.degrees(math.atan2(diff_Y/diff_X))
+		angle = math.degrees(math.atan2(diff_Y, diff_X))
+		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
 		return self.travel_straight(distance, update_particles=True)
 
@@ -385,7 +377,7 @@ class Robot:
 		while s_pose <= -360:
 			s_pose+=360
 
-		rotation = -(s_pose-self.state["pose"].get("theta", 0))
+		rotation = (s_pose-self.state["pose"].get("theta", 0))
 
 		if rotation==0:
 			print("No rotation required.")
@@ -393,10 +385,11 @@ class Robot:
 
 		if rotation > 180:
 			rotation-=360
-			success = self.rotate_right(rotation)
-		else:
-			success = self.rotate_right(rotation)
+		elif rotation < -180:
+			rotation +=360
+		success = self.rotate_left(rotation)
 		self.state["pose"]["theta"] = s_pose
+		print("Rotation required: {}".format(rotation))
 		print("Ending pose: {}".format(s_pose))
 
 		if update_particles:
@@ -407,7 +400,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)\n9: Rotate right\n10: Save state\n11: Reset state")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)\n9: Rotate right\n10: Save state\n11: Reset state\n12: Print state\n13: Start threading\n14: Stop threading")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -450,6 +443,12 @@ class Robot:
 				self.save_state()
 			elif command==11:
 				self.reset_state()
+			elif command==12:
+				self.print_state()
+			elif command==13:
+				self.start_threading()
+			elif command==14:
+				self.stop_threading()
 			else:
 				command = -1
 				self.stop()

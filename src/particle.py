@@ -1,5 +1,6 @@
 import random
 import math
+import numpy as np
 
 class ParticleState():
     def __init__(self, standard_deviation, n_particles=100):
@@ -24,6 +25,12 @@ class ParticleState():
         else:
             raise Exception("Not a valid action!")
         return True
-
+    def get_coordinates(self):
+	mean_y = np.mean(np.array([point[0][1] for point in self.state]))
+        mean_x = np.mean(np.array([point[0][0] for point in self.state]))
+        mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
+        return (mean_x, mean_y, mean_theta)    
+    def reset(self):
+	self.state = [([0,0,0],1/self.number_of_particles) for x in xrange(self.number_of_particles)]
     def get_state(self):
         return self.state
