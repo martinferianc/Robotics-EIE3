@@ -11,7 +11,7 @@ In each turn we update all the particles with new theta values as : `theta+=thet
 
 
 ### 2.2 Waypoint Navigation
-Now we had the array set up containing all the projected points of the robot based on it's probable deviation from the prescribed path, it would be useful to have a function which will allow us to move to a particular point in 2D space. The robot would automatically adjusting it's position based on how far it expects to deviate from where it thinks it is. To do this we have implemented a function `navigate_to_waypoint` which takes an X and Y point as arguments (in meters). The robot looks at where it thinks it is based upon it's mean position, and calculates how far it needs to travel in order to reach the point assigned to it. To make the most direct route we turn by calling set_robot_pose which changes the angle of the robot based upon a starting reference of 0. The robot can then travel the hypotenuse of the X and Y values to allow it to reach the prescribed point (via the shortest route possible).
+Now we had the array set up containing all the projected points of the robot based on it's probable deviation from the prescribed path, it would be useful to have a function which will allow us to move to a particular point in 2D space. The robot would automatically adjusting it's position based on how far it expects to deviate from where it thinks it is. To do this we have implemented a function `navigate_to_waypoint` which takes an X and Y point as arguments (in meters). The robot looks at where it thinks it is based upon it's mean position, and calculates how far it needs to travel in order to reach the point assigned to it. To make the most direct route we turn by calling `set_robot_pose` which changes the angle of the robot based upon a starting reference of 0. The robot can then travel the hypotenuse of the `X` and `Y` values to allow it to reach the prescribed point (via the shortest route possible).
 
 We managed to implement this correctly and have a video of the robot travelling to (0.5, 0.8) and then returning to (0,0).
 
@@ -47,33 +47,33 @@ We observed a deviation of approximately +/- 2cm which almost agrees with the da
 
 We started with the distance set to 40 cm. We took 10 measurements and recorded the mean, variance and standard deviation.
 
-|  Measurement | Mean | Variance | Standard deviation |
-|:-------:|:-------:||:-------:|
-|1   |43   |0 | 0|
-|2   |43   |0 | 0|
-|3   |43   |0 | 0|
+| Trial | Mean | Variance | Standard deviation |
+|:-------:|:-------:|:-------:|:-----:|
+|1   |43    |0 | 0|
+|2   |43    |0 | 0|
+|3   |43    |0 | 0|
 |4   |42    |0 | 0|
 |5   |42    |0 | 0|
 |6   |42    |0 | 0|
 |7   |42    |0 | 0|
 |8   |42    |0 | 0|
 |9   |42    |0 | 0|
-|10   |42    |0 | 0|
+|10  |42    |0 | 0|
 
 Then we measured scatter with the distance of 100 cm.
 
-|  Measurement | Mean | Variance | Standard deviation |
-|:-------:|:-------:||:-------:|
+| Trial | Mean | Variance | Standard deviation |
+|:-------:|:-------:|:-------:|:-----:|
 |1   |103.8  |0.16 | 0.4|
-|2   |104   |0 | 0|
-|3   |104   |0 | 0|
-|4   |104   |0 | 0|
-|5   |104    |0 | 0|
-|6   |104    |0 | 0|
-|7   |104    |0 | 0|
-|8   |104    |0 | 0|
-|9   |104    |0 | 0|
-|10   |104    |0 | 0|
+|2   |104    |0    | 0|
+|3   |104    |0    | 0|
+|4   |104    |0    | 0|
+|5   |104    |0    | 0|
+|6   |104    |0    | 0|
+|7   |104    |0    | 0|
+|8   |104    |0    | 0|
+|9   |104    |0    | 0|
+|10  |104   |0    | 0|
 
 In the second case we saw double the error for the shorter distance. Therefore we assume that the depth definitely matters and the error increases proportionally to the depth being measured.
 
