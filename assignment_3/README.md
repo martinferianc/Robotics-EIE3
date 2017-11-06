@@ -14,6 +14,7 @@ In each turn we update all the particles with new theta values as : `theta+=thet
 Now we had the array set up containing all the projected points of the robot based on it's probable deviation from the prescribed path, it would be useful to have a function which will allow us to move to a particular point in 2D space. The robot would automatically adjusting it's position based on how far it expects to deviate from where it thinks it is. To do this we have implemented a function `navigate_to_waypoint` which takes an X and Y point as arguments (in meters). The robot looks at where it thinks it is based upon it's mean position, and calculates how far it needs to travel in order to reach the point assigned to it. To make the most direct route we turn by calling `set_robot_pose` which changes the angle of the robot based upon a starting reference of 0. The robot can then travel the hypotenuse of the `X` and `Y` values to allow it to reach the prescribed point (via the shortest route possible).
 
 We managed to implement this correctly and have a video of the robot travelling to (0.5, 0), (0, 0.5) and then returning to (0,0).
+[Link](https://www.youtube.com/watch?v=JyegLMHnY8Q)
 
 
 ### 2.3 Sonar investigation
