@@ -1,4 +1,5 @@
 import random
+import math
 
 class ParticleState():
     def __init__(self, standard_deviation, n_particles=100):
