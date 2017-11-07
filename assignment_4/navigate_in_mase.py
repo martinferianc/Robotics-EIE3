@@ -20,13 +20,44 @@ MAP = [[0,0,"O"],
        [210,84,"G"],
        [210,0,"H"]]
 
-Robot = Robot(interface, pid_config_file="carpet_config.json")
-while True:
-    X = float(input("Type in the X coordinate: "))
-    Y = float(input("Type in the Y coordinate: "))
-    Robot.navigate_to_waypoint(X,Y)
+POINTS = [(84,30),
+          (180,30),
+          (180,53),
+          (138,54),
+          (138,168),
+          (114,168),
+          (114,84),
+          (84,84),
+          (84,30),
+          (0,0)]
+
+Robot = Robot(interface,
+              pid_config_file="carpet_config.json",
+              map=MAP,
+              mcl=True,
+              x= 20,
+              y=20,
+              mode="continuous",
+              theta=90,
+              threading=True
+              )
+
+Canvas = Canvas();
+Map = Map();
+Map.add_wall((0,0,0,168));        # a
+Map.add_wall((0,168,84,168));     # b
+Map.add_wall((84,126,84,210));    # c
+Map.add_wall((84,210,168,210));   # d
+Map.add_wall((168,210,168,84));   # e
+Map.add_wall((168,84,210,84));    # f
+Map.add_wall((210,84,210,0));     # g
+Map.add_wall((210,0,0,0));        # h
+Map.draw();
+
+
+for x,y in POINTS:
+    Robot.navigate_to_waypoint(x,y)
     NUMBER_OF_PARTICLES = Robot.get_state()
-    NUMBER_OF_PARTICLES = [point[0] for point in NUMBER_OF_PARTICLES]
-    print "drawParticles:" + str(NUMBER_OF_PARTICLES)
+    canvas.drawParticles(NUMBER_OF_PARTICLES):
 
 interface.terminate()
