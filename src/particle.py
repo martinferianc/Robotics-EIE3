@@ -42,6 +42,17 @@ class ParticleState():
     def __normalise_weights(self):
         # Normalisation of weights
         # Returns new state with all weights normalized
+        # initialize weight_sum
+        weight_sum = 0
+        # sumarize weight
+        for index in xrange(len(self.state)):
+            weight_sum += self.state[index][1]
+        # divide individual weight by weight_sum
+        for index in xrange(len(self.state)):
+            self.state[index][1] = self.state[index][1] / weight_sum
+
+        return True
+
     def __calculate_proability(self, point, ultrasound_reading):
         #Calculate the probabilities of a single point at a given location
         #Takes the coordinate, ultra_sound reading
