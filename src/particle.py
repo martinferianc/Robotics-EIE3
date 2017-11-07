@@ -10,12 +10,16 @@ def move_angle_within_range(angle, lower = -math.pi, upper = math.pi, k = 2*math
     return angle
 
 class ParticleState():
-    def __init__(self, standard_deviation, n_particles=100):
+    def __init__(self, standard_deviation, n_particles=100, x = None, y = None, theta=None, mode="continuous", map = None):
+        if mode == "continuous":
+            if x is not None and y is not None and theta is not None:
+                self.state = [[[x,y,theta],1/n_particles] for x in xrange(n_particles)]
+
         self.number_of_particles = n_particles
-	self.state = [([0,0,0],1/n_particles) for x in xrange(n_particles)]
+	self.state = [[[0,0,0],1/n_particles] for x in xrange(n_particles)]
         self.standard_deviation = standard_deviation
     # Movement is distance for
-    def update_state(self, action, movement):
+    def update_state(self, action, movement, mcl=False):
         if action == "straight":
             # movement is the distance travelled
             for point in self.state:
@@ -42,3 +46,21 @@ class ParticleState():
         self.state = [([0,0,0],1/self.number_of_particles) for x in xrange(self.number_of_particles)]
     def get_state(self):
         return self.state
+
+    def __normalise_weights(self):
+        # Normalisation of weights
+        # Returns new state with all weights normalized
+    def __calculate_proability(self, point, ultrasound_reading):
+        #Calculate the probabilities of a single point at a given location
+        #Takes the coordinate, ultra_sound reading
+        #Changes the weight of that given point
+
+    def __resample(self):
+        #Resamples our probability distribution according to new weights
+
+    def __calculate_incidence_angle(self,point):
+        #Calculates the incidence angle of the ultrasound reading
+
+
+    def __calculate_distance_to_nearest_wall(self,point):
+        #Calculates the distance to nearest wall
