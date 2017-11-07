@@ -2,6 +2,7 @@ from __future__ import division
 import random
 import math
 import numpy as np
+import copy
 
 class ParticleState():
     def __init__(self,
@@ -116,7 +117,7 @@ class ParticleState():
                     break
             new_state.append([particle_coord[chosen_idx], 1/float(self.no_of_particles)])
         # put new state into self
-        self.state = new_state
+        self.state = copy.deepcopy(new_state)
 
 
     def __calculate_incidence_angle(self,point):
