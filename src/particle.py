@@ -2,6 +2,7 @@ from __future__ import division
 import random
 import math
 import numpy as np
+import copy
 
 class ParticleState():
     def __init__(self,
@@ -72,6 +73,17 @@ class ParticleState():
         #Mike
         # Normalisation of weights
         # Returns new state with all weights normalized
+        # initialize weight_sum
+        weight_sum = 0
+        # sumarize weight
+        for index in xrange(len(self.state)):
+            weight_sum += self.state[index][1]
+        # divide individual weight by weight_sum
+        for index in xrange(len(self.state)):
+            self.state[index][1] = self.state[index][1] / weight_sum
+
+        return True
+
     def __calculate_proability(self, point, ultrasound_reading):
         #George
         #Calculate the probabilities of a single point at a given location
@@ -81,6 +93,32 @@ class ParticleState():
     def __resample(self):
         #Mike
         #Resamples our probability distribution according to new weights
+        """ Takes a normalised particle distribution array
+            1. generate an array of the particle distribution probability histogram
+            2. generate an array of particle coordinates corresponding to the histogram
+            3. use Cumulative Porbability Distribution to pick particles
+        """
+        new_state = []
+        # generate histogram and particle coordinates array
+        histo = []
+        particle_coord = []
+        for index in xrange(len(self.state)):
+            particle_coord.append(self.state[index][0])
+            histo.append(self.state[index][1])
+        # generate cumulative sum array
+        cum_histo = np.cumsum(histo)
+        # pick particles and form a new set of particles
+        for loop_no in xrange(len(self.state)):
+            random_no = random.uniform(0, 1)
+            chosen_idx = 0
+            while (cum_histo[chosen_idx] < random_no):
+                chosen_idx += 1
+                if (chosen_idx >= len(cum_histo)-1):
+                    break
+            new_state.append([particle_coord[chosen_idx], 1/float(self.no_of_particles)])
+        # put new state into self
+        self.state = copy.deepcopy(new_state)
+
 
     def __calculate_incidence_angle(self,point):
         #Owen
