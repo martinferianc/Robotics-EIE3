@@ -54,9 +54,12 @@ class ParticleState():
         #Calculates the incidence angle of the ultrasound reading
 
 
-    def __calculate_distance_to_nearest_wall(self,point):
+    def __predict_distance_to_nearest_wall(self,point):
         #Calculates the distance to nearest wall, returning M
         #For each wall in the area which a line from the robot would pass thorough, we need to calculate M, the distance.
         #We will then take the smallest positive value of M which will be the nearest wall.
+        for point in self.state:
 
-        if()
+
+
+    def __calculate_possible_m(self,point):
