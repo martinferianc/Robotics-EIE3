@@ -47,7 +47,7 @@ class ParticleState():
         self.standard_deviation = standard_deviation
 
     # Movement is distance for
-    def update_state(self, action, movement, mcl=False, ultra_sound=None):
+    def update_state(self, action, movement, mcl=False, ultrasound=None):
         if mcl is False:
             if action == "straight":
                 # movement is the distance travelled
@@ -95,14 +95,17 @@ class ParticleState():
 
         return True
 
-    def __calculate_liklihood(self, x, y, theta, z):
+    def __calculate_liklihood(self, point, ultrasound_measurement):
         # Calculate the probability of a single point at a given location
         # Takes the coordinate, ultra_sound reading
         # Changes the weight of that given point
 
         # Find out which wall the sonar beam will hit
+        predicted_distance = self.__predict_distance_to_nearest_wall(point)
+        incidence_angle = self.__predict_incidence_angle()
+        diff = ultrasound_measurement - predicted_distance
+        #np.exp()
 
-        self.__calculate_distance_to_nearest_wall()
 
     def __resample(self):
         #Mike
