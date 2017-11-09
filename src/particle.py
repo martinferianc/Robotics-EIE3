@@ -13,8 +13,9 @@ class ParticleState():
                  theta=None,
                  mode="continuous",
                  mcl = False,
-                 map = None):
+                 Map = None):
         self.state = []
+        self.mcl = mcl
         if mode == "continuous":
             if x is not None and y is not None and theta is not None:
                 self.state = [[[x,y,theta],1/n_particles] for x in xrange(n_particles)]
@@ -38,31 +39,42 @@ class ParticleState():
         self.number_of_particles = n_particles
         self.standard_deviation = standard_deviation
     # Movement is distance for
-    def update_state(self, action, movement, mcl=False, ultra_sound=None):
-        if mcl is False:
-            if action == "straight":
-                # movement is the distance travelled
-                for point in self.state:
-                    e_x=random.gauss(0,self.standard_deviation["x"])
-                    e_y=random.gauss(0,self.standard_deviation["y"])
-                    e_theta=random.gauss(0,self.standard_deviation["theta"])
-                    point[0][0]+=(movement + e_x)*math.cos(point[0][2])
-                    point[0][1]+=(movement + e_y)*math.sin(point[0][2])
-                    point[0][2]+=e_theta
-            elif action == "rotation":
-                # movement is the amount of rotation
-                for point in self.state:
-    		    point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta"])
-            else:
-                raise Exception("Not a valid action!")
-            return True
+    def update_state(self, action, movement, ultrasound=None):
+        if action == "straight":
+            # movement is the distance travelled
+            for point in self.state:
+                e_x=random.gauss(0,self.standard_deviation["x"])
+                e_y=random.gauss(0,self.standard_deviation["y"])
+                e_theta=random.gauss(0,self.standard_deviation["theta"])
+                point[0][0]+=(movement + e_x)*math.cos(point[0][2])
+                point[0][1]+=(movement + e_y)*math.sin(point[0][2])
+                point[0][2]+=e_theta
+        elif action == "rotation":
+            # movement is the amount of rotation
+            for point in self.state:
+    	    point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta"])
         else:
-            pass
+            raise Exception("Not a valid action!")
+
+        if self.mcl:
+            # Step 1 - Motion prediction based on odometry
+            for point in self.state:
+                likelihood = __calculate_likelihood(point, ultrasound)
+                point[1] *= likelihood
+            self.__normalise_weights()
+            self.__resample()
+        return True
 
     def get_coordinates(self):
-	mean_y = np.mean(np.array([point[0][1] for point in self.state]))
-        mean_x = np.mean(np.array([point[0][0] for point in self.state]))
-        mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
+        if self.mcl:
+            self.__normalise_weights()
+            mean_x = sum([point[0][0]*point[1] for point in self.state]))
+            mean_y = sum([point[0][1]*point[1]  for point in self.state]))
+            mean_theta = sum([point[0][2]*point[1]  for point in self.state]))
+        else:
+            mean_x = np.mean(np.array([point[0][0] for point in self.state]))
+            mean_y = np.mean(np.array([point[0][1] for point in self.state]))
+            mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
         return (mean_x, mean_y, mean_theta)
     def reset(self):
 	    self.state = [([0,0,0],1/self.number_of_particles) for x in xrange(self.number_of_particles)]
@@ -84,12 +96,15 @@ class ParticleState():
 
         return True
 
-    def __calculate_proability(self, point, ultrasound_reading):
-        #George
-        #Calculate the probabilities of a single point at a given location
-        #Takes the coordinate, ultra_sound reading
-        #Changes the weight of that given point
-	pass
+    def __calculate_likelihood(self, point, ultrasound_measurement):
+        nearest_wall = self.__predicted_wall(point)
+        predicted_distance = nearest_wall["distance"]
+        if nearest_wall["angle"] > 15:
+            return k
+        diff = ultrasound_measurement - predicted_distance
+        likelihood = k + math.exp(-math.pow(diff,2)/(2*math.pow(standard_deviation["ultrasound"],2)))
+        return likelihood
+
     def __resample(self):
         #Mike
         #Resamples our probability distribution according to new weights

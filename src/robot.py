@@ -22,10 +22,11 @@ class Robot:
 				 theta = None,
 				 mode = "continuous",
 				 mcl = False,
-				 map = None):
+				 Map = None):
 		# Robot initilization
 		self.interface = interface
-
+		self.mcl = mcl
+		self.Map = Map
 		self.print_thread = None
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
@@ -41,7 +42,7 @@ class Robot:
 		self.standard_deviation["x"] = 0.2427
 		self.standard_deviation["y"] = 0.238
 		self.standard_deviation["theta"] = 0.01
-		self.particle_state = ParticleState(self.standard_deviation,100, map=map,x=x, y=y,theta=theta,mcl=mcl,mode=mode)
+		self.particle_state = ParticleState(self.standard_deviation,100, Map=Map,x=x, y=y,theta=theta,mcl=mcl,mode=mode)
 
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
@@ -217,7 +218,7 @@ class Robot:
 		#print("New pose: {}".format(self.state["pose"].get("theta")))
 		# Maybe only save state when the robot is shutting down?
 		if update_particles:
-			self.particle_state.update_state("rotation", angle)
+			self.particle_state.update_state("rotation", angle, self.distance)
 		return self.__move_wheels([dist,-dist])
 
 	#Takes the angle in degrees and rotates the robot left
@@ -346,7 +347,7 @@ class Robot:
 	def travel_straight(self, distance, update_particles=False):
 		success = self.__move_wheels(distances=[distance,distance])
 		if update_particles:
-			self.particle_state.update_state("straight", distance)
+			self.particle_state.update_state("straight", distance, ultrasound = self.distance)
 		return success
 
 	# Move the top camera to specified pose
@@ -403,7 +404,7 @@ class Robot:
 		print("Ending pose: {}".format(s_pose))
 
 		if update_particles:
-			self.particle_state.update_state("rotation", rotation)
+			self.particle_state.update_state("rotation", rotation, self.distance)
 		return success
 
 	# Interactive mode for the robot to control without writing a program each time
