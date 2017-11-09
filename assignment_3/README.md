@@ -5,9 +5,9 @@
 
 We have created a list of 100 lists representing each of the particles. Each list contains (x,y,theta) coordinates.
 
-Each time the robot moves straight, the X coordinate is updated with: `X+=X+(D+e)cos(theta)`, the Y coordinate with: `Y+=Y+(D+g)sin(theta)` and theta with: `theta+=theta+f` where `e`, `f` and `g` are error terms created from a random sample of a Gaussian distribution with a mean of 0 (as on average the robot should end up in the same place) and standard deviation of 1/16 as we found this value to closest reflect the deviation of +/- 3cm we are experiencing.
+Each time the robot moves straight, the X coordinate is updated with: `X = X + (D+e)cos(theta)`, the Y coordinate with: `Y = Y + (D+f)sin(theta)` and theta with: `theta = theta + g` where `e`, `f` and `g` are error terms created from a random sample of a Gaussian distribution with a mean of 0 (as on average the robot should end up in the same place) and standard deviation of 1/16 as we found this value to closest reflect the deviation of +/- 3cm we are experiencing.
 
-In each turn we update all the particles with new theta values as : `theta+=theta+f+angle`
+In each turn we update all the particles with new theta values as : `theta = theta+g+angle`
 
 
 ### 2.2 Waypoint Navigation
@@ -35,11 +35,11 @@ We measured each distance 10 times and these are the results:
 
 |  Distance | Mean |
 |:-------:|:-------:|
-|20    |22    |
-|40     |41        |
-|60     |60     |
-|80      |79.7     |
-|100      |101       |
+|20       |22       |
+|40       |41       |
+|60       |60       |
+|80       |79.7     |
+|100      |101      |
 
 The 10 consecutive measurements had variance and standard deviation of 0, meaning they did not change.
 
@@ -75,7 +75,7 @@ Then we measured scatter with the distance of 100 cm.
 |7   |104    |0    | 0|
 |8   |104    |0    | 0|
 |9   |104    |0    | 0|
-|10  |104   |0    | 0|
+|10  |104    |0    | 0|
 
 In the second case we saw double the error for the shorter distance. Therefore we assume that the depth definitely matters and the error increases proportionally to the depth being measured.
 
