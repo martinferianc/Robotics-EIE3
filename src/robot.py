@@ -53,6 +53,16 @@ class Robot:
 		if threading:
 			self.start_threading()
 
+	    self.particle_state = ParticleState(
+					 standard_deviation = self.standard_deviation,
+	                 n_particles=100,
+	                 x = x,
+	                 y = y,
+	                 theta=theta,
+	                 mode=self.mode,
+	                 mcl = True,
+	                 Map = self.Map)
+		
 
 	def load_base_config(self):
 		# configure main settings
@@ -117,8 +127,6 @@ class Robot:
 		self.standard_deviation["theta_straight"] = data["standard_deviation"]["theta_straight"]
 		self.standard_deviation["theta_rotate"] = data["standard_deviation"]["theta_rotate"]
 		self.standard_deviation["ultrasound"] = data["standard_deviation"]["ultrasound"]
-
-		self.particle_state = ParticleState(self.standard_deviation,100)
 
 	#Load the PID config file
 	def load_pid_config(self):
