@@ -2,6 +2,7 @@ import random
 import math
 import numpy as np
 
+# Takes an angle and moves it within specified range, default is between -pi and pi
 def move_angle_within_range(angle, lower = -math.pi, upper = math.pi, k = 2*math.pi):
     while (angle < lower):
         angle += k
@@ -38,8 +39,8 @@ class ParticleState():
             raise Exception("Not a valid action!")
         return True
     def get_coordinates(self):
-        mean_y = np.mean(np.array([point[0][1] for point in self.state]))
         mean_x = np.mean(np.array([point[0][0] for point in self.state]))
+        mean_y = np.mean(np.array([point[0][1] for point in self.state]))
         mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
         return (mean_x, mean_y, mean_theta)
     def reset(self):
@@ -50,10 +51,15 @@ class ParticleState():
     def __normalise_weights(self):
         # Normalisation of weights
         # Returns new state with all weights normalized
-    def __calculate_proability(self, point, ultrasound_reading):
-        #Calculate the probabilities of a single point at a given location
-        #Takes the coordinate, ultra_sound reading
-        #Changes the weight of that given point
+
+    def __calculate_liklihood(self, x, y, theta, z):
+        # Calculate the probability of a single point at a given location
+        # Takes the coordinate, ultra_sound reading
+        # Changes the weight of that given point
+
+        # Find out which wall the sonar beam will hit
+
+        self.__calculate_distance_to_nearest_wall()
 
     def __resample(self):
         #Resamples our probability distribution according to new weights
