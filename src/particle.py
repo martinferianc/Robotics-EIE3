@@ -170,7 +170,7 @@ class ParticleState():
         return math.degrees(math.acos(angle))
 
     def __calculate_m(self,point,wallPointA,wallPointB):
-        m = (((wallPointB[1]-wallPointA[1])(wallPointA[0]-point[0])-(wallPointB[0]-wallPointA[0])(wallPointA[1]-point[1]))/
+        m = (((wallPointB[1]-wallPointA[1])*(wallPointA[0]-point[0])-(wallPointB[0]-wallPointA[0])*(wallPointA[1]-point[1]))/
         (((wallPointB[1]-wallPointA[1])*math.cos(point[2])) - (wallPointB[0]-wallPointA[0])*math.sin(point[2])))
         intersect_x = point[0] + m*math.cos(point[2])
         intersect_y = point[1] + m*math.sin(point[2])
