@@ -49,7 +49,7 @@ class Robot:
 
 		self.load_base_config()
 		self.load_pid_config()
-		self.particle_state = ParticleState(standard_deviation = self.standard_deviation,n_particles=100,x = x,y = y,theta=theta,mode=mode,mcl = True,Map = self.Map)
+		self.particle_state = ParticleState(standard_deviation = self.standard_deviation,n_particles=100,x = x,y = y,theta=theta,mode=mode,mcl = self.mcl,Map = self.Map)
 		if threading:
 			self.start_threading()
 
@@ -326,6 +326,7 @@ class Robot:
 		diff_Y = (Y*100)-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
+		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
 		return self.travel_straight(distance, update_particles=True)
@@ -468,7 +469,7 @@ class Robot:
 			else:
 				command = -1
 				self.stop()
-				self.stop_threading()
+				
 		return True
 
 

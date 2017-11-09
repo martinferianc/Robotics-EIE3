@@ -1,3 +1,7 @@
+import random
+import matplotlib.pyplot as plt
+import time
+
 class pidParameters():
     def __init__(self):
         self.minOutput = 0
@@ -44,7 +48,7 @@ class Interface:
     def getSensorValue(self,port):
         if self.sensors[port] == "SENSOR_ULTRASONIC":
             # Insert some random function here
-            return (10,0)
+            return (random.randint(1,11)*8,0)
         else:
             return (0,0)
     
@@ -55,6 +59,7 @@ class Interface:
         return 1
     
     def motorAngleReferencesReached(self,ports):
+        time.sleep(0.2)
         return 1
     
     def setMotorRotationSpeedReferences(self,ports,speeds):
@@ -72,5 +77,7 @@ class Interface:
         return True
      
     def terminate(self):
+        raw_input("Press enter to close all plots.")
+        plt.close('all')
         print("Shutting down robot.")
         return True

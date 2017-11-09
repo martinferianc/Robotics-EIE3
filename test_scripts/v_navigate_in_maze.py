@@ -1,13 +1,12 @@
 import threading
 import time
-import sys
 from src.robot import Robot
+from src.drawing import Map, Canvas
 from src.virtual_interface import Interface
 
 #Initialize the interface
-interface=Interface()
+interface= Interface()
 interface.initialize()
-interface.startLogging("motor_position_1.log")
 
 PARTICLES = None
 
@@ -36,14 +35,30 @@ Robot = Robot(interface,
               pid_config_file="carpet_config.json",
               Map=MAP,
               mcl=True,
-              x=20,
-              y=20,
+              x=0.2,
+              y=0.2,
               mode="continuous",
               theta=90,
               threading=True
               )
 
-Robot.interactive_mode()
+Canvas = Canvas(virtual=True)
+Map = Map(Canvas)
+Map.add_wall((0,0,0,168))        # a
+Map.add_wall((0,168,84,168))     # b
+Map.add_wall((84,126,84,210))    # c
+Map.add_wall((84,210,168,210))   # d
+Map.add_wall((168,210,168,84))   # e
+Map.add_wall((168,84,210,84))    # f
+Map.add_wall((210,84,210,0))     # g
+Map.add_wall((210,0,0,0))        # h
+Map.draw()
 
-interface.stopLogging()
+
+for x,y in POINTS:
+    PARTICLES = Robot.get_state()
+    Canvas.drawParticles(PARTICLES)
+    Robot.navigate_to_waypoint(x/100,y/100)
+    Robot.stop_threading()
+
 interface.terminate()
