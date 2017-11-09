@@ -1,4 +1,6 @@
 import random
+import matplotlib.pyplot as plt
+import time
 
 class pidParameters():
     def __init__(self):
@@ -57,6 +59,7 @@ class Interface:
         return 1
     
     def motorAngleReferencesReached(self,ports):
+        time.sleep(0.2)
         return 1
     
     def setMotorRotationSpeedReferences(self,ports,speeds):
@@ -74,5 +77,7 @@ class Interface:
         return True
      
     def terminate(self):
+        raw_input("Press enter to close all plots.")
+        plt.close('all')
         print("Shutting down robot.")
         return True
