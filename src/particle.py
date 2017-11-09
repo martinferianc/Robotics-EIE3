@@ -144,8 +144,9 @@ class ParticleState():
     def __calculate_incidence_angle(self,point):
         #Owen
         #Calculates the incidence angle of the ultrasound reading
-
+        pass
 
     def __calculate_distance_to_nearest_wall(self,point):
         #Owen
         #Calculates the distance to nearest wall
+        pass
