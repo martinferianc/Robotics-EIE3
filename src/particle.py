@@ -95,17 +95,21 @@ class ParticleState():
 
         return True
 
-    def __calculate_liklihood(self, point, ultrasound_measurement):
+    def __calculate_likelihood(self, point, ultrasound_measurement):
         # Calculate the probability of a single point at a given location
         # Takes the coordinate, ultra_sound reading
         # Changes the weight of that given point
 
         # Find out which wall the sonar beam will hit
+        k = 0.05
         predicted_distance = self.__predict_distance_to_nearest_wall(point)
         incidence_angle = self.__predict_incidence_angle()
-        diff = ultrasound_measurement - predicted_distance
-        #np.exp()
 
+        if incidence_angle > 15:
+            return k
+        diff = ultrasound_measurement - predicted_distance
+        likelihood = k + math.exp(-math.pow(diff,2)/(2*math.pow(standard_deviation["ultrasound"],2)))
+        return likelihood
 
     def __resample(self):
         #Mike
