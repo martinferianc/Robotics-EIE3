@@ -69,7 +69,7 @@ class ParticleState():
         if self.mcl:
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
-                likelihood = __calculate_likelihood(point[0], ultrasound)
+                likelihood = self.__calculate_likelihood(point[0], ultrasound)
                 point[1] *= likelihood
             self.__normalise_weights()
             self.__resample()
