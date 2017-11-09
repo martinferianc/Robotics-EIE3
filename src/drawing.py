@@ -34,12 +34,13 @@ class Canvas:
         return (self.map_size + self.margin - y)*self.scale
 
 class Map:
-    def __init__(self):
+    def __init__(self, canvas):
         self.walls = [];
+        self.canvas = canvas
     def add_wall(self,wall):
         self.walls.append(wall);
     def clear(self):
         self.walls = [];
     def draw(self):
         for wall in self.walls:
-            canvas.drawLine(wall);
+            self.canvas.drawLine(wall);

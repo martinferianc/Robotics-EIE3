@@ -43,7 +43,7 @@ Robot = Robot(interface,
               )
 
 Canvas = Canvas();
-Map = Map();
+Map = Map(Canvas);
 Map.add_wall((0,0,0,168));        # a
 Map.add_wall((0,168,84,168));     # b
 Map.add_wall((84,126,84,210));    # c
