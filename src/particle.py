@@ -52,7 +52,7 @@ class ParticleState():
             elif action == "rotation":
                 # movement is the amount of rotation
                 for point in self.state:
-    		point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta"])
+    		    point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta"])
             else:
                 raise Exception("Not a valid action!")
             return True
@@ -60,7 +60,7 @@ class ParticleState():
             pass
 
     def get_coordinates(self):
-	    mean_y = np.mean(np.array([point[0][1] for point in self.state]))
+	mean_y = np.mean(np.array([point[0][1] for point in self.state]))
         mean_x = np.mean(np.array([point[0][0] for point in self.state]))
         mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
         return (mean_x, mean_y, mean_theta)
@@ -89,7 +89,7 @@ class ParticleState():
         #Calculate the probabilities of a single point at a given location
         #Takes the coordinate, ultra_sound reading
         #Changes the weight of that given point
-
+	pass
     def __resample(self):
         #Mike
         #Resamples our probability distribution according to new weights
@@ -123,8 +123,9 @@ class ParticleState():
     def __calculate_incidence_angle(self,point):
         #Owen
         #Calculates the incidence angle of the ultrasound reading
-
+ 	pass
 
     def __calculate_distance_to_nearest_wall(self,point):
         #Owen
         #Calculates the distance to nearest wall
+	pass

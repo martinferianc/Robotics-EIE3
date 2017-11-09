@@ -16,7 +16,7 @@ class Robot:
 				 interface,
 				 pid_config_file="paper_config.json",
 				 config_file="base_config.json",
-				 threading=False
+				 threading=False,
 				 x = None,
 				 y = None,
 				 theta = None,
