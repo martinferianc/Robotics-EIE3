@@ -59,7 +59,7 @@ class ParticleState():
         if self.mcl:
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
-                likelihood = __calculate_likelihood(point, ultrasound)
+                likelihood = __calculate_likelihood(point[0], ultrasound)
                 point[1] *= likelihood
             self.__normalise_weights()
             self.__resample()
@@ -97,7 +97,7 @@ class ParticleState():
         return True
 
     def __calculate_likelihood(self, point, ultrasound_measurement):
-        nearest_wall = self.__predicted_wall(point)
+        nearest_wall = self.__predict_distance_to_nearest_wall(point)
         predicted_distance = nearest_wall["distance"]
         if nearest_wall["angle"] > 15:
             return k
@@ -134,13 +134,31 @@ class ParticleState():
         # put new state into self
         self.state = copy.deepcopy(new_state)
 
+    def __predict_distance_to_nearest_wall(self,point):
+        #Calculates the distance to nearest wall, returning M
+        #For each wall in the area which a line from the robot would pass thorough, we need to calculate M, the distance.
+        #We will then take the smallest positive value of M which will be the nearest wall.
+        m = []
+        for i in range(len(Map)-1):
+            m.append(__calculate_m(point, Map[i], Map[i+1]))
+        smallest_m = min(j for j in m if j > 0)
+        position = m.index(smallest_m);
+        B = __predict_incidence_angle(point,Map[position], Map[position+1])
+        return {"distance": smallest_m, "angle": B, "wall":str(Map[position][2])+str(Map[position+1][2]) }
 
-    def __calculate_incidence_angle(self,point):
+    def __predict_incidence_angle(self,point, wallPointA, wallPointB):
         #Owen
         #Calculates the incidence angle of the ultrasound reading
- 	pass
+        angle = (math.cos(point[2])*(wallPointA[1]-wallPointB[1])+math.sin(point[2])*(wallPointB[0]-wallPointA[0]))/
+        math.sqrt(math.pow((wallPointA[1] - wallPointB[1]),2)+math.pow((wallPointB[0]-wallPointA[0]),2))
+        return math.degrees(math.acos(angle))
 
-    def __calculate_distance_to_nearest_wall(self,point):
-        #Owen
-        #Calculates the distance to nearest wall
-	pass
+    def __calculate_m(self,point,wallPointA,wallPointB):
+        m = (((wallPointB[1]-wallPointA[1])(wallPointA[0]-point[0])-(wallPointB[0]-wallPointA[0])(wallPointA[1]-point[1]))/
+        (((wallPointB[1]-wallPointA[1])*math.cos(point[2])) - (wallPointB[0]-wallPointA[0])*math.sin(point[2])))
+        intersect_x = point[0] + m*math.cos(point[2])
+        intersect_y = point[1] + m*math.sin(point[2])
+        if((intersect_x >= min(wallPointA[0], wallPointB[0])) && (intersect_x <= max(wallPointA[0], wallPointB[0]))):
+            if((intersect_y >= min(wallPointA[1], wallPointB[1])) && (intersect_y <= max(wallPointA[1], wallPointB[1])))):
+                return m
+        return -1;
