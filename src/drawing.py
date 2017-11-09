@@ -26,13 +26,13 @@ class Canvas:
         y1 = self.__screenY(line[1])
         x2 = self.__screenX(line[2])
         y2 = self.__screenY(line[3])
-        if virtual:
+        if self.virtual:
             plt.plot([x1,x2],[y1,y2])
         print "drawLine:" + str((x1,y1,x2,y2))
 
     def drawParticles(self,data):
         display = [(self.__screenX(d[0][0])+d[1],self.__screenY(d[0][1])+d[1]) for d in data]
-        if virtual:
+        if self.virtual:
             plt.plot([i[0] for i in display],[i[1] for i in display],"ro")
             plt.draw()
         print "drawParticles:" + str(display)
