@@ -120,7 +120,7 @@ class ParticleState():
         self.state = copy.deepcopy(new_state)
 
 
-    def __calculate_incidence_angle(self,point):
+    def __predict_incidence_angle(self,point):
         #Owen
         #Calculates the incidence angle of the ultrasound reading
 
