@@ -85,6 +85,7 @@ class ParticleState():
             mean_x = np.mean(np.array([point[0][0] for point in self.state]))
             mean_y = np.mean(np.array([point[0][1] for point in self.state]))
             mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
+        print("Coordinates - x: {0}, y: {1}, theta {2}".format(mean_x, mean_y, mean_theta))
         mean_theta = move_angle_within_range(mean_theta)
         return (mean_x, mean_y, mean_theta)
     def reset(self):
