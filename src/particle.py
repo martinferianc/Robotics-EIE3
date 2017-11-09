@@ -26,7 +26,7 @@ class ParticleState():
         self.mcl = mcl
         if mode == "continuous":
             if x is not None and y is not None and theta is not None:
-                self.state = [[[x,y,theta],1/n_particles] for x in xrange(n_particles)]
+                self.state = [[[x,y,math.radians(theta)],1/n_particles] for x in xrange(n_particles)]
             else:
 	            self.state = [[[0,0,0],1/n_particles] for x in xrange(n_particles)]
         elif mode == "global":
