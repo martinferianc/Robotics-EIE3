@@ -106,7 +106,7 @@ class Robot:
 		self.standard_deviation["y"] = data["standard_deviation"]["y"]
 		self.standard_deviation["theta_straight"] = data["standard_deviation"]["theta_straight"]
 		self.standard_deviation["theta_rotate"] = data["standard_deviation"]["theta_rotate"]
-		self.standard_deviation["untrasound"] = data["standard_deviation"]["untrasound"]
+		self.standard_deviation["ultrasound"] = data["standard_deviation"]["ultrasound"]
 
 		self.particle_state = ParticleState(self.standard_deviation,100)
 
