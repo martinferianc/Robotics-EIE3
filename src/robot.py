@@ -12,7 +12,17 @@ import os
 
 class Robot:
 	## INTITIALIZATION FUNCTIONS
-	def __init__(self, interface, pid_config_file="paper_config.json",config_file="base_config.json", threading=False):
+	def __init__(self,
+				 interface,
+				 pid_config_file="paper_config.json",
+				 config_file="base_config.json",
+				 threading=False
+				 x = None,
+				 y = None,
+				 theta = None,
+				 mode = "continuous",
+				 mcl = False,
+				 map = None):
 		# Robot initilization
 		self.interface = interface
 
@@ -31,7 +41,7 @@ class Robot:
 		self.standard_deviation["x"] = 0.2427
 		self.standard_deviation["y"] = 0.238
 		self.standard_deviation["theta"] = 0.01
-		self.particle_state = ParticleState(self.standard_deviation,100)
+		self.particle_state = ParticleState(self.standard_deviation,100, map=map,x=x, y=y,theta=theta,mcl=mcl,mode=mode)
 
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
