@@ -60,6 +60,7 @@ for x,y in POINTS:
     PARTICLES = Robot.get_state()
     Canvas.drawParticles(PARTICLES)
     Robot.navigate_to_waypoint(x/100,y/100)
+    print("potato")
     Robot.stop_threading()
 
 interface.terminate()
