@@ -153,10 +153,10 @@ class ParticleState():
         #We will then take the smallest positive value of M which will be the nearest wall.
         m = []
         for i in range(len(self.Map)-1):
-            m.append(__calculate_m(point, self.Map[i], self.Map[i+1]))
+            m.append(self.__calculate_m(point, self.Map[i], self.Map[i+1]))
         smallest_m = min(j for j in m if j > 0)
         position = m.index(smallest_m);
-        B = __predict_incidence_angle(point,self.Map[position], self.Map[position+1])
+        B = self.__predict_incidence_angle(point,self.Map[position], self.Map[position+1])
         return {"distance": smallest_m, "angle": B, "wall":str(self.Map[position][2])+str(self.Map[position+1][2]) }
 
     def __predict_incidence_angle(self,point, wallPointA, wallPointB):
