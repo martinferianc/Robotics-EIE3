@@ -111,6 +111,7 @@ class ParticleState():
         return True
 
     def __calculate_likelihood(self, point, ultrasound_measurement):
+        k = 0.05
         nearest_wall = self.__predict_distance_to_nearest_wall(point)
         predicted_distance = nearest_wall["distance"]
         if nearest_wall["angle"] > 15:
