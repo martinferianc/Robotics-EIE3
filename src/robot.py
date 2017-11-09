@@ -30,7 +30,8 @@ class Robot:
 		self.standard_deviation = {}
 		self.standard_deviation["x"] = 0.2427
 		self.standard_deviation["y"] = 0.238
-		self.standard_deviation["theta"] = 0.01
+		self.standard_deviation["theta_straight"] = 0.009
+		self.standard_deviation["theta_rotate"] = 0.012
 		self.particle_state = ParticleState(self.standard_deviation,100)
 
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
