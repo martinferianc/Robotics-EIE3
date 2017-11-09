@@ -67,8 +67,8 @@ class ParticleState():
                 point[0][2] = move_angle_within_range(point[0][2])
         else:
             raise Exception("Not a valid action!")
-
-        if self.mcl:
+        
+        if self.mcl is True:
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
                 likelihood = self.__calculate_likelihood(point[0], ultrasound)

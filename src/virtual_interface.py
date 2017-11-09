@@ -1,3 +1,5 @@
+import random
+
 class pidParameters():
     def __init__(self):
         self.minOutput = 0
@@ -44,7 +46,7 @@ class Interface:
     def getSensorValue(self,port):
         if self.sensors[port] == "SENSOR_ULTRASONIC":
             # Insert some random function here
-            return (10,0)
+            return (random.randint(1,11)*8,0)
         else:
             return (0,0)
     
