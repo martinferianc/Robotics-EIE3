@@ -68,9 +68,9 @@ class ParticleState():
     def get_coordinates(self):
         if self.mcl:
             self.__normalise_weights()
-            mean_x = sum([point[0][0]*point[1] for point in self.state]))
-            mean_y = sum([point[0][1]*point[1]  for point in self.state]))
-            mean_theta = sum([point[0][2]*point[1]  for point in self.state]))
+            mean_x = sum([point[0][0]*point[1] for point in self.state])
+            mean_y = sum([point[0][1]*point[1]  for point in self.state])
+            mean_theta = sum([point[0][2]*point[1]  for point in self.state])
         else:
             mean_x = np.mean(np.array([point[0][0] for point in self.state]))
             mean_y = np.mean(np.array([point[0][1] for point in self.state]))
