@@ -27,7 +27,7 @@ class ParticleState():
         self.Map = Map
         if mode == "continuous":
             if x is not None and y is not None and theta is not None:
-                print("Initializing particle state with x,y,theta = ({0},{1},{2})".format(x,y,theta))
+                print("Initializing particle state with x,y,theta = ({0},{1},{2})".format(x,y,math.radians(theta)))
                 self.state = [[[x,y,math.radians(theta)],1/n_particles] for i in xrange(n_particles)]
             else:
 	            self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
