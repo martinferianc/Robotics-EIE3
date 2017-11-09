@@ -42,17 +42,17 @@ Robot = Robot(interface,
               threading=True
               )
 
-Canvas = Canvas();
-Map = Map(Canvas);
-Map.add_wall((0,0,0,168));        # a
-Map.add_wall((0,168,84,168));     # b
-Map.add_wall((84,126,84,210));    # c
-Map.add_wall((84,210,168,210));   # d
-Map.add_wall((168,210,168,84));   # e
-Map.add_wall((168,84,210,84));    # f
-Map.add_wall((210,84,210,0));     # g
-Map.add_wall((210,0,0,0));        # h
-Map.draw();
+Canvas = Canvas()
+Map = Map(Canvas)
+Map.add_wall((0,0,0,168))        # a
+Map.add_wall((0,168,84,168))     # b
+Map.add_wall((84,126,84,210))    # c
+Map.add_wall((84,210,168,210))   # d
+Map.add_wall((168,210,168,84))   # e
+Map.add_wall((168,84,210,84))    # f
+Map.add_wall((210,84,210,0))     # g
+Map.add_wall((210,0,0,0))        # h
+Map.draw()
 
 
 for x,y in POINTS:

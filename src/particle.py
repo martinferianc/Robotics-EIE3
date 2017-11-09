@@ -161,7 +161,7 @@ class ParticleState():
         (((wallPointB[1]-wallPointA[1])*math.cos(point[2])) - (wallPointB[0]-wallPointA[0])*math.sin(point[2])))
         intersect_x = point[0] + m*math.cos(point[2])
         intersect_y = point[1] + m*math.sin(point[2])
-        if((intersect_x >= min(wallPointA[0], wallPointB[0])) && (intersect_x <= max(wallPointA[0], wallPointB[0]))):
-            if((intersect_y >= min(wallPointA[1], wallPointB[1])) && (intersect_y <= max(wallPointA[1], wallPointB[1])))):
+        if ((intersect_x >= min(wallPointA[0], wallPointB[0])) and (intersect_x <= max(wallPointA[0], wallPointB[0]))):
+            if ((intersect_y >= min(wallPointA[1], wallPointB[1])) and (intersect_y <= max(wallPointA[1], wallPointB[1])))):
                 return m
         return -1;
