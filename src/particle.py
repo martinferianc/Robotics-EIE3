@@ -4,6 +4,14 @@ import math
 import numpy as np
 import copy
 
+# Takes an angle and moves it within specified range, default is between -pi and pi
+def move_angle_within_range(angle, lower = -math.pi, upper = math.pi, k = 2*math.pi):
+    while (angle < lower):
+        angle += k
+    while (angle > upper):
+        angle -= k
+    return angle
+
 class ParticleState():
     def __init__(self,
                  standard_deviation,
@@ -49,10 +57,12 @@ class ParticleState():
                 point[0][0]+=(movement + e_x)*math.cos(point[0][2])
                 point[0][1]+=(movement + e_y)*math.sin(point[0][2])
                 point[0][2]+=e_theta
+                point[0][2] = move_angle_within_range(point[0][2])
         elif action == "rotation":
             # movement is the amount of rotation
             for point in self.state:
                 point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta_rotate"])
+                point[0][2] = move_angle_within_range(point[0][2])
         else:
             raise Exception("Not a valid action!")
 
@@ -75,6 +85,7 @@ class ParticleState():
             mean_x = np.mean(np.array([point[0][0] for point in self.state]))
             mean_y = np.mean(np.array([point[0][1] for point in self.state]))
             mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
+        mean_theta = move_angle_within_range(mean_theta)
         return (mean_x, mean_y, mean_theta)
     def reset(self):
 	    self.state = [([0,0,0],1/self.number_of_particles) for x in xrange(self.number_of_particles)]
