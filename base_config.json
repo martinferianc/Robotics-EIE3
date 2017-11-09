@@ -27,5 +27,13 @@
     
     "prop_ctl": {
         "k_p": 0.07
+    },
+
+    "standard_deviation": {
+    	"x": 0.2427,
+	"y": 0.238,
+	"theta_straight": 0.009,
+    	"ultrasound": 0.03,
+	"theta_rotate": 0.012
     }
 }
