@@ -149,8 +149,11 @@ class ParticleState():
     def __predict_incidence_angle(self,point, wallPointA, wallPointB):
         #Owen
         #Calculates the incidence angle of the ultrasound reading
-        angle = (math.cos(point[2])*(wallPointA[1]-wallPointB[1])+math.sin(point[2])*(wallPointB[0]-wallPointA[0]))/
-        math.sqrt(math.pow((wallPointA[1] - wallPointB[1]),2)+math.pow((wallPointB[0]-wallPointA[0]),2))
+        diff_y_AB = wallPointA[1]-wallPointB[1]
+        diff_x_AB = wallPointB[0]-wallPointA[0]
+        c = math.cos(point[2])*diff_y_AB
+        s = math.sin(point[2])*diff_x_AB
+        angle = (c + s) / math.sqrt(math.pow(diff_y_AB,2)+math.pow(diff_x_AB,2))
         return math.degrees(math.acos(angle))
 
     def __calculate_m(self,point,wallPointA,wallPointB):
