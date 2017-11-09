@@ -17,9 +17,9 @@ class Robot:
 				 pid_config_file="paper_config.json",
 				 config_file="base_config.json",
 				 threading=False,
-				 x = None,
-				 y = None,
-				 theta = None,
+				 x = 0,
+				 y = 0,
+				 theta = 0,
 				 mode = "continuous",
 				 mcl = False,
 				 Map = None):
@@ -37,7 +37,7 @@ class Robot:
 		self.threads = []
 
 		# Robot state
-		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
+		self.state = {'pose':{'x':x, 'y': y, 'theta': theta}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
 			try:
 				with open("robot_state.json","r") as f:
