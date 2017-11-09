@@ -53,16 +53,15 @@ class Robot:
 		if threading:
 			self.start_threading()
 
-	    self.particle_state = ParticleState(
-					 standard_deviation = self.standard_deviation,
-	                 n_particles=100,
-	                 x = x,
-	                 y = y,
-	                 theta=theta,
-	                 mode=self.mode,
-	                 mcl = True,
-	                 Map = self.Map)
-		
+	    self.particle_state = ParticleState(standard_deviation = self.standard_deviation,
+	        								n_particles=100,
+	        								x = x,
+	        								y = y,
+	        								theta=theta,
+	        								mode=self.mode,
+	        								mcl = True,
+	        								Map = self.Map)
+
 
 	def load_base_config(self):
 		# configure main settings
