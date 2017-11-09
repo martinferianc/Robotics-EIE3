@@ -156,6 +156,7 @@ class ParticleState():
         m = []
         for i in range(len(self.Map)-1):
             m.append(self.__calculate_m(point, self.Map[i], self.Map[i+1]))
+        print("M:")
         print(m)
         smallest_m = min(j for j in m if j > 0)
         position = m.index(smallest_m);
@@ -173,10 +174,15 @@ class ParticleState():
         return math.degrees(math.acos(angle))
 
     def __calculate_m(self,point,wallPointA,wallPointB):
-        m = (((wallPointB[1]-wallPointA[1])*(wallPointA[0]-point[0])-(wallPointB[0]-wallPointA[0])*(wallPointA[1]-point[1]))/
-        (((wallPointB[1]-wallPointA[1])*math.cos(point[2])) - (wallPointB[0]-wallPointA[0])*math.sin(point[2])))
-        intersect_x = point[0] + m*math.cos(point[2])
-        intersect_y = point[1] + m*math.sin(point[2])
+        cos_t = math.cos(point[2])
+        sin_t = math.sin(point[2])
+        diff_y_BA = wallPointB[1]-wallPointA[1]
+        diff_x_AO = wallPointA[0]-point[0]
+        diff_x_BA = wallPointB[0]-wallPointA[0]
+        diff_y_AO = wallPointA[1]-point[1]
+        m = ((diff_y_BA*diff_x_AO)-(diff_x_BA*diff_y_AO))/((diff_y_BA*cos_t) - (diff_x_BA*sin_t))
+        intersect_x = point[0] + m*cos_t
+        intersect_y = point[1] + m*sin_t
         if ((intersect_x >= min(wallPointA[0], wallPointB[0])) and (intersect_x <= max(wallPointA[0], wallPointB[0]))):
             if ((intersect_y >= min(wallPointA[1], wallPointB[1])) and (intersect_y <= max(wallPointA[1], wallPointB[1]))):
                 return m
