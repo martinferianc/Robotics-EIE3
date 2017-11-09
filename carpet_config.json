@@ -7,7 +7,7 @@
 		"minOutput": -255,
 		"maxOutput": 255,
 		"k_p": 450.0,
-		"k_i": 500.0,
+		"k_i": 350.0,
 		"k_d": 300.0
 
 	},
@@ -20,10 +20,10 @@
 		"minOutput": -255,
 		"maxOutput": 255,
 		"k_p": 450.0,
-		"k_i": 500.0,
+		"k_i": 350.0,
 		"k_d": 300.0
 	},
 
 	"distance_calibration": 3.05,
-	"angle_calibration": 0.16
+	"angle_calibration": 0.17
 }
