@@ -28,9 +28,9 @@ class ParticleState():
         if mode == "continuous":
             if x is not None and y is not None and theta is not None:
                 print("Initializing particle state with x,y,theta = ({0},{1},{2})".format(x,y,theta))
-                self.state = [[[x,y,math.radians(theta)],1/n_particles] for x in xrange(n_particles)]
+                self.state = [[[x,y,math.radians(theta)],1/n_particles] for i in xrange(n_particles)]
             else:
-	            self.state = [[[0,0,0],1/n_particles] for x in xrange(n_particles)]
+	            self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
         elif mode == "global":
             for i in range(n_particles):
                 x = random.randint(1,210)
@@ -45,7 +45,7 @@ class ParticleState():
                         valid = True
                 self.state.append([[x,y,0],1/n_particles])
         else:
-            self.state = [[[0,0,0],1/n_particles] for x in xrange(n_particles)]
+            self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
         self.number_of_particles = n_particles
         self.standard_deviation = standard_deviation
     # Movement is distance for
@@ -91,7 +91,7 @@ class ParticleState():
         mean_theta = move_angle_within_range(mean_theta)
         return (mean_x, mean_y, mean_theta)
     def reset(self):
-	    self.state = [([0,0,0],1/self.number_of_particles) for x in xrange(self.number_of_particles)]
+	    self.state = [([0,0,0],1/self.number_of_particles) for i in xrange(self.number_of_particles)]
     def get_state(self):
         return self.state
 
