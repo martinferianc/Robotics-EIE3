@@ -52,7 +52,7 @@ class ParticleState():
         elif action == "rotation":
             # movement is the amount of rotation
             for point in self.state:
-    	        point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta_rotation"])
+                point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta_rotate"])
         else:
             raise Exception("Not a valid action!")
 

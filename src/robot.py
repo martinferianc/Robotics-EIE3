@@ -37,13 +37,6 @@ class Robot:
 		self.threads = []
 
 		# Robot state
-		self.particle_state = None
-		self.standard_deviation = {}
-		self.standard_deviation["x"] = 0.2427
-		self.standard_deviation["y"] = 0.238
-		self.standard_deviation["theta"] = 0.01
-		self.particle_state = ParticleState(self.standard_deviation,100, Map=Map,x=x, y=y,theta=theta,mcl=mcl,mode=mode)
-
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
 			try:
@@ -115,6 +108,17 @@ class Robot:
 		# load proportional control param
 		self.proportional_control = {}
 		self.proportional_control["k_p"] = data["prop_ctl"]["k_p"]
+
+                # load particle state
+		self.particle_state = None
+		self.standard_deviation = {}
+		self.standard_deviation["x"] = data["standard_deviation"]["x"]
+		self.standard_deviation["y"] = data["standard_deviation"]["y"]
+		self.standard_deviation["theta_straight"] = data["standard_deviation"]["theta_straight"]
+		self.standard_deviation["theta_rotate"] = data["standard_deviation"]["theta_rotate"]
+		self.standard_deviation["ultrasound"] = data["standard_deviation"]["ultrasound"]
+
+		self.particle_state = ParticleState(self.standard_deviation,100)
 
 	#Load the PID config file
 	def load_pid_config(self):
