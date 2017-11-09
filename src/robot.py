@@ -1,5 +1,4 @@
 from __future__ import division
-import brickpi
 import time
 import json
 import math
@@ -103,10 +102,10 @@ class Robot:
 		if self.touch_ports is not None:
 			self.bumpers = data["bumpers"]
 			for i in self.touch_ports:
-				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
+				self.interface.sensorEnable(i,"SENSOR_TOUCH")
 
 		if self.ultrasonic_port is not None:
-				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
+				self.interface.sensorEnable(self.ultrasonic_port, "SENSOR_ULTRASONIC")
 
 		# load proportional control param
 		self.proportional_control = {}
@@ -304,6 +303,7 @@ class Robot:
 
 		print("POSITIONING")
 		print("Robot theta: {}".format(self.state["pose"]["theta"]))
+		print("Robot x,y: {0},{1}".format(self.state["pose"]["x"],self.state["pose"]["y"]))
 		print("Camera pose: {}".format(self.state["ultra_pose"]))
 		current_x, current_y, current_theta = self.particle_state.get_coordinates()
 

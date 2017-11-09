@@ -27,6 +27,7 @@ class ParticleState():
         self.Map = Map
         if mode == "continuous":
             if x is not None and y is not None and theta is not None:
+                print("Initializing particle state with x,y,theta = ({0},{1},{2})".format(x,y,theta))
                 self.state = [[[x,y,math.radians(theta)],1/n_particles] for x in xrange(n_particles)]
             else:
 	            self.state = [[[0,0,0],1/n_particles] for x in xrange(n_particles)]
@@ -86,7 +87,7 @@ class ParticleState():
             mean_x = np.mean(np.array([point[0][0] for point in self.state]))
             mean_y = np.mean(np.array([point[0][1] for point in self.state]))
             mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
-        print("Coordinates - x: {0}, y: {1}, theta {2}".format(mean_x, mean_y, mean_theta))
+        # print("Coordinates - x: {0}, y: {1}, theta {2}".format(mean_x, mean_y, mean_theta))
         mean_theta = move_angle_within_range(mean_theta)
         return (mean_x, mean_y, mean_theta)
     def reset(self):
