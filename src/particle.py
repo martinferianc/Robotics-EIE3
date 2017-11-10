@@ -145,7 +145,7 @@ class ParticleState():
                 chosen_idx += 1
                 if (chosen_idx >= len(cum_histo)-1):
                     break
-            new_state.append([particle_coord[chosen_idx], 1/float(self.no_of_particles)])
+            new_state.append([particle_coord[chosen_idx], 1/float(self.number_of_particles)])
         # put new state into self
         self.state = copy.deepcopy(new_state)
 
