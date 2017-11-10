@@ -153,6 +153,7 @@ class ParticleState():
         #Calculates the distance to nearest wall, returning M
         #For each wall in the area which a line from the robot would pass thorough, we need to calculate M, the distance.
         #We will then take the smallest positive value of M which will be the nearest wall.
+        print "Testing for particle {0},{1},{2}".format(point[0],point[1],point[2])
         m = []
         for i in range(len(self.Map)-1):
             m.append(self.__calculate_m(point, self.Map[i], self.Map[i+1]))
@@ -184,10 +185,12 @@ class ParticleState():
         m = ((diff_y_BA*diff_x_AO)-(diff_x_BA*diff_y_AO))/((diff_y_BA*cos_t) - (diff_x_BA*sin_t))
         intersect_x = point[0] + m*cos_t
         intersect_y = point[1] + m*sin_t
-        print "Intersects @: " + str(intersect_x) + ", " + str(intersect_y)
-        if ((intersect_x >= min(wallPointA[0], wallPointB[0])) and (intersect_x <= max(wallPointA[0], wallPointB[0]))):
-            print min(wallPointA[1], wallPointB[1])
-            print max(wallPointA[1], wallPointB[1])
-            if ((intersect_y >= min(wallPointA[1], wallPointB[1])) and (intersect_y <= max(wallPointA[1], wallPointB[1]))):
+        # If the wall is vertical (parallel to y) check to see if the predicted y is within range.
+        if(wallPointA[0] == wallPointB[0]):
+            if(float(min(wallPointA[1], wallPointB[1])) <= intersect_y <= float(max(wallPointA[1], wallPointB[1]))):
+                return m
+        # If the wall is horizontal (parallel to x) check to see if the predicted x is within range.
+        if(wallPointA[1] == wallPointB[1]):
+            if (float(min(wallPointA[0], wallPointB[0])) <= intersect_x <= float(max(wallPointA[0], wallPointB[0]))):
                 return m
         return -1;
