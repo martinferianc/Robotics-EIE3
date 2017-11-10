@@ -58,7 +58,11 @@ class ParticleState():
                 e_y=random.gauss(0,self.standard_deviation["y"])
                 e_theta=random.gauss(0,self.standard_deviation["theta_straight"])
                 point[0][0]+=(movement + e_x)*math.cos(point[0][2])
+                if(point[0][0] < 0):
+                    point[0][0] = 0
                 point[0][1]+=(movement + e_y)*math.sin(point[0][2])
+                if(point[0][1] < 0):
+                    point[0][1] = 0
                 point[0][2]+=e_theta
                 point[0][2] = move_angle_within_range(point[0][2])
                 print "Point after movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])
@@ -157,14 +161,16 @@ class ParticleState():
         #We will then take the smallest positive value of M which will be the nearest wall.
         print "Testing for particle {0},{1},{2}".format(point[0],point[1],point[2])
         m = []
-        for i in range(len(self.Map)-1):
-            m.append(self.__calculate_m(point, self.Map[i], self.Map[i+1]))
+        number_walls = len(self.Map)
+        for i in range(len(self.Map)):
+            m.append(self.__calculate_m(point, self.Map[i], self.Map[(i+1)%number_walls]))
         print("M:")
         print(m)
-        smallest_m = min(j for j in m if j > 0)
+        smallest_m = min(j for j in m if j >= 0)
         position = m.index(smallest_m);
-        B = self.__predict_incidence_angle(point,self.Map[position], self.Map[position+1])
-        return {"distance": smallest_m, "angle": B, "wall":str(self.Map[position][2])+str(self.Map[position+1][2]) }
+        next_wall = (position+1)%number_walls
+        B = self.__predict_incidence_angle(point,self.Map[position], self.Map[next_wall])
+        return {"distance": smallest_m, "angle": B, "wall":str(self.Map[position][2])+str(self.Map[next_wall][2]) }
 
 
     def __predict_incidence_angle(self,point, wallPointA, wallPointB):
