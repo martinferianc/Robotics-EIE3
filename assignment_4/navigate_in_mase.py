@@ -3,10 +3,10 @@ import threading
 import time
 from src.robot import Robot
 from src.drawing import Map, Canvas
-from src.virtual_interface import Interface
+import brickpi
 
 #Initialize the interface
-interface= Interface()
+interface=brickpi.Interface()
 interface.initialize()
 
 PARTICLES = None
@@ -34,33 +34,31 @@ POINTS = [(84,30),
 
 Robot = Robot(interface,
               pid_config_file="carpet_config.json",
-              Map=MAP,
-              mcl=False,
-              x=20,
+              map=MAP,
+              mcl=True,
+              x= 20,
               y=20,
               mode="continuous",
               theta=90,
               threading=True
               )
 
-Canvas = Canvas(virtual=True)
-Map = Map(Canvas)
-Map.add_wall((0,0,0,168))        # a
-Map.add_wall((0,168,84,168))     # b
-Map.add_wall((84,126,84,210))    # c
-Map.add_wall((84,210,168,210))   # d
-Map.add_wall((168,210,168,84))   # e
-Map.add_wall((168,84,210,84))    # f
-Map.add_wall((210,84,210,0))     # g
-Map.add_wall((210,0,0,0))        # h
-Map.draw()
+Canvas = Canvas();
+Map = Map();
+Map.add_wall((0,0,0,168));        # a
+Map.add_wall((0,168,84,168));     # b
+Map.add_wall((84,126,84,210));    # c
+Map.add_wall((84,210,168,210));   # d
+Map.add_wall((168,210,168,84));   # e
+Map.add_wall((168,84,210,84));    # f
+Map.add_wall((210,84,210,0));     # g
+Map.add_wall((210,0,0,0));        # h
+Map.draw();
 
 
 for x,y in POINTS:
-    PARTICLES = Robot.get_state()
-    Canvas.drawParticles(PARTICLES)
     Robot.navigate_to_waypoint(x/100,y/100)
-    print("potato")
-    Robot.stop_threading()
+    NUMBER_OF_PARTICLES = Robot.get_state()
+    canvas.drawParticles(NUMBER_OF_PARTICLES):
 
 interface.terminate()
