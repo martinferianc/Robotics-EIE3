@@ -54,8 +54,6 @@ class Robot:
 			self.start_threading()
 
 
-
-
 	def load_base_config(self):
 		# configure main settings
 		with open(self.config_file) as config_file:
@@ -417,7 +415,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)\n9: Rotate right\n10: Save state\n11: Reset state\n12: Print state\n13: Start threading\n14: Stop threading")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)(m)\n9: Rotate right\n10: Save state\n11: Reset state\n12: Print state\n13: Start threading\n14: Stop threading")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -469,7 +467,7 @@ class Robot:
 			else:
 				command = -1
 				self.stop()
-				
+
 		return True
 
 

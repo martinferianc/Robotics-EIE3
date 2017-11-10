@@ -56,7 +56,7 @@ Map.draw()
 
 
 for x,y in POINTS:
-    Robot.navigate_to_waypoint(x/100,y/100)
+    Robot.navigate_to_waypoint(x,y)
     PARTICLES = Robot.get_state()
     Canvas.drawParticles(PARTICLES)
 
