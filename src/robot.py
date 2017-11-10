@@ -320,13 +320,14 @@ class Robot:
 		return True
 	def navigate_to_waypoint(self,X,Y):
                 current_x, current_y, current_theta = self.particle_state.get_coordinates()
-		diff_X = (X*100)-current_x
-		diff_Y = (Y*100)-current_y
+		diff_X = X-current_x
+		diff_Y = Y-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
 		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
+		print "Rotation Finished"
 		return self.travel_straight(distance, update_particles=True)
 
 	#Sets a constant speed for specified motors
@@ -415,7 +416,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)(m)\n9: Rotate right\n10: Save state\n11: Reset state\n12: Print state\n13: Start threading\n14: Stop threading")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)(cm)\n9: Rotate right\n10: Save state\n11: Reset state\n12: Print state\n13: Start threading\n14: Stop threading")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")

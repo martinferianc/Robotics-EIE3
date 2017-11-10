@@ -35,7 +35,7 @@ POINTS = [(84,30),
 Robot = Robot(interface,
               pid_config_file="carpet_config.json",
               Map=MAP,
-              mcl=False,
+              mcl=True,
               x=20,
               y=20,
               mode="continuous",
@@ -60,7 +60,6 @@ for x,y in POINTS:
     PARTICLES = Robot.get_state()
     Canvas.drawParticles(PARTICLES)
     Robot.navigate_to_waypoint(x,y)
-    print("potato")
     Robot.stop_threading()
 
 interface.terminate()

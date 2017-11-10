@@ -53,6 +53,7 @@ class ParticleState():
         if action == "straight":
             # movement is the distance travelled
             for point in self.state:
+                print "Point before movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])
                 e_x=random.gauss(0,self.standard_deviation["x"])
                 e_y=random.gauss(0,self.standard_deviation["y"])
                 e_theta=random.gauss(0,self.standard_deviation["theta_straight"])
@@ -60,6 +61,7 @@ class ParticleState():
                 point[0][1]+=(movement + e_y)*math.sin(point[0][2])
                 point[0][2]+=e_theta
                 point[0][2] = move_angle_within_range(point[0][2])
+                print "Point after movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])
         elif action == "rotation":
             # movement is the amount of rotation
             for point in self.state:
@@ -72,9 +74,12 @@ class ParticleState():
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
                 likelihood = self.__calculate_likelihood(point[0], ultrasound)
+                print "Likelihood: {0}".format(likelihood)
                 point[1] *= likelihood
             self.__normalise_weights()
             self.__resample()
+            for point in self.state:
+                print "Point after resampling x:{} y:{} theta:{} w:{}".format(point[0][0], point[0][1], point[0][2],point[1])
         return True
 
     def get_coordinates(self):
@@ -130,24 +135,21 @@ class ParticleState():
         """
         new_state = []
         # generate histogram and particle coordinates array
-        histo = []
-        particle_coord = []
-        for index in xrange(len(self.state)):
-            particle_coord.append(self.state[index][0])
-            histo.append(self.state[index][1])
+        particle_coord = copy.deepcopy([point[0] for point in self.state])
+        histo = copy.deepcopy([point[1] for point in self.state])
         # generate cumulative sum array
         cum_histo = np.cumsum(histo)
         # pick particles and form a new set of particles
-        for loop_no in xrange(len(self.state)):
+        for loop_no in xrange(self.number_of_particles):
             random_no = random.uniform(0, 1)
             chosen_idx = 0
             while (cum_histo[chosen_idx] < random_no):
                 chosen_idx += 1
                 if (chosen_idx >= len(cum_histo)-1):
                     break
-            new_state.append([particle_coord[chosen_idx], 1/float(self.number_of_particles)])
+            new_state.append([copy.deepcopy(particle_coord[chosen_idx]), 1/float(self.number_of_particles)])
         # put new state into self
-        self.state = copy.deepcopy(new_state)
+        self.state = new_state
 
     def __predict_distance_to_nearest_wall(self,point):
         #Calculates the distance to nearest wall, returning M
