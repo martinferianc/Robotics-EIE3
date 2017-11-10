@@ -58,10 +58,11 @@ class ParticleState():
                 e_y=random.gauss(0,self.standard_deviation["y"])
                 e_theta=random.gauss(0,self.standard_deviation["theta_straight"])
                 point[0][0]+=(movement + e_x)*math.cos(point[0][2])
-                if(point[0][0] < 0):
+
+                if(point[0][0] < 0) and self.mcl:
                     point[0][0] = 0
                 point[0][1]+=(movement + e_y)*math.sin(point[0][2])
-                if(point[0][1] < 0):
+                if(point[0][1] < 0) and self.mcl:
                     point[0][1] = 0
                 point[0][2]+=e_theta
                 point[0][2] = move_angle_within_range(point[0][2])
@@ -109,13 +110,11 @@ class ParticleState():
         # Normalisation of weights
         # Returns new state with all weights normalized
         # initialize weight_sum
-        weight_sum = 0
         # sumarize weight
-        for index in xrange(len(self.state)):
-            weight_sum += self.state[index][1]
+        weight_sum = sum([point[1] for point in self.state])
         # divide individual weight by weight_sum
-        for index in xrange(len(self.state)):
-            self.state[index][1] = self.state[index][1] / weight_sum
+        for point in self.state:
+            point[1] = point[1] / weight_sum
 
         return True
 
