@@ -23,6 +23,7 @@ The particle distribution for each step will be displayed in the web interface.
 <img src="../Resources/images/ass4-map.PNG" height="300px" align="center" />
 
 The coordinates of the vertex are:
+
 | Point |  x  |  y  |
 |:-----:|:---:|:---:|
 |O      |0    |0    |
@@ -89,6 +90,7 @@ Accurate sequential navigation can be achieved using continuous MCL.
 A point estimate of the current position and orientation of the robot can be made by taking the mean of all the particles. The robot can navigate to the next point based on current point estimate. All particles get updated based outward-looking(exteroceptive) sensors as the robot travels, so that cumulative errors are eliminated.
 
 Waypoints to travel:
+
 | x  | y  |
 |:--:|:--:|
 |84  |30  |
