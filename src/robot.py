@@ -8,6 +8,7 @@ from collections import deque
 import numpy as np
 import random
 import os
+import brickpi
 
 class Robot:
 	## INTITIALIZATION FUNCTIONS
