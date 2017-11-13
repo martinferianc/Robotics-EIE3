@@ -39,7 +39,7 @@ The coordinates of the vertex are:
 
 
 ### Using the Sonar
-The sonar is not mounted above the rotation centre of the robot. An offset of `<what?>` is added to the sonar readings.
+The sonar is not mounted above the rotation centre of the robot. An offset of `-3` is added to the sonar readings.
 
 
 
