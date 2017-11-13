@@ -60,4 +60,5 @@ Map.draw()
 for x,y in POINTS:
     Robot.step_to_waypoint(x,y, maxdistance=20)
 
+Robot.stop_threading()
 interface.terminate()

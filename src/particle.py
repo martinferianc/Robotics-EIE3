@@ -122,14 +122,14 @@ class ParticleState():
         nearest_wall = self.__predict_distance_to_nearest_wall(point)
         predicted_distance = nearest_wall["distance"]
         if nearest_wall["angle"] > 15:
-            print("Angle too high: {}".format(nearest_wall["angle"]))
+            #print("Angle too high: {}".format(nearest_wall["angle"]))
             return k
         diff = ultrasound_measurement - predicted_distance
 	numerator = -math.pow(diff,2)
 	denominator = 2*math.pow(self.standard_deviation["ultrasound"],2)
 	exponent = math.exp(numerator/denominator)
-	if (exponent < 0.01):
-		print("Exponent very low! Exponent: {}".format(exponent))
+	#if (exponent < 0.01):
+		#print("Exponent very low! Exponent: {}".format(exponent))
 	#print("Diff: {0}, Numerator {1}, Denominator {2}, Exponent {3}".format(diff, numerator, denominator, exponent))
         likelihood = k + (math.exp(numerator/denominator))
         return likelihood
@@ -186,10 +186,10 @@ class ParticleState():
         c = math.cos(point[2])*diff_y_AB
         s = math.sin(point[2])*diff_x_BA
         angle = (c + s) / math.sqrt(math.pow(diff_y_AB,2)+math.pow(diff_x_BA,2))
-        if(math.degrees(math.acos(angle)) > 50):
-            print "Robot @: {0}, {1}, {2}".format(point[0], point[1], point[2])
-            print "Wall Point A: {0}, {1}".format(wallPointA[0], wallPointA[1])
-            print "Wall Point B: {0}, {1}".format(wallPointB[0], wallPointB[1])
+        #if(math.degrees(math.acos(angle)) > 50):
+            #print "Robot @: {0}, {1}, {2}".format(point[0], point[1], point[2])
+            #print "Wall Point A: {0}, {1}".format(wallPointA[0], wallPointA[1])
+            #print "Wall Point B: {0}, {1}".format(wallPointB[0], wallPointB[1])
         return math.degrees(math.acos(angle))
 
     def __calculate_m(self,point,wallPointA,wallPointB):
