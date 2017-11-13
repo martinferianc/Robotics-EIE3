@@ -21,7 +21,7 @@
     },
     "ultrasonic_port": 3,
     "motor_ports": {
-      "left": 0,
+      "left": 3,
       "right": 1,
       "top" : 2
     },
@@ -31,10 +31,10 @@
     },
 
     "standard_deviation": {
-    	"x": 0.2427,
-	    "y": 0.238,
+    	"x": 0.7,
+	    "y": 0.7,
 	    "theta_straight": 0.0018,
     	"ultrasound": 3,
-	    "theta_rotate": 0.0024
+	    "theta_rotate": 0.007
     }
 }
