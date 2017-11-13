@@ -322,12 +322,11 @@ class Robot:
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		self.particle_state.reset()
 		return True
-	
+
 	def step_to_waypoint(self,X,Y,maxdistance=20):
-		runs = int(math.ceil(distance / maxdistance))
 		success = False
 		while not success:
-			success = self.navigate_to_waypoint(x,y,maxdistance)
+			success = self.navigate_to_waypoint(X,Y,maxdistance)
 		return success
 
 	def navigate_to_waypoint(self,X,Y, maxdistance = None):
