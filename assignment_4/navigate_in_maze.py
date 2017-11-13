@@ -4,6 +4,7 @@ import time
 from src.robot import Robot
 from src.drawing import Map, Canvas
 import brickpi
+import math
 
 
 #Initialize the interface
