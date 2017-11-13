@@ -2,7 +2,9 @@
 import time
 import random
 import math
+import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.cm as cm
 
 
 
@@ -16,11 +18,16 @@ def calcTheta():
     return random.randint(0,360)
 
 class Canvas:
-    def __init__(self,map_size=210):
+    def __init__(self,map_size=210, virtual=False):
         self.map_size    = map_size    # in cm
         self.canvas_size = 768         # in pixels
         self.margin      = 0.05*map_size
         self.scale       = self.canvas_size/(map_size+2*self.margin)
+        self.virtual = virtual
+        x = np.arange(10)
+        ys = [i+x+(i*x)**2 for i in range(20)]
+        self.colors = cm.rainbow(np.linspace(0, 1, len(ys)))
+        self.counter = 0
 
     def drawLine(self,line):
         x1 = self.__screenX(line[0])
@@ -34,7 +41,14 @@ class Canvas:
 
     def drawParticles(self,data):
         display = [(self.__screenX(d[0][0])+d[1],self.__screenY(d[0][1])+d[1]) for d in data]
-        print "drawParticles:" + str(display)
+        if self.virtual:
+            plt.ion()
+            plt.figure(num=1,figsize=(10,10))
+            plt.plot([i[0] for i in display],[i[1] for i in display],"ro",c=self.colors[self.counter])
+            plt.pause(0.05)
+            self.counter+=1
+        else:
+            print "drawParticles:" + str(display)
     def __screenX(self,x):
         return (x + self.margin)*self.scale
     def __screenY(self,y):
@@ -54,3 +68,5 @@ class Map:
     def draw(self):
         for wall in self.walls:
             self.canvas.drawLine(wall)
+        if self.virtual:
+            plt.show(block=False)
