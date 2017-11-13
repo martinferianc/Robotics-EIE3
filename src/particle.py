@@ -82,7 +82,7 @@ class ParticleState():
                 point[1] *= likelihood
             self.__normalise_weights()
             self.__resample()
-            for point in self.state:
+            #for point in self.state:
                 #print "Point after resampling x:{} y:{} theta:{} w:{}".format(point[0][0], point[0][1], point[0][2],point[1])
         return True
 
@@ -162,8 +162,8 @@ class ParticleState():
         number_walls = len(self.Map)
         for i in range(len(self.Map)):
             m.append(self.__calculate_m(point, self.Map[i], self.Map[(i+1)%number_walls]))
-        print("M:")
-        print(m)
+        #print("M:")
+        #print(m)
         smallest_m = min(j for j in m if j >= 0)
         position = m.index(smallest_m);
         next_wall = (position+1)%number_walls
