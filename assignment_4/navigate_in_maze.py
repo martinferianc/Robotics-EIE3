@@ -4,7 +4,6 @@ import time
 from src.robot import Robot
 from src.drawing import Map, Canvas
 import brickpi
-import math
 
 
 #Initialize the interface
@@ -23,7 +22,7 @@ MAP = [[0,0,"O"],
        [210,84,"G"],
        [210,0,"H"]]
 
-POINTS = [(86,30),
+POINTS = [(84,30),
           (180,30),
           (180,53),
           (138,54),
@@ -31,7 +30,7 @@ POINTS = [(86,30),
           (114,168),
           (114,84),
           (84,84),
-          (86,30),
+          (84,30),
           (0,0)]
 
 Robot = Robot(interface,
@@ -58,31 +57,9 @@ Map.add_wall((210,0,0,0))        # h
 Map.draw()
 
 
-for i in range(1,len(POINTS)):
-    if (POINTS[i-1][0] == POINTS[i][0]):
-        diff_y = POINTS[i-1][1] - POINTS[i][1]
-        y = POINTS[i-1][1]
-        x = POINTS[i][0]
-        for runs in range(int(math.ceil(diff_y / 20))):
-            if diff_y-y>20:
-                y+= 20
-            else:
-                y+=diff_y-y
-            Robot.navigate_to_waypoint(x,y)
-            PARTICLES = Robot.get_state()
-            Canvas.drawParticles(PARTICLES)
-    if (POINTS[i-1][1] == POINTS[i][1]):
-        diff_x = POINTS[i-1][0] - POINTS[i][0]
-        y = POINTS[i][1]
-        x = POINTS[i-1][0]
-        for runs in range(int(math.ceil(diff_x / 20))):
-            if diff_x-x>20:
-                x+= 20
-            else:
-                x+=diff_x-x
-            Robot.navigate_to_waypoint(x,y)
-            PARTICLES = Robot.get_state()
-            Canvas.drawParticles(PARTICLES)
+for x,y in POINTS:
+    Robot.navigate_to_waypoint(x,y, maxdistance=20)
+    PARTICLES = Robot.get_state()
+    Canvas.drawParticles(PARTICLES)
 
-Robot.stop_threading()
 interface.terminate()
