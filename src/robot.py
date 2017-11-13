@@ -181,8 +181,9 @@ class Robot:
 			raise Exception("Ultrasonic sensor not initialized!")
 
 	# Update self.distance to self.__median_filtered_ultrasonic()
-	def __update_distance(self):
-		self.distance_stack.append(self.__read_ultrasonic_sensor())
+	def update_distance(self):
+		for i in range(15):
+			self.distance_stack.append(self.__read_ultrasonic_sensor())
 		q_copy = self.distance_stack
 		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)] - self.distance_offset
 		return True
@@ -244,7 +245,7 @@ class Robot:
 	### END OF PRIVATE FUNCTIONS
 
 	### PUBLIC FUNCTIONS
-	def start_threading(self, touch=True, ultrasonic=True, interval = 0.05):
+	def start_threading(self, touch=True, ultrasonic=False, interval = 0.05):
 		# If threads already exist, stop them and delete them.
 		if self.threads:
 			for i in self.threads:
@@ -354,6 +355,7 @@ class Robot:
 	def travel_straight(self, distance, update_particles=False):
 		success = self.__move_wheels(distances=[distance,distance])
 		if update_particles:
+			self.update_distance()
 			self.particle_state.update_state("straight", distance, ultrasound = self.distance)
 		return success
 

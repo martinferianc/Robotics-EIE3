@@ -122,6 +122,7 @@ class ParticleState():
         nearest_wall = self.__predict_distance_to_nearest_wall(point)
         predicted_distance = nearest_wall["distance"]
         if nearest_wall["angle"] > 15:
+            print("Angle too high: {}".format(nearest_wall["angle"]))
             return k
         diff = ultrasound_measurement - predicted_distance
         likelihood = k + math.exp(-math.pow(diff,2)/(2*math.pow(self.standard_deviation["ultrasound"],2)))
