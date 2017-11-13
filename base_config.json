@@ -33,8 +33,8 @@
     "standard_deviation": {
     	"x": 0.2427,
 	    "y": 0.238,
-	    "theta_straight": 0.0009,
+	    "theta_straight": 0.0018,
     	"ultrasound": 0.03,
-	    "theta_rotate": 0.0012
+	    "theta_rotate": 0.0024
     }
 }
