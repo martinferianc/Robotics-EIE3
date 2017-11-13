@@ -27,9 +27,6 @@ class Canvas:
         y1 = self.__screenY(line[1])
         x2 = self.__screenX(line[2])
         y2 = self.__screenY(line[3])
-        if self.virtual:
-            plt.figure(num=1,figsize=(30,30))
-            plt.plot([x1,x2],[y1,y2])
         print "drawLine:" + str((x1,y1,x2,y2))
 
     def drawParticles(self,data):
@@ -44,9 +41,6 @@ class Map:
     def __init__(self, canvas):
         self.walls = [];
         self.canvas = canvas
-        self.virtual = False
-        if canvas.virtual:
-            self.virtual = True
     def add_wall(self,wall):
         self.walls.append(wall)
     def clear(self):

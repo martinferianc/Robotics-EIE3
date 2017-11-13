@@ -35,10 +35,10 @@ Robot = Robot(interface,
               pid_config_file="carpet_config.json",
               Map=MAP,
               mcl=True,
-              x=20,
-              y=20,
+              x=86,
+              y=30,
               mode="continuous",
-              theta=90,
+              theta=0,
               threading=True
               )
 
