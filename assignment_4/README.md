@@ -55,17 +55,17 @@ A constant `K=0.05` is added to the Gaussian Distribution to model the constant 
 On the other hand, the robust likelihood function is less aggressive in 'killing off' particles which are far from agreeing with measurements. But an occasional garbage measurement will not lead to the sudden death of all the particles in good positions.
 
 ##### Constituents in `particle.py`
-1. Find out which wall the sonar beam would hit. -> `??`
+1. Find out which wall the sonar beam would hit. -> `__calculate_m`
 2. Calculate the expected depth measurement. -> `__predict_distance_to_nearest_wall()`
 3. Calculate the likelihood value for each particle. -> `__calculate_likelihood()`
-4. Set likelihood value to `0.05` if the incident angle is greater than **15 degrees**. -> `__calculate_likelihood()` -> `__predict_distance_to_nearest_wall()`
+4. Set likelihood value to `0.05` if the incident angle is greater than **15 degrees**. -> `__calculate_likelihood()` -> `__predict_incidence_angle()`
 
 
 
 ### _3.2_ Normalising and Resampling (12 Marks)
 #### Normalisation
 Implemented in [particle.py](../src/particle.py) `:: __normalise_weights()`.  
-Add up all the weights in the unnormalised set, and then divide the weight of each by this total.
+Add up all the weights in the non-normalised set, and then divide the weight of each by this total.
 
 #### Resample
 Implemented in [particle.py](../src/particle.py) `:: __resample()`.
