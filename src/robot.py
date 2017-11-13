@@ -325,6 +325,10 @@ class Robot:
                 current_x, current_y, current_theta = self.particle_state.get_coordinates()
 		diff_X = X-current_x
 		diff_Y = Y-current_y
+		if abs(diff_X)<0.5:
+			diff_X = 0
+		if abs(diff_Y)<0.5:
+			diff_Y = 0
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
 		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
