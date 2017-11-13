@@ -321,8 +321,17 @@ class Robot:
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		self.particle_state.reset()
 		return True
-	def navigate_to_waypoint(self,X,Y, maxdistance=None):
-                current_x, current_y, current_theta = self.particle_state.get_coordinates()
+	
+	def step_to_waypoint(self,X,Y,maxdistance=20):
+		runs = int(math.ceil(distance / maxdistance))
+		success = False
+		while not success:
+			success = self.navigate_to_waypoint(x,y,maxdistance)
+		return success
+
+	def navigate_to_waypoint(self,X,Y, maxdistance = None):
+		success = True
+		current_x, current_y, current_theta = self.particle_state.get_coordinates()
 		diff_X = X-current_x
 		diff_Y = Y-current_y
 		if abs(diff_X)<0.5:
@@ -331,11 +340,16 @@ class Robot:
 			diff_Y = 0
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
+		if maxdistance:
+			if distance > maxdistance:
+				distance = maxdistance
+				success = False
 		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
 		print "Rotation Finished"
-		return self.travel_straight(distance, update_particles=True, maxdistance)
+		self.travel_straight(distance, update_particles=True)
+		return success
 
 	#Sets a constant speed for specified motors
 	def set_speed(self, speeds=[2,2], wheels=None):
@@ -356,27 +370,11 @@ class Robot:
 		return True
 
 	#Takes the distance in centimeters and moves it forward
-	def travel_straight(self, distance, update_particles=False, maxdistance=None):
-		if maxdistance:
-			runs = int(math.ceil(distance / maxdistance))
-			movement = 0
-			distance_travelled = 0
-			for i in range(runs):
-				diff = distance-distance_travelled
-				if diff > maxdistance:
-					movement=maxdistance
-				else:
-					movement=diff
-				distance_travelled+=movement
-				success = self.__move_wheels(distances=[movement,movement])
-				if update_particles:
-					self.update_distance()
-					self.particle_state.update_state("straight", movement, ultrasound = self.distance)
-		else:
-			success = self.__move_wheels(distances=[distance,distance])
-			if update_particles:
-				self.update_distance()
-				self.particle_state.update_state("straight", distance, ultrasound = self.distance)
+	def travel_straight(self, distance, update_particles=False):
+		success = self.__move_wheels(distances=[distance,distance])
+		if update_particles:
+			self.update_distance()
+			self.particle_state.update_state("straight", distance, ultrasound = self.distance)
 		return success
 
 	# Move the top camera to specified pose

@@ -30,8 +30,7 @@ POINTS = [(84,30),
           (114,168),
           (114,84),
           (84,84),
-          (84,30),
-          (0,0)]
+          (84,30)]
 
 Robot = Robot(interface,
               pid_config_file="carpet_config.json",
@@ -58,7 +57,7 @@ Map.draw()
 
 
 for x,y in POINTS:
-    Robot.navigate_to_waypoint(x,y, maxdistance=20)
+    Robot.step_to_waypoint(x,y, maxdistance=20)
     PARTICLES = Robot.get_state()
     Canvas.drawParticles(PARTICLES)
 
