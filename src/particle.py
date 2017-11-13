@@ -180,10 +180,14 @@ class ParticleState():
         #Owen
         #Calculates the incidence angle of the ultrasound reading
         diff_y_AB = wallPointA[1]-wallPointB[1]
-        diff_x_AB = wallPointB[0]-wallPointA[0]
+        diff_x_BA = wallPointB[0]-wallPointA[0]
         c = math.cos(point[2])*diff_y_AB
-        s = math.sin(point[2])*diff_x_AB
-        angle = (c + s) / math.sqrt(math.pow(diff_y_AB,2)+math.pow(diff_x_AB,2))
+        s = math.sin(point[2])*diff_x_BA
+        angle = (c + s) / math.sqrt(math.pow(diff_y_AB,2)+math.pow(diff_x_BA,2))
+        if(math.degrees(math.acos(angle)) > 50):
+            print "Robot @: {0}, {1}, {2}".format(Point[0], Point[1], Point[2])
+            print "Wall Point A: {0}, {1}".format(wallPointA[0], wallPointA[1])
+            print "Wall Point B: {0}, {1}".format(wallPointB[0], wallPointB[1])
         return math.degrees(math.acos(angle))
 
     def __calculate_m(self,point,wallPointA,wallPointB):
