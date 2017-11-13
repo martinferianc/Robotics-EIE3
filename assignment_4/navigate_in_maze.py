@@ -1,8 +1,10 @@
+from __future__ import division
 import threading
 import time
 from src.robot import Robot
 from src.drawing import Map, Canvas
 import brickpi
+
 
 #Initialize the interface
 interface=brickpi.Interface()
@@ -55,9 +57,31 @@ Map.add_wall((210,0,0,0))        # h
 Map.draw()
 
 
-for x,y in POINTS:
-    Robot.navigate_to_waypoint(x,y)
-    PARTICLES = Robot.get_state()
-    Canvas.drawParticles(PARTICLES)
+for i in range(1,len(POINTS)):
+    if (POINTS[i-1][0] == POINTS[i][0]):
+        diff_y = POINTS[i-1][1] - POINTS[i][1]
+        y = POINTS[i-1][1]
+        x = POINTS[i][0]
+        for runs in range(math.ceil(diff_y % 20)):
+            if diff_y-y>20:
+                y+= 20
+            else:
+                y+=diff_y-y
+            Robot.navigate_to_waypoint(x,y)
+            PARTICLES = Robot.get_state()
+            Canvas.drawParticles(PARTICLES)
+    if (POINTS[i-1][1] == POINTS[i][1]):
+        diff_x = POINTS[i-1][0] - POINTS[i][0]
+        y = POINTS[i][1]
+        x = POINTS[i-1][0]
+        for runs in range(math.ceil(diff_x % 20)):
+            if diff_x-x>20:
+                x+= 20
+            else:
+                x+=diff_x-x
+            Robot.navigate_to_waypoint(x,y)
+            PARTICLES = Robot.get_state()
+            Canvas.drawParticles(PARTICLES)
 
+Robot.stop_threading()
 interface.terminate()
