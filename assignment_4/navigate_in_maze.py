@@ -20,7 +20,7 @@ MAP = [[0,0,"O"],
        [210,84,"G"],
        [210,0,"H"]]
 
-POINTS = [(84,30),
+POINTS = [(86,30),
           (180,30),
           (180,53),
           (138,54),
@@ -28,7 +28,7 @@ POINTS = [(84,30),
           (114,168),
           (114,84),
           (84,84),
-          (84,30),
+          (86,30),
           (0,0)]
 
 Robot = Robot(interface,
@@ -59,5 +59,5 @@ for x,y in POINTS:
     Robot.navigate_to_waypoint(x,y)
     PARTICLES = Robot.get_state()
     Canvas.drawParticles(PARTICLES)
-
+Robot.stop_threading()
 interface.terminate()
