@@ -155,7 +155,8 @@ class Robot:
 		self.motorParams["right"].pidParameters.k_p = PID["right"]["k_p"]
 		self.motorParams["right"].pidParameters.k_i = PID["right"]["k_i"]
 		self.motorParams["right"].pidParameters.k_d = PID["right"]["k_d"]
-
+		print(PID)
+		print("Left motor is in port {0}, right motor is in port {1}".format(self.wheels[0], self.wheels[1]))
 		self.interface.setMotorAngleControllerParameters(self.wheels[0], self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.wheels[1], self.motorParams["right"])
 		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0,0])
