@@ -63,7 +63,7 @@ for i in range(1,len(POINTS)):
         diff_y = POINTS[i-1][1] - POINTS[i][1]
         y = POINTS[i-1][1]
         x = POINTS[i][0]
-        for runs in range(math.ceil(diff_y % 20)):
+        for runs in range(int(math.ceil(diff_y / 20))):
             if diff_y-y>20:
                 y+= 20
             else:
@@ -75,7 +75,7 @@ for i in range(1,len(POINTS)):
         diff_x = POINTS[i-1][0] - POINTS[i][0]
         y = POINTS[i][1]
         x = POINTS[i-1][0]
-        for runs in range(math.ceil(diff_x % 20)):
+        for runs in range(int(math.ceil(diff_x / 20))):
             if diff_x-x>20:
                 x+= 20
             else:
