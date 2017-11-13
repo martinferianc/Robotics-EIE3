@@ -67,6 +67,7 @@ class Robot:
 		self.touch_ports = data["touch_ports"]
 		self.ultrasonic_port = data["ultrasonic_port"]
 		self.motor_ports = data["motor_ports"]
+		self.distance_offset = data["ultra_sound_offset"]
 
 		#Motor initialization
 		# self.wheels IS JUST THE WHEEL MOTORS
@@ -183,7 +184,7 @@ class Robot:
 	def __update_distance(self):
 		self.distance_stack.append(self.__read_ultrasonic_sensor())
 		q_copy = self.distance_stack
-		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)]
+		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)] - self.distance_offset
 		return True
 
 	# Move specified wheel a certain distance

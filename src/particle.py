@@ -66,7 +66,6 @@ class ParticleState():
                     point[0][1] = 0
                 point[0][2]+=e_theta
                 point[0][2] = move_angle_within_range(point[0][2])
-                print "Point after movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])
         elif action == "rotation":
             # movement is the amount of rotation
             for point in self.state:

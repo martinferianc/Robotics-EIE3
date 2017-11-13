@@ -12,6 +12,7 @@
     },
 
     "ultra_angle_calibration": 0.0178,
+    "ultra_sound_offset": 3,
 
     "touch_ports": [0, 2],
     "bumpers": {
