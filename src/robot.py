@@ -22,7 +22,8 @@ class Robot:
 				 theta = 0,
 				 mode = "continuous",
 				 mcl = False,
-				 Map = None):
+				 Map = None,
+				 canvas = None):
 		# Robot initilization
 		self.interface = interface
 		self.mcl = mcl
@@ -32,6 +33,7 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
+		self.canvas = canvas
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -326,7 +328,11 @@ class Robot:
 	def step_to_waypoint(self,X,Y,maxdistance=20):
 		success = False
 		while not success:
+			PARTICLES = self.get_state()
+			if self.canvas:
+				self.canvas.drawParticles(PARTICLES)
 			success = self.navigate_to_waypoint(X,Y,maxdistance)
+
 		return success
 
 	def navigate_to_waypoint(self,X,Y, maxdistance = None):
