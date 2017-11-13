@@ -78,7 +78,7 @@ class ParticleState():
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
                 likelihood = self.__calculate_likelihood(point[0], ultrasound)
-                #print "Likelihood: {0}".format(likelihood)
+                #print "Likelihood: {0} Ultrasound: {1}".format(likelihood, ultrasound)
                 point[1] *= likelihood
             self.__normalise_weights()
             self.__resample()
@@ -125,7 +125,11 @@ class ParticleState():
             print("Angle too high: {}".format(nearest_wall["angle"]))
             return k
         diff = ultrasound_measurement - predicted_distance
-        likelihood = k + math.exp(-math.pow(diff,2)/(2*math.pow(self.standard_deviation["ultrasound"],2)))
+	numerator = -math.pow(diff,2)
+	denominator = 2*math.pow(self.standard_deviation["ultrasound"],2)
+	exponent = math.exp(numerator/denominator)
+	#print("Diff: {0}, Numerator {1}, Denominator {2}, Exponent {3}".format(diff, numerator, denominator, exponent))
+        likelihood = k + (math.exp(numerator/denominator))
         return likelihood
 
     def __resample(self):
