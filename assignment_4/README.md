@@ -22,7 +22,7 @@ The particle distribution for each step will be displayed in the web interface.
 ### The Environment and Map
 <img src="../Resources/images/ass4-map.PNG" height="300px" align="center" />
 
-The coordinates of the vertex are:
+The coordinates of each of the vertices are:
 
 | Point |  x  |  y  |
 |:-----:|:---:|:---:|
@@ -39,7 +39,7 @@ The coordinates of the vertex are:
 
 
 ### Using the Sonar
-The sonar is not mounted above the rotation centre of the robot. An offset of `-3` is added to the sonar readings.
+The sonar is not mounted above the rotation centre of the robot. To compensate for this, an offset of `-3` is added to the sonar readings.
 
 
 
@@ -49,8 +49,8 @@ Using Gaussian Distribution to calculate likelihood for each particle based on `
 
 <img src="../Resources/images/ass4-robust_likelihood.PNG" height="300px" align="center" />
 
-The robust likelihood function model the fact that eal sensors sometimes report 'garbage' values.
-A constant `K=0.05` is added to the Gaussian Distribution to model there is some constant probability that the sensor will return a garbage value, uniformly distributed across the range of the sensor.
+The robust likelihood function models the fact that real sensors sometimes report 'garbage' values.
+A constant `K=0.05` is added to the Gaussian Distribution to model the constant probability that the sensor will return a garbage value. The probability of this is uniformly distributed across the range of the sensor.
 
 On the other hand, the robust likelihood function is less aggressive in 'killing off' particles which are far from agreeing with measurements. But an occasional garbage measurement will not lead to the sudden death of all the particles in good positions.
 
@@ -72,12 +72,12 @@ Implemented in [particle.py](../src/particle.py) `:: __resample()`.
 
 > Strong and successful particles get to reproduce and weak ones die out!
 
-Given a particle set of N particles with varying but normalised weights as the starting point, resampling 
-generates N new particles whose weights are all equal to 1/N but whose spatial distribution now represents 
+Given a particle set of N particles with varying but normalised weights as the starting point, resampling
+generates N new particles whose weights are all equal to 1/N but whose spatial distribution now represents
 the previous weighted distribution.  
 Therefore, we get many copies of the strong particles, and few or in many cases no copies of the weak particles.
 
-The random choosing of particles to copy proportionally to their weights is achieved by building a cumulative 
+The random choosing of particles to copy proportionally to their weights is achieved by building a cumulative
 weight array and then generating random numbers between 0 and 1.
 
 Finally, the new set of particles overwrites the old one.
