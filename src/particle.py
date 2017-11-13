@@ -53,7 +53,7 @@ class ParticleState():
         if action == "straight":
             # movement is the distance travelled
             for point in self.state:
-                print "Point before movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])
+                #print "Point before movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])
                 e_x=random.gauss(0,self.standard_deviation["x"])
                 e_y=random.gauss(0,self.standard_deviation["y"])
                 e_theta=random.gauss(0,self.standard_deviation["theta_straight"])
@@ -78,12 +78,12 @@ class ParticleState():
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
                 likelihood = self.__calculate_likelihood(point[0], ultrasound)
-                print "Likelihood: {0}".format(likelihood)
+                #print "Likelihood: {0}".format(likelihood)
                 point[1] *= likelihood
             self.__normalise_weights()
             self.__resample()
             for point in self.state:
-                print "Point after resampling x:{} y:{} theta:{} w:{}".format(point[0][0], point[0][1], point[0][2],point[1])
+                #print "Point after resampling x:{} y:{} theta:{} w:{}".format(point[0][0], point[0][1], point[0][2],point[1])
         return True
 
     def get_coordinates(self):
@@ -157,7 +157,7 @@ class ParticleState():
         #Calculates the distance to nearest wall, returning M
         #For each wall in the area which a line from the robot would pass thorough, we need to calculate M, the distance.
         #We will then take the smallest positive value of M which will be the nearest wall.
-        print "Testing for particle {0},{1},{2}".format(point[0],point[1],point[2])
+        #print "Testing for particle {0},{1},{2}".format(point[0],point[1],point[2])
         m = []
         number_walls = len(self.Map)
         for i in range(len(self.Map)):
