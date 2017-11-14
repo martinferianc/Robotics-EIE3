@@ -46,7 +46,6 @@ class Robot:
 					self.state = json.load(f)
 			except Exception as e:
 				print "Error reading from the JSON file."
-
 		self.config_file = config_file
 		self.pid_config_file = pid_config_file
 
@@ -121,6 +120,7 @@ class Robot:
 		self.standard_deviation["y"] = data["standard_deviation"]["y"]
 		self.standard_deviation["theta_straight"] = data["standard_deviation"]["theta_straight"]
 		self.standard_deviation["theta_rotate"] = data["standard_deviation"]["theta_rotate"]
+		self.standard_deviation["theta_top_rotate"] = data["standard_deviation"]["theta_top_rotate"]
 		self.standard_deviation["ultrasound"] = data["standard_deviation"]["ultrasound"]
 
 	#Load the PID config file
