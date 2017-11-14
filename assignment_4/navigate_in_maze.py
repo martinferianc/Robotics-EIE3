@@ -32,6 +32,9 @@ POINTS = [(86,30),
           (86,84),
           (86,30)]
 
+Canvas = Canvas()
+Map = Map(Canvas)
+
 Robot = Robot(interface,
               pid_config_file="carpet_config.json",
               Map=MAP,
@@ -40,11 +43,10 @@ Robot = Robot(interface,
               y=30,
               mode="continuous",
               theta=0,
-              threading=True
+              threading=True,
+              canvas = Canvas
               )
 
-Canvas = Canvas()
-Map = Map(Canvas)
 Map.add_wall((0,0,0,168))        # a
 Map.add_wall((0,168,84,168))     # b
 Map.add_wall((84,126,84,210))    # c
