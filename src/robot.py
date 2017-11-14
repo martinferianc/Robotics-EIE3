@@ -39,7 +39,6 @@ class Robot:
 		self.max_sd_error = 1
 
 		# Robot state
-		self.set_ultra_pose(0)
 		self.state = {'pose':{'x':x, 'y': y, 'theta': theta}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
 			try:
@@ -47,7 +46,6 @@ class Robot:
 					self.state = json.load(f)
 			except Exception as e:
 				print "Error reading from the JSON file."
-
 		self.config_file = config_file
 		self.pid_config_file = pid_config_file
 
