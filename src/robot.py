@@ -370,7 +370,7 @@ class Robot:
 			time.sleep(1)
 			wall_distance['-90'] = self.get_distance
 			self.set_ultra_pose(0)
-			print "Ultrasound: {0}".format(min(wall_distance))
+			print "Ultrasound: {0}".format(min(wall_distance, key=wall_distance.get))
 			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = min(wall_distance), ultrasound_pose = min(wall_distance, key=wall_distance.get))
 		return success
 
