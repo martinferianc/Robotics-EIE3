@@ -32,9 +32,6 @@ POINTS = [(86,30),
           (86,84),
           (86,30)]
 
-Canvas = Canvas()
-Map = Map(Canvas)
-
 Robot = Robot(interface,
               pid_config_file="carpet_config.json",
               Map=MAP,
@@ -43,9 +40,11 @@ Robot = Robot(interface,
               y=30,
               mode="continuous",
               theta=0,
-              threading=True,
-              canvas=Canvas
+              threading=True
               )
+
+Canvas = Canvas()
+Map = Map(Canvas)
 Map.add_wall((0,0,0,168))        # a
 Map.add_wall((0,168,84,168))     # b
 Map.add_wall((84,126,84,210))    # c
@@ -59,6 +58,8 @@ Map.draw()
 
 for x,y in POINTS:
     Robot.step_to_waypoint(x,y, maxdistance=20)
+    PARTICLES = Robot.get_state()
+    Canvas.drawParticles(PARTICLES)
 
 Robot.stop_threading()
 interface.terminate()

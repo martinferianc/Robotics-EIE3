@@ -320,9 +320,22 @@ class Robot:
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		self.particle_state.reset()
 		return True
+<<<<<<< HEAD
 	
 	def navigate_to_waypoint(self,X,Y):
         		current_x, current_y, current_theta = self.particle_state.get_coordinates()
+=======
+
+	def step_to_waypoint(self,X,Y,maxdistance=20):
+		success = False
+		while not success:
+			success = self.navigate_to_waypoint(X,Y,maxdistance)
+		return success
+
+	def navigate_to_waypoint(self,X,Y, maxdistance = None):
+		success = True
+		current_x, current_y, current_theta = self.particle_state.get_coordinates()
+>>>>>>> parent of cfa37ad... Hax with canvas
 		diff_X = X-current_x
 		diff_Y = Y-current_y
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
