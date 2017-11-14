@@ -186,11 +186,7 @@ class Robot:
 	# Update self.distance to self.__median_filtered_ultrasonic()
 	def update_distance(self):
 		for i in range(15):
-<<<<<<< HEAD
-                    raw_ultra_reading = self.__read_ultrasonic_sensor()
-=======
                     raw_ultra_reading = int(self.__read_ultrasonic_sensor())
->>>>>>> 212c1054b51e23ec7c75c216925c9a05f3277c09
                     calibrated_ultra_reading = raw_ultra_reading - self.distance_offset - (raw_ultra_reading*self.distance_proportional_offset)
                     self.distance_stack.append(calibrated_ultra_reading)
 		q_copy = self.distance_stack
