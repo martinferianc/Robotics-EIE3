@@ -368,14 +368,14 @@ class Robot:
 			wall_distance = {}
 			self.set_ultra_pose(90)
 			time.sleep(2)
-			wall_distance['90'] = self.get_distance
+			wall_distance['90'] = self.get_distance()
 			self.set_ultra_pose(-90)
+			wall_distance['-90'] = self.get_distance()
 			time.sleep(2)
-			wall_distance['-90'] = self.get_distance
 			self.set_ultra_pose(0)
-			print "Ultrasound: {0}".format(min(wall_distance))
-			print "Ultrasound: {0}".format(min(wall_distance, key=wall_distance.get))
-			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = min(wall_distance), ultrasound_pose = min(wall_distance, key=wall_distance.get))
+			print wall_distance[min(wall_distance)]
+			print wall_distance[min(wall_distance, key=wall_distance.get)]
+			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = wall_distance[min(wall_distance)], ultrasound_pose = min(wall_distance, key=wall_distance.get))
 		return success
 
 	#Sets a constant speed for specified motors
