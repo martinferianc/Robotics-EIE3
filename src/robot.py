@@ -366,7 +366,7 @@ class Robot:
 		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
 		pose = 0
 		while ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
-			pose+=10
+			pose-=20
 			self.set_ultra_pose(pose)
 			time.sleep(1)
 			u_distance = self.get_distance()
