@@ -180,8 +180,11 @@ class Robot:
 
 	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
-			result = self.interface.getSensorValue(self.ultrasonic_port)
-	  		return result[0]
+			try:
+				result = self.interface.getSensorValue(self.ultrasonic_port)
+				return result[0]
+			except IndexError:
+				return 255
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
