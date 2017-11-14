@@ -34,9 +34,9 @@
     "standard_deviation": {
         "x": 1,
         "y": 1,
-        "theta_straight": 0.01,
+        "theta_straight": 0.04,
         "ultrasound": 1.5,
-        "theta_rotate": 0.1,
+        "theta_rotate": 0.2,
         "theta_top_rotate": 0.01
     }
 }
