@@ -29,13 +29,8 @@ POINTS = [(86,30),
           (138,168),
           (114,168),
           (114,84),
-<<<<<<< HEAD
           (86,84),
           (86,30)]
-=======
-          (84,84),
-          (84,30)]
->>>>>>> parent of cfa37ad... Hax with canvas
 
 Robot = Robot(interface,
               pid_config_file="carpet_config.json",
