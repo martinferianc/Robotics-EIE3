@@ -367,11 +367,11 @@ class Robot:
 		if((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
 			wall_distance = {}
 			self.set_ultra_pose(90)
-			time.sleep(2)
+			time.sleep(1)
 			wall_distance['90'] = self.get_distance()
 			self.set_ultra_pose(-90)
+			time.sleep(1)
 			wall_distance['-90'] = self.get_distance()
-			time.sleep(2)
 			self.set_ultra_pose(0)
 			print wall_distance[min(wall_distance)]
 			print wall_distance[min(wall_distance, key=wall_distance.get)]
