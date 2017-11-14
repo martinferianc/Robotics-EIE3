@@ -365,7 +365,7 @@ class Robot:
 		current_err = self.particle_state.get_error()
 		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
 		while ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
-			wall_distance = []
+			wall_distance = {}
 			self.set_ultra_pose(90)
 			time.sleep(1)
 			wall_distance['90'] = self.get_distance()
