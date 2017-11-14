@@ -101,6 +101,13 @@ class ParticleState():
         return (mean_x, mean_y, mean_theta)
     def reset(self):
 	    self.state = [([0,0,0],1/self.number_of_particles) for i in xrange(self.number_of_particles)]
+
+    def get_error(self):
+        std_x = np.std(np.array([point[0][0] for point in self.state]))
+        std_y = np.std(np.array([point[0][1] for point in self.state]))
+        std_theta = np.std(np.array([point[0][2] for point in self.state]))
+        return std_x, std_y, std_theta
+
     def get_state(self):
         return self.state
 
