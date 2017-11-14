@@ -36,6 +36,8 @@ class Robot:
 		self.motor_speeds = [0,0]
 		self.threads = []
 
+		self.max_sd_error = 1
+
 		# Robot state
 		self.state = {'pose':{'x':x, 'y': y, 'theta': theta}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
@@ -342,7 +344,17 @@ class Robot:
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
 		print "Rotation Finished"
-		return self.travel_straight(distance, update_particles=True)
+		self.travel_straight(distance, update_particles=True)
+		# Check if S.D of particles is very large (they should be updated again)
+		current_err = self.particle_state.get_error()
+		if((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
+			wall_distance = {}
+			self.set_ultra_pose(90)
+			wall_distance['90'] = self.get_distance
+			self.set_ultra_pose(-90)
+			wall_distance['-90'] = self.get_distance
+			return self.particle_state.update_state(action = "refinement", movement = None, ultrasound = min(wall_distance), ultrasound_pose = min(wall_distance, key=wall_distance.get()) )
+		return True
 
 	#Sets a constant speed for specified motors
 	def set_speed(self, speeds=[2,2], wheels=None):
