@@ -368,10 +368,10 @@ class Robot:
 			wall_distance = {}
 			self.set_ultra_pose(90)
 			time.sleep(2)
-			wall_distance['90'] = self.get_distance
+			wall_distance['90'] = self.get_distance()
 			self.set_ultra_pose(-90)
 			time.sleep(2)
-			wall_distance['-90'] = self.get_distance
+			wall_distance['-90'] = self.get_distance()
 			self.set_ultra_pose(0)
 			print "Ultrasound: {0}".format(min(wall_distance))
 			print "Ultrasound: {0}".format(min(wall_distance, key=wall_distance.get))
