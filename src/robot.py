@@ -363,8 +363,10 @@ class Robot:
 		if((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
 			wall_distance = {}
 			self.set_ultra_pose(90)
+			time.sleep(1)
 			wall_distance['90'] = self.get_distance
 			self.set_ultra_pose(-90)
+			time.sleep(1)
 			wall_distance['-90'] = self.get_distance
 			self.set_ultra_pose(0)
 			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = min(wall_distance), ultrasound_pose = min(wall_distance, key=wall_distance.get))
