@@ -184,8 +184,8 @@ class Robot:
 	# Update self.distance to self.__median_filtered_ultrasonic()
 	def update_distance(self):
 		for i in range(15):
-                    raw_ultra_reading = self.__read_ultrasonic_sensor
-                    calibrated_ultra_reading = raw_ultra_reading + self.distance_offset + (raw_ultra_reading*self.distance_proportional_offset)
+                    raw_ultra_reading = int(self.__read_ultrasonic_sensor)
+                    calibrated_ultra_reading = raw_ultra_reading - self.distance_offset - (raw_ultra_reading*self.distance_proportional_offset)
                     self.distance_stack.append(calibrated_ultra_reading)
 		q_copy = self.distance_stack
 		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)]
@@ -264,7 +264,7 @@ class Robot:
 				raise Exception("Touch sensors not initialized!")
 		if ultrasonic:
 			if self.ultrasonic_port is not None:
-				distance_thread = Poller(t=interval,target=self.__update_distance)
+				distance_thread = Poller(t=interval,target=self.update_distance)
 				self.threads.append(distance_thread)
 				distance_thread.start()
 			else:

@@ -46,7 +46,7 @@ class ParticleState():
                     else:
                         valid = True
                 self.state.append([[x,y,theta],1/n_particles])
-        elif: mode == "localised":
+        elif mode == "localised":
             X = [point[0] for point in points]
             Y = [point[1] for point in points]
             for i in range(n_particles):
