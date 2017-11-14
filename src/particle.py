@@ -21,7 +21,8 @@ class ParticleState():
                  theta=None,
                  mode="continuous",
                  mcl = False,
-                 Map = None):
+                 Map = None,
+                 points = None):
         self.state = []
         self.mcl = mcl
         self.Map = Map
@@ -35,6 +36,7 @@ class ParticleState():
             for i in range(n_particles):
                 x = random.randint(1,210)
                 y = random.randint(1,210)
+                theta = random.uniform(-math.pi, math.pi)
                 valid = True
                 while valid is False:
                     if (y>=168 and x<=84) or (y>=84 and x>=168):
@@ -43,13 +45,22 @@ class ParticleState():
                         y = random.randint(1,210)
                     else:
                         valid = True
-                self.state.append([[x,y,0],1/n_particles])
+                self.state.append([[x,y,theta],1/n_particles])
+        elif: mode == "localised":
+            X = [point[0] for point in points]
+            Y = [point[1] for point in points]
+            for i in range(n_particles):
+                x = random.choice(X)
+                y = random.choice(Y)
+                theta = random.uniform(-math.pi, math.pi)
+                self.state.append([[x,y,theta],1/n_particles])
+
         else:
             self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
         self.number_of_particles = n_particles
         self.standard_deviation = standard_deviation
     # Movement is distance for
-    def update_state(self, action, movement, ultrasound=None):
+    def update_state(self, action, movement, ultrasound=None, ultrasound_pose = None):
         if action == "straight":
             # movement is the distance travelled
             for point in self.state:
@@ -71,13 +82,18 @@ class ParticleState():
             for point in self.state:
                 point[0][2] += math.radians(movement) + random.gauss(0,self.standard_deviation["theta_rotate"])
                 point[0][2] = move_angle_within_range(point[0][2])
+        #Account for the uncertainity in ultra sound rotation
+        elif action == "refinement":
+            for point in self.state:
+                point[0][2] += random.gauss(0,self.standard_deviation["theta_top_rotate"])
+                point[0][2] = move_angle_within_range(point[0][2])
         else:
             raise Exception("Not a valid action!")
 
         if self.mcl is True:
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
-                likelihood = self.__calculate_likelihood(point[0], ultrasound)
+                likelihood = self.__calculate_likelihood(point[0], ultrasound, ultrasound_pose)
                 #print "Likelihood: {0} Ultrasound: {1}".format(likelihood, ultrasound)
                 point[1] *= likelihood
             self.__normalise_weights()
@@ -99,6 +115,7 @@ class ParticleState():
         # print("Coordinates - x: {0}, y: {1}, theta {2}".format(mean_x, mean_y, mean_theta))
         mean_theta = move_angle_within_range(mean_theta)
         return (mean_x, mean_y, mean_theta)
+
     def reset(self):
 	    self.state = [([0,0,0],1/self.number_of_particles) for i in xrange(self.number_of_particles)]
 
@@ -124,9 +141,9 @@ class ParticleState():
 
         return True
 
-    def __calculate_likelihood(self, point, ultrasound_measurement):
+    def __calculate_likelihood(self, point, ultrasound_measurement, ultrasound_pose = None):
         k = 0.05
-        nearest_wall = self.__predict_distance_to_nearest_wall(point)
+        nearest_wall = self.__predict_distance_to_nearest_wall(point, ultrasound_pose)
         predicted_distance = nearest_wall["distance"]
         if nearest_wall["angle"] > 15:
             #print("Angle too high: {}".format(nearest_wall["angle"]))
@@ -167,7 +184,7 @@ class ParticleState():
         # put new state into self
         self.state = new_state
 
-    def __predict_distance_to_nearest_wall(self,point):
+    def __predict_distance_to_nearest_wall(self,point, ultrasound_pose=None):
         #Calculates the distance to nearest wall, returning M
         #For each wall in the area which a line from the robot would pass thorough, we need to calculate M, the distance.
         #We will then take the smallest positive value of M which will be the nearest wall.
@@ -175,23 +192,27 @@ class ParticleState():
         m = []
         number_walls = len(self.Map)
         for i in range(len(self.Map)):
-            m.append(self.__calculate_m(point, self.Map[i], self.Map[(i+1)%number_walls]))
+            m.append(self.__calculate_m(point, self.Map[i], self.Map[(i+1)%number_walls], ultrasound_pose))
         #print("M:")
         #print(m)
         smallest_m = min(j for j in m if j >= 0)
         position = m.index(smallest_m);
         next_wall = (position+1)%number_walls
-        B = self.__predict_incidence_angle(point,self.Map[position], self.Map[next_wall])
+        B = self.__predict_incidence_angle(point,self.Map[position], self.Map[next_wall],ultrasound_pose)
         return {"distance": smallest_m, "angle": B, "wall":str(self.Map[position][2])+str(self.Map[next_wall][2]) }
 
 
-    def __predict_incidence_angle(self,point, wallPointA, wallPointB):
+    def __predict_incidence_angle(self,point, wallPointA, wallPointB, ultrasound_pose=None):
         #Owen
         #Calculates the incidence angle of the ultrasound reading
         diff_y_AB = wallPointA[1]-wallPointB[1]
         diff_x_BA = wallPointB[0]-wallPointA[0]
-        c = math.cos(point[2])*diff_y_AB
-        s = math.sin(point[2])*diff_x_BA
+        if ultrasound_pose:
+            c = math.cos(point[2]+math.radians(ultrasound_pose))*diff_y_AB
+            s = math.sin(point[2]+math.radians(ultrasound_pose))*diff_x_BA
+        else:
+            c = math.cos(point[2])*diff_y_AB
+            s = math.sin(point[2])*diff_x_BA
         angle = (c + s) / math.sqrt(math.pow(diff_y_AB,2)+math.pow(diff_x_BA,2))
         #if(math.degrees(math.acos(angle)) > 50):
             #print "Robot @: {0}, {1}, {2}".format(point[0], point[1], point[2])
@@ -199,9 +220,13 @@ class ParticleState():
             #print "Wall Point B: {0}, {1}".format(wallPointB[0], wallPointB[1])
         return math.degrees(math.acos(angle))
 
-    def __calculate_m(self,point,wallPointA,wallPointB):
-        cos_t = math.cos(point[2])
-        sin_t = math.sin(point[2])
+    def __calculate_m(self,point,wallPointA,wallPointB, ultrasound_pose=None):
+        if ultrasound_pose:
+            cos_t = math.cos(point[2]+math.radians(ultrasound_pose))
+            sin_t = math.sin(point[2]+math.radians(ultrasound_pose))
+        else:
+            cos_t = math.cos(point[2])
+            sin_t = math.sin(point[2])
         diff_y_BA = wallPointB[1]-wallPointA[1]
         diff_x_AO = wallPointA[0]-point[0]
         diff_x_BA = wallPointB[0]-wallPointA[0]
