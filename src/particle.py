@@ -143,8 +143,11 @@ class ParticleState():
 
     def __calculate_likelihood(self, point, ultrasound_measurement, ultrasound_pose = None):
         k = 0.05
-        nearest_wall = self.__predict_distance_to_nearest_wall(point, ultrasound_pose)
-        predicted_distance = nearest_wall["distance"]
+        try:
+            nearest_wall = self.__predict_distance_to_nearest_wall(point, ultrasound_pose)
+            predicted_distance = nearest_wall["distance"]
+        except Exception as e:
+            return k
         if nearest_wall["angle"] > 15:
             #print("Angle too high: {}".format(nearest_wall["angle"]))
             return k
@@ -195,12 +198,15 @@ class ParticleState():
             m.append(self.__calculate_m(point, self.Map[i], self.Map[(i+1)%number_walls], ultrasound_pose))
         #print("M:")
         #print(m)
-        smallest_m = min(j for j in m if j >= 0)
-        position = m.index(smallest_m);
-        next_wall = (position+1)%number_walls
-        B = self.__predict_incidence_angle(point,self.Map[position], self.Map[next_wall],ultrasound_pose)
-        return {"distance": smallest_m, "angle": B, "wall":str(self.Map[position][2])+str(self.Map[next_wall][2]) }
-
+        try:
+            smallest_m = min(j for j in m if j >= 0)
+            position = m.index(smallest_m);
+            next_wall = (position+1)%number_walls
+            B = self.__predict_incidence_angle(point,self.Map[position], self.Map[next_wall],ultrasound_pose)
+            return {"distance": smallest_m, "angle": B, "wall":str(self.Map[position][2])+str(self.Map[next_wall][2]) }
+        except ValueError as e:
+            print "Error: No wall values satisfy criteria"
+            raise
 
     def __predict_incidence_angle(self,point, wallPointA, wallPointB, ultrasound_pose=None):
         #Owen
