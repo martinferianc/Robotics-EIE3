@@ -36,7 +36,7 @@ class Robot:
 		self.motor_speeds = [0,0]
 		self.threads = []
 
-		self.max_sd_error = 1
+		self.max_sd_error = 3
 
 		# Robot state
 		self.state = {'pose':{'x':x, 'y': y, 'theta': theta}, 'ultra_pose': 0}
