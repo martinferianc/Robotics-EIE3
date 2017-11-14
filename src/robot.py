@@ -22,11 +22,13 @@ class Robot:
 				 theta = 0,
 				 mode = "continuous",
 				 mcl = False,
-				 Map = None):
+				 Map = None,
+				 canvas = None):
 		# Robot initilization
 		self.interface = interface
 		self.mcl = mcl
 		self.Map = Map
+		self.canvas = canvas
 		self.print_thread = None
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
@@ -331,6 +333,9 @@ class Robot:
 		success = False
 		while not success:
 			success = self.navigate_to_waypoint(X,Y,maxdistance)
+			if self.canvas:
+				particles = self.particle_state.get_state()
+				self.canvas.drawParticles(particles)
 		return success
 
 	def navigate_to_waypoint(self,X,Y, maxdistance = None):
@@ -338,8 +343,16 @@ class Robot:
 		current_x, current_y, current_theta = self.particle_state.get_coordinates()
 		diff_X = X-current_x
 		diff_Y = Y-current_y
+		if abs(diff_X)<0.5:
+			diff_X = 0
+		if abs(diff_Y)<0.5:
+			diff_Y = 0
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
+		if maxdistance:
+			if distance > maxdistance:
+				distance = maxdistance
+				success = False
 		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
@@ -354,8 +367,8 @@ class Robot:
 			self.set_ultra_pose(-90)
 			wall_distance['-90'] = self.get_distance
 			self.set_ultra_pose(0)
-			return self.particle_state.update_state(action = "refinement", movement = None, ultrasound = min(wall_distance), ultrasound_pose = min(wall_distance, key=wall_distance.get))
-		return True
+			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = min(wall_distance), ultrasound_pose = min(wall_distance, key=wall_distance.get))
+		return success
 
 	#Sets a constant speed for specified motors
 	def set_speed(self, speeds=[2,2], wheels=None):
