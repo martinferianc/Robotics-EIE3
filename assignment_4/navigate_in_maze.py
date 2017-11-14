@@ -57,6 +57,8 @@ Map.add_wall((210,84,210,0))     # g
 Map.add_wall((210,0,0,0))        # h
 Map.draw()
 
+for point in POINTS:
+    Canvas.drawCross(point)
 
 for x,y in POINTS:
     Robot.step_to_waypoint(x,y, maxdistance=20)
