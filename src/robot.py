@@ -22,8 +22,7 @@ class Robot:
 				 theta = 0,
 				 mode = "continuous",
 				 mcl = False,
-				 Map = None,
-				 canvas = None):
+				 Map = None):
 		# Robot initilization
 		self.interface = interface
 		self.mcl = mcl
@@ -33,7 +32,6 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
-		self.canvas = canvas
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -157,8 +155,7 @@ class Robot:
 		self.motorParams["right"].pidParameters.k_p = PID["right"]["k_p"]
 		self.motorParams["right"].pidParameters.k_i = PID["right"]["k_i"]
 		self.motorParams["right"].pidParameters.k_d = PID["right"]["k_d"]
-		print(PID)
-		print("Left motor is in port {0}, right motor is in port {1}".format(self.wheels[0], self.wheels[1]))
+
 		self.interface.setMotorAngleControllerParameters(self.wheels[0], self.motorParams["left"])
 		self.interface.setMotorAngleControllerParameters(self.wheels[1], self.motorParams["right"])
 		self.interface.setMotorRotationSpeedReferences(self.motors,[0,0,0])
@@ -184,9 +181,8 @@ class Robot:
 			raise Exception("Ultrasonic sensor not initialized!")
 
 	# Update self.distance to self.__median_filtered_ultrasonic()
-	def update_distance(self):
-		for i in range(15):
-			self.distance_stack.append(self.__read_ultrasonic_sensor())
+	def __update_distance(self):
+		self.distance_stack.append(self.__read_ultrasonic_sensor())
 		q_copy = self.distance_stack
 		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)] - self.distance_offset
 		return True
@@ -248,7 +244,7 @@ class Robot:
 	### END OF PRIVATE FUNCTIONS
 
 	### PUBLIC FUNCTIONS
-	def start_threading(self, touch=True, ultrasonic=False, interval = 0.05):
+	def start_threading(self, touch=True, ultrasonic=True, interval = 0.05):
 		# If threads already exist, stop them and delete them.
 		if self.threads:
 			for i in self.threads:
@@ -324,38 +320,31 @@ class Robot:
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		self.particle_state.reset()
 		return True
+<<<<<<< HEAD
+	
+	def navigate_to_waypoint(self,X,Y):
+        		current_x, current_y, current_theta = self.particle_state.get_coordinates()
+=======
 
 	def step_to_waypoint(self,X,Y,maxdistance=20):
 		success = False
 		while not success:
-			PARTICLES = self.get_state()
-			if self.canvas:
-				self.canvas.drawParticles(PARTICLES)
 			success = self.navigate_to_waypoint(X,Y,maxdistance)
-
 		return success
 
 	def navigate_to_waypoint(self,X,Y, maxdistance = None):
 		success = True
 		current_x, current_y, current_theta = self.particle_state.get_coordinates()
+>>>>>>> parent of cfa37ad... Hax with canvas
 		diff_X = X-current_x
 		diff_Y = Y-current_y
-		if abs(diff_X)<0.5:
-			diff_X = 0
-		if abs(diff_Y)<0.5:
-			diff_Y = 0
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
-		if maxdistance:
-			if distance > maxdistance:
-				distance = maxdistance
-				success = False
 		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
 		print "Rotation Finished"
-		self.travel_straight(distance, update_particles=True)
-		return success
+		return self.travel_straight(distance, update_particles=True)
 
 	#Sets a constant speed for specified motors
 	def set_speed(self, speeds=[2,2], wheels=None):
@@ -379,7 +368,6 @@ class Robot:
 	def travel_straight(self, distance, update_particles=False):
 		success = self.__move_wheels(distances=[distance,distance])
 		if update_particles:
-			self.update_distance()
 			self.particle_state.update_state("straight", distance, ultrasound = self.distance)
 		return success
 
