@@ -35,7 +35,7 @@
         "x": 0.7,
         "y": 0.7,
         "theta_straight": 0.2,
-        "ultrasound": 3,
+        "ultrasound": 1.5,
         "theta_rotate": 0.1,
         "theta_top_rotate": 0.02
     }
