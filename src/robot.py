@@ -360,6 +360,7 @@ class Robot:
 		self.travel_straight(distance, update_particles=True)
 		# Check if S.D of particles is very large (they should be updated again)
 		current_err = self.particle_state.get_error()
+		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
 		if((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
 			wall_distance = {}
 			self.set_ultra_pose(90)
