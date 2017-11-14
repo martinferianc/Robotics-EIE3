@@ -364,26 +364,16 @@ class Robot:
 		# Check if S.D of particles is very large (they should be updated again)
 		current_err = self.particle_state.get_error()
 		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
-		pose = 0
 		while ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
-			pose-=20
-			self.set_ultra_pose(pose)
+			wall_distance = []
+			self.set_ultra_pose(90)
 			time.sleep(1)
-<<<<<<< HEAD
-			u_distance = self.get_distance()
-			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = u_distance, ultrasound_pose = pose)
-			current_err = self.particle_state.get_error()
-		self.set_ultra_pose(-pose)
-=======
 			wall_distance['90'] = self.get_distance()
 			self.set_ultra_pose(-90)
 			time.sleep(1)
 			wall_distance['-90'] = self.get_distance()
 			self.set_ultra_pose(0)
-			print wall_distance[min(wall_distance)]
-			print wall_distance[min(wall_distance, key=wall_distance.get)]
 			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = wall_distance[min(wall_distance)], ultrasound_pose = min(wall_distance, key=wall_distance.get))
->>>>>>> parent of 2f35f25... Removed printing
 		return success
 
 	#Sets a constant speed for specified motors
