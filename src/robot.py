@@ -68,6 +68,7 @@ class Robot:
 		self.ultrasonic_port = data["ultrasonic_port"]
 		self.motor_ports = data["motor_ports"]
 		self.distance_offset = data["ultra_sound_offset"]
+                self.distance_proportional_offset = data["ultra_sound_proportional_offset"]
 
 		#Motor initialization
 		# self.wheels IS JUST THE WHEEL MOTORS
@@ -181,10 +182,13 @@ class Robot:
 			raise Exception("Ultrasonic sensor not initialized!")
 
 	# Update self.distance to self.__median_filtered_ultrasonic()
-	def __update_distance(self):
-		self.distance_stack.append(self.__read_ultrasonic_sensor())
+	def update_distance(self):
+		for i in range(15):
+                    raw_ultra_reading = self.__read_ultrasonic_sensor
+                    calibrated_ultra_reading = raw_ultra_reading + self.distance_offset + (raw_ultra_reading*self.distance_proportional_offset)
+                    self.distance_stack.append(calibrated_ultra_reading)
 		q_copy = self.distance_stack
-		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)] - self.distance_offset
+		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)]
 		return True
 
 	# Move specified wheel a certain distance
