@@ -34,6 +34,13 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
+		self.distances = {
+			-90:255,
+			-45:255,
+			0:255,
+			45:255,
+			90:255
+		}
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -195,8 +202,17 @@ class Robot:
                     calibrated_ultra_reading = raw_ultra_reading + self.distance_offset + (raw_ultra_reading*self.distance_proportional_offset)
                     self.distance_stack.append(calibrated_ultra_reading)
 		q_copy = self.distance_stack
-		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)]
-		return True
+		d = sorted(q_copy)[int((len(q_copy)-1)/2)]
+		self.distance = d
+		return d
+
+	def __distance_loop(self):
+		pose = -90
+		for i in range(5):
+			set_ultra_pose(pose)
+			self.distances[pose] = update_distance()
+			pose += 45
+
 
 	# Move specified wheel a certain distance
 	def __move_wheels(self, distances=[1,1],wheels=None):
@@ -271,7 +287,7 @@ class Robot:
 				raise Exception("Touch sensors not initialized!")
 		if ultrasonic:
 			if self.ultrasonic_port is not None:
-				distance_thread = Poller(t=interval,target=self.update_distance)
+				distance_thread = Poller(t=interval,target=self.__distance_loop)
 				self.threads.append(distance_thread)
 				distance_thread.start()
 			else:
@@ -373,6 +389,7 @@ class Robot:
 			time.sleep(1)
 			wall_distance['-90'] = self.get_distance()
 			self.set_ultra_pose(0)
+			print("Pose of minimum distance: {}".format(min(wall_distance, key=wall_distance.get))))
 			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = wall_distance[min(wall_distance)], ultrasound_pose = min(wall_distance, key=wall_distance.get))
 		return success
 
