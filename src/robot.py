@@ -207,22 +207,20 @@ class Robot:
 		return d
 
 	def __distance_loop(self):
-		pose = -135
-		for i in range(5):
+		pose = -90
+		for i in range(4):
+			self.set_ultra_pose(pose)
+			print(pose)
+			time.sleep(0.1)
+			self.distances[pose] = self.update_distance()
 			pose += 45
-			self.set_ultra_pose(pose)
+
+		for i in range(4):
 			print(pose)
+			self.set_ultra_pose(pose)
 			time.sleep(0.1)
 			self.distances[pose] = self.update_distance()
-
-
-		for i in range(5):
 			pose -= 45
-			print(pose)
-			self.set_ultra_pose(pose)
-			time.sleep(0.1)
-			self.distances[pose] = self.update_distance()
-
 
 	# Move specified wheel a certain distance
 	def __move_wheels(self, distances=[1,1],wheels=None):
