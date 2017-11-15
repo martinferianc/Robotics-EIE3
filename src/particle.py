@@ -171,7 +171,7 @@ class ParticleState():
         maximum = max(out)
         if len(ultrasound)>1:
             print("Max. Likelihood: {}".format(maximum))
-        return avg
+        return maximum
 
     def __resample(self):
         #Mike
