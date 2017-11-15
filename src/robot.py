@@ -417,7 +417,7 @@ class Robot:
 	def travel_straight(self, distance, update_particles=False):
 		success = self.__move_wheels(distances=[distance,distance])
 		if update_particles:
-			self.particle_state.update_state("straight", distance, ultrasound = {'0',self.update_distance()})
+			self.particle_state.update_state("straight", distance, ultrasound = {'0':self.update_distance()})
 		return success
 
 	# Move the top camera to specified pose
