@@ -156,7 +156,7 @@ class ParticleState():
             if nearest_wall["angle"] > 15:
                 out.append(k)
                 continue
-            print("Point position: x - {0}, y - {1}, theta - {2}".format(point[0], point[1], math.degrees(point[2] + int(key))))
+            print("Point position: x - {0}, y - {1}, theta - {2}".format(point[0], point[1], math.degrees(point[2]+math.radians(int(key)))))
 
             diff = value - predicted_distance
             numerator = -math.pow(diff,2)
@@ -164,7 +164,7 @@ class ParticleState():
             exponent = math.exp(numerator/denominator)
             likelihood = k + (math.exp(numerator/denominator))
             out.append(likelihood)
-        
+
         avg = sum(out)/len(out)
         print("Predicted distance: {0}, Diff: {1}, Likelihood:{2}".format(predicted_distance, diff, avg))
         return avg
@@ -236,7 +236,6 @@ class ParticleState():
 
     def __calculate_m(self,point,wallPointA,wallPointB, ultrasound_pose=None):
         if ultrasound_pose:
-            print(ultrasound_pose)
             cos_t = math.cos(point[2]+math.radians(ultrasound_pose))
             sin_t = math.sin(point[2]+math.radians(ultrasound_pose))
         else:
