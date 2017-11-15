@@ -212,7 +212,7 @@ class Robot:
 			self.set_ultra_pose(i)
 			time.sleep(0.1)
 			self.distances[i] = self.update_distance()
-
+		print (self.distances)
 
 	# Move specified wheel a certain distance
 	def __move_wheels(self, distances=[1,1],wheels=None):
