@@ -59,9 +59,9 @@ class ParticleState():
             self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
         self.number_of_particles = n_particles
         self.standard_deviation = standard_deviation
-        
+
     # Movement is distance for
-    def update_state(self, action, movement, ultrasound=None, ultrasound_pose = None):
+    def update_state(self, action, movement, ultrasound=None):
         if action == "straight":
             # movement is the distance travelled
             for point in self.state:
@@ -94,7 +94,7 @@ class ParticleState():
         if self.mcl is True:
             # Step 1 - Motion prediction based on odometry
             for point in self.state:
-                likelihood = self.__calculate_likelihood(point[0], ultrasound, ultrasound_pose)
+                likelihood = self.__calculate_likelihood(point[0], ultrasound)
                 #print "Likelihood: {0} Ultrasound: {1}".format(likelihood, ultrasound)
                 point[1] *= likelihood
             self.__normalise_weights()
@@ -142,25 +142,28 @@ class ParticleState():
 
         return True
 
-    def __calculate_likelihood(self, point, ultrasound_measurement, ultrasound_pose = None):
+    def __calculate_likelihood(self, point, ultrasound):
         k = 0.05
-        try:
-            nearest_wall = self.__predict_distance_to_nearest_wall(point, ultrasound_pose)
-            predicted_distance = nearest_wall["distance"]
-        except Exception as e:
-            return k
-        if nearest_wall["angle"] > 15:
-            #print("Angle too high: {}".format(nearest_wall["angle"]))
-            return k
-        diff = ultrasound_measurement - predicted_distance
-	numerator = -math.pow(diff,2)
-	denominator = 2*math.pow(self.standard_deviation["ultrasound"],2)
-	exponent = math.exp(numerator/denominator)
-	#if (exponent < 0.01):
-		#print("Exponent very low! Exponent: {}".format(exponent))
-	#print("Diff: {0}, Numerator {1}, Denominator {2}, Exponent {3}".format(diff, numerator, denominator, exponent))
-        likelihood = k + (math.exp(numerator/denominator))
-        return likelihood
+        out = []
+        for key,value in ultrasound.items():
+            try:
+                nearest_wall = self.__predict_distance_to_nearest_wall(point, int(key))
+                predicted_distance = nearest_wall["distance"]
+            except ValueError as e:
+                out.append(k)
+                continue
+
+            if nearest_wall["angle"] > 15:
+                out.append(k)
+                continue
+
+            diff = value - predicted_distance
+            numerator = -math.pow(diff,2)
+            denominator = 2*math.pow(self.standard_deviation["ultrasound"],2)
+            exponent = math.exp(numerator/denominator)
+            likelihood = k + (math.exp(numerator/denominator))
+            out.append(likelihood)
+        return sum(out)/len(out)
 
     def __resample(self):
         #Mike

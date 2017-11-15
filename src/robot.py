@@ -287,7 +287,7 @@ class Robot:
 				raise Exception("Touch sensors not initialized!")
 		if ultrasonic:
 			if self.ultrasonic_port is not None:
-				distance_thread = Poller(t=interval,target=self.__distance_loop)
+				distance_thread = Poller(t=interval,target=self.update_distance())
 				self.threads.append(distance_thread)
 				distance_thread.start()
 			else:
@@ -377,20 +377,22 @@ class Robot:
 		self.set_robot_pose(angle, update_particles=True)
 		print "Rotation Finished"
 		self.travel_straight(distance, update_particles=True)
+
 		# Check if S.D of particles is very large (they should be updated again)
 		current_err = self.particle_state.get_error()
 		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
 		if ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
 			wall_distance = {}
+			wall_distance['0'] = self.update_distance()
 			self.set_ultra_pose(90)
+			wall_distance['90'] = self.update_distance()
 			time.sleep(1)
-			wall_distance['90'] = self.get_distance()
 			self.set_ultra_pose(-90)
+			wall_distance['-90'] = self.update_distance()
 			time.sleep(1)
-			wall_distance['-90'] = self.get_distance()
 			self.set_ultra_pose(0)
 			print("Pose of minimum distance: {}".format(min(wall_distance, key=wall_distance.get)))
-			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = wall_distance[min(wall_distance)], ultrasound_pose = min(wall_distance, key=wall_distance.get))
+			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = wall_distance)
 		return success
 
 	#Sets a constant speed for specified motors
@@ -415,7 +417,7 @@ class Robot:
 	def travel_straight(self, distance, update_particles=False):
 		success = self.__move_wheels(distances=[distance,distance])
 		if update_particles:
-			self.particle_state.update_state("straight", distance, ultrasound = self.distance)
+			self.particle_state.update_state("straight", distance, ultrasound = {'0',self.update_distance()})
 		return success
 
 	# Move the top camera to specified pose
