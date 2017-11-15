@@ -210,17 +210,16 @@ class Robot:
 		pose = -90
 		for i in range(4):
 			self.set_ultra_pose(pose)
-			print(pose)
 			time.sleep(0.1)
 			self.distances[pose] = self.update_distance()
 			pose += 45
 
-		for i in range(4):
-			print(pose)
+		for i in range(3):
+			pose -= 45
 			self.set_ultra_pose(pose)
 			time.sleep(0.1)
 			self.distances[pose] = self.update_distance()
-			pose -= 45
+
 
 	# Move specified wheel a certain distance
 	def __move_wheels(self, distances=[1,1],wheels=None):
