@@ -143,7 +143,7 @@ class ParticleState():
         return True
 
     def __calculate_likelihood(self, point, ultrasound):
-        k = 0.05
+        k = 0.01
         out = []
         for key,value in ultrasound.items():
             likelihood = k
