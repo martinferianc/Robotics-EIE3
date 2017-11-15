@@ -59,6 +59,7 @@ class ParticleState():
             self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
         self.number_of_particles = n_particles
         self.standard_deviation = standard_deviation
+        
     # Movement is distance for
     def update_state(self, action, movement, ultrasound=None, ultrasound_pose = None):
         if action == "straight":

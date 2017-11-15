@@ -22,11 +22,13 @@ class Robot:
 				 theta = 0,
 				 mode = "continuous",
 				 mcl = False,
-				 Map = None):
+				 Map = None,
+				 canvas = None):
 		# Robot initilization
 		self.interface = interface
 		self.mcl = mcl
 		self.Map = Map
+		self.canvas = canvas
 		self.print_thread = None
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
@@ -36,6 +38,8 @@ class Robot:
 		self.motor_speeds = [0,0]
 		self.threads = []
 
+		self.max_sd_error = 3
+
 		# Robot state
 		self.state = {'pose':{'x':x, 'y': y, 'theta': theta}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
@@ -44,7 +48,6 @@ class Robot:
 					self.state = json.load(f)
 			except Exception as e:
 				print "Error reading from the JSON file."
-
 		self.config_file = config_file
 		self.pid_config_file = pid_config_file
 
@@ -119,6 +122,7 @@ class Robot:
 		self.standard_deviation["y"] = data["standard_deviation"]["y"]
 		self.standard_deviation["theta_straight"] = data["standard_deviation"]["theta_straight"]
 		self.standard_deviation["theta_rotate"] = data["standard_deviation"]["theta_rotate"]
+		self.standard_deviation["theta_top_rotate"] = data["standard_deviation"]["theta_top_rotate"]
 		self.standard_deviation["ultrasound"] = data["standard_deviation"]["ultrasound"]
 
 	#Load the PID config file
@@ -176,8 +180,11 @@ class Robot:
 
 	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
-			result = self.interface.getSensorValue(self.ultrasonic_port)
-	  		return result[0]
+			try:
+				result = self.interface.getSensorValue(self.ultrasonic_port)
+				return result[0]
+			except IndexError:
+				return 255
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
@@ -329,6 +336,9 @@ class Robot:
 		success = False
 		while not success:
 			success = self.navigate_to_waypoint(X,Y,maxdistance)
+			if self.canvas:
+				particles = self.particle_state.get_state()
+				self.canvas.drawParticles(particles)
 		return success
 
 	def navigate_to_waypoint(self,X,Y, maxdistance = None):
@@ -336,13 +346,35 @@ class Robot:
 		current_x, current_y, current_theta = self.particle_state.get_coordinates()
 		diff_X = X-current_x
 		diff_Y = Y-current_y
+		if abs(diff_X)<0.5:
+			diff_X = 0
+		if abs(diff_Y)<0.5:
+			diff_Y = 0
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
+		if maxdistance:
+			if distance > maxdistance:
+				distance = maxdistance
+				success = False
 		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
 		print "Rotation Finished"
-		return self.travel_straight(distance, update_particles=True)
+		self.travel_straight(distance, update_particles=True)
+		# Check if S.D of particles is very large (they should be updated again)
+		current_err = self.particle_state.get_error()
+		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
+		if ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
+			wall_distance = {}
+			self.set_ultra_pose(90)
+			time.sleep(1)
+			wall_distance['90'] = self.get_distance()
+			self.set_ultra_pose(-90)
+			time.sleep(1)
+			wall_distance['-90'] = self.get_distance()
+			self.set_ultra_pose(0)
+			self.particle_state.update_state(action = "refinement", movement = None, ultrasound = wall_distance[min(wall_distance)], ultrasound_pose = min(wall_distance, key=wall_distance.get))
+		return success
 
 	#Sets a constant speed for specified motors
 	def set_speed(self, speeds=[2,2], wheels=None):
