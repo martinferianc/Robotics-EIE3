@@ -61,7 +61,7 @@ class ParticleState():
         self.standard_deviation = standard_deviation
 
     # Movement is distance for
-    def update_state(self, action, movement, ultrasound=None):
+    def update_state(self, action, movement, ultrasound={'0', 255}):
         if action == "straight":
             # movement is the distance travelled
             for point in self.state:
