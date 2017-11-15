@@ -8,10 +8,10 @@
         "maxOutput": 255,
         "k_p": 400.0,
         "k_i": 550.0,
-        "k_d": 500.0
+        "k_d": 450.0
     },
 
-    "ultra_angle_calibration": 0.019,
+    "ultra_angle_calibration": 0.018,
     "ultra_sound_offset": -2,
     "ultra_sound_proportional_offset": 0,
 
