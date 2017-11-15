@@ -7,8 +7,8 @@
         "minOutput": -255,
         "maxOutput": 255,
         "k_p": 400.0,
-        "k_i": 500.0,
-        "k_d": 400.0
+        "k_i": 550.0,
+        "k_d": 500.0
     },
 
     "ultra_angle_calibration": 0.019,
