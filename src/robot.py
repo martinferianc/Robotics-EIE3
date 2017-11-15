@@ -209,8 +209,8 @@ class Robot:
 	def __distance_loop(self):
 		pose = -90
 		for i in range(5):
-			set_ultra_pose(pose)
-			self.distances[pose] = update_distance()
+			self.set_ultra_pose(pose)
+			self.distances[pose] = self.update_distance()
 			pose += 45
 
 
