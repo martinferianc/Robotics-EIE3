@@ -147,7 +147,9 @@ class ParticleState():
         out = []
         for key,value in ultrasound.items():
             try:
-                nearest_wall = self.__predict_distance_to_nearest_wall(point, int(key))
+                # Using -int(key) because for the ultrasound motor -90 is left and +90 is right
+                # but in the robot's axis, +90 is right and -90 is left
+                nearest_wall = self.__predict_distance_to_nearest_wall(point, -int(key))
                 predicted_distance = nearest_wall["distance"]
             except ValueError as e:
                 out.append(k)
@@ -156,19 +158,17 @@ class ParticleState():
             if nearest_wall["angle"] > 15:
                 out.append(k)
                 continue
-            if len(ultrasound) >1:
-                print("Point position: x: {0}, y: {1}, theta: {2}, Camera angle: {3}".format(point[0], point[1], math.degrees(point[2]+math.radians(int(key))), int(key)))
-                print("Predicted distance: {0}, Actual distance: {1}\n".format(predicted_distance, value))
+            if len(ultrasound) > 1:
+                print("---Point: x: {0}, y: {1}, theta: {2}, cam: {3}**pd: {4}, ad: {5}".format(point[0], point[1], math.degrees(point[2]+math.radians(int(key))), int(key), predicted_distance, value))
             diff = value - predicted_distance
             numerator = -math.pow(diff,2)
             denominator = 2*math.pow(self.standard_deviation["ultrasound"],2)
             exponent = math.exp(numerator/denominator)
             likelihood = k + (math.exp(numerator/denominator))
             out.append(likelihood)
-
         avg = sum(out)/len(out)
-
-
+        if len(ultrasound)>1:
+            print("Avg. Likelihood: {}".format(avg))
         return avg
 
     def __resample(self):
