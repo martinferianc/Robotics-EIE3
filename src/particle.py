@@ -156,8 +156,9 @@ class ParticleState():
             if nearest_wall["angle"] > 15:
                 out.append(k)
                 continue
-            print("Point position: x - {0}, y - {1}, theta - {2}".format(point[0], point[1], math.degrees(point[2]+math.radians(int(key)))))
-
+            if len(ultrasound) >1:
+                print("Point position: x - {0}, y - {1}, theta - {2}".format(point[0], point[1], math.degrees(point[2]+math.radians(int(key)))))
+                print("Predicted distance: {0}, Actual distance: {1}".format(predicted_distance, value))
             diff = value - predicted_distance
             numerator = -math.pow(diff,2)
             denominator = 2*math.pow(self.standard_deviation["ultrasound"],2)
@@ -166,7 +167,8 @@ class ParticleState():
             out.append(likelihood)
 
         avg = sum(out)/len(out)
-        print("Predicted distance: {0}, Diff: {1}, Likelihood:{2}".format(predicted_distance, diff, avg))
+
+
         return avg
 
     def __resample(self):
