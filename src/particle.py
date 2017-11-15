@@ -148,9 +148,7 @@ class ParticleState():
         for key,value in ultrasound.items():
             likelihood = k
             try:
-                # Using -int(key) because for the ultrasound motor -90 is left and +90 is right
-                # but in the robot's axis, +90 is right and -90 is left
-                nearest_wall = self.__predict_distance_to_nearest_wall(point, -int(key))
+                nearest_wall = self.__predict_distance_to_nearest_wall(point, int(key))
                 predicted_distance = nearest_wall["distance"]
             except ValueError as e:
                 out.append(k)
