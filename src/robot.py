@@ -271,7 +271,7 @@ class Robot:
 	### END OF PRIVATE FUNCTIONS
 
 	### PUBLIC FUNCTIONS
-	def start_threading(self, touch=True, ultrasonic=True, interval = 0.05):
+	def start_threading(self, touch=True, ultrasonic=False, interval = 0.05):
 		# If threads already exist, stop them and delete them.
 		if self.threads:
 			for i in self.threads:
@@ -384,6 +384,7 @@ class Robot:
 		if ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
 			wall_distance = {}
 			wall_distance['0'] = self.update_distance()
+			time.sleep(1)
 			self.set_ultra_pose(90)
 			wall_distance['90'] = self.update_distance()
 			time.sleep(1)
