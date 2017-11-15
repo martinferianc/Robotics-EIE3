@@ -32,10 +32,10 @@
     },
 
     "standard_deviation": {
-        "x": 0.8,
-        "y": 0.8,
+        "x": 1,
+        "y": 1,
         "theta_straight": 0.02,
-        "ultrasound": 2.2,
+        "ultrasound": 2.5,
         "theta_rotate": 0.08,
         "theta_top_rotate": 0.01
     }
