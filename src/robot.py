@@ -287,7 +287,7 @@ class Robot:
 				raise Exception("Touch sensors not initialized!")
 		if ultrasonic:
 			if self.ultrasonic_port is not None:
-				distance_thread = Poller(t=interval,target=self.update_distance())
+				distance_thread = Poller(t=interval,target=self.update_distance)
 				self.threads.append(distance_thread)
 				distance_thread.start()
 			else:
@@ -474,7 +474,7 @@ class Robot:
 		print("Ending pose: {}".format(s_pose))
 
 		if update_particles:
-			self.particle_state.update_state("rotation", rotation, self.distance)
+			self.particle_state.update_state("rotation", rotation, {'0':self.distance})
 		return success
 
 	# Interactive mode for the robot to control without writing a program each time
