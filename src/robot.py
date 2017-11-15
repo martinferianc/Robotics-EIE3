@@ -382,14 +382,17 @@ class Robot:
 		current_err = self.particle_state.get_error()
 		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
 		if ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
+			d = self.update_distance()
 			time.sleep(0.1)
-			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'0':self.update_distance()})
+			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'0':d})
 			self.set_ultra_pose(90)
+			d = self.update_distance()
 			time.sleep(0.1)
-			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'90':self.update_distance()})
+			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'90':d})
 			self.set_ultra_pose(-90)
+			d = self.update_distance()
 			time.sleep(0.1)
-			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'-90':self.update_distance()})
+			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'-90':d})
 			self.set_ultra_pose(0)
 		return success
 
@@ -528,6 +531,8 @@ class Robot:
 				self.start_threading()
 			elif command==14:
 				self.stop_threading()
+			elif command==15:
+				print(self.update_distance())
 			else:
 				command = -1
 				self.stop_threading()
