@@ -207,15 +207,18 @@ class Robot:
 		return d
 
 	def __distance_loop(self):
-		pose = -90
+		pose = -135
 		for i in range(5):
+			pose += 45
 			self.set_ultra_pose(pose)
+			print(pose)
 			time.sleep(0.1)
 			self.distances[pose] = self.update_distance()
-			pose += 45
+
 
 		for i in range(5):
 			pose -= 45
+			print(pose)
 			self.set_ultra_pose(pose)
 			time.sleep(0.1)
 			self.distances[pose] = self.update_distance()
@@ -537,6 +540,7 @@ class Robot:
 				self.stop_threading()
 			else:
 				command = -1
+				self.stop_threading()
 				self.stop()
 
 		return True
