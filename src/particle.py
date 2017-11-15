@@ -165,12 +165,12 @@ class ParticleState():
             denominator = 2*math.pow(self.standard_deviation["ultrasound"],2)
             exponent = math.exp(numerator/denominator)
             likelihood = k + (math.exp(numerator/denominator))
-            if len(ultrasound) > 1:
-                print("---Point: x: {0}, y: {1}, theta: {2}, cam: {3}**pd: {4}, ad: {5}, li: {6}".format(point[0], point[1], math.degrees(point[2]+math.radians(int(key))), int(key), predicted_distance, value, likelihood))
+            #if len(ultrasound) > 1:
+            #    print("---Point: x: {0}, y: {1}, theta: {2}, cam: {3}**pd: {4}, ad: {5}, li: {6}".format(point[0], point[1], math.degrees(point[2]+math.radians(int(key))), int(key), predicted_distance, value, likelihood))
             out.append(likelihood)
         maximum = max(out)
-        if len(ultrasound)>1:
-            print("Max. Likelihood: {}".format(maximum))
+        #if len(ultrasound)>1:
+        #    print("Max. Likelihood: {}".format(maximum))
         return maximum
 
     def __resample(self):
