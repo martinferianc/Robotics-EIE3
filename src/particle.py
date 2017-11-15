@@ -164,7 +164,7 @@ class ParticleState():
             exponent = math.exp(numerator/denominator)
             likelihood = k + (math.exp(numerator/denominator))
             out.append(likelihood)
-        time.sleep(2)
+        
         avg = sum(out)/len(out)
         print("Predicted distance: {0}, Diff: {1}, Likelihood:{2}".format(predicted_distance, diff, avg))
         return avg
