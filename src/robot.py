@@ -472,15 +472,19 @@ class Robot:
 
 
 	def recognize_location(self):
-	    ls_obs = LocationSignature();
-	    characterize_location(ls_obs);
-
+		sig_obs = self.characterize_location()
 	    # FILL IN: COMPARE ls_read with ls_obs and find the best match
-	    for idx in range(signatures.size):
+		min_dist = None
+	    for idx in range(self.number_of_signatures):
 	        print "STATUS:  Comparing signature " + str(idx) + " with the observed signature."
-	        ls_read = signatures.read(idx);
-	        dist    = compare_signatures(ls_obs, ls_read)
+	        sig_read = self.read(idx)
+	        dist = self.compare_signatures(sig_obs, sig_read)
+			if not min_dist or dist<min_dist:
+				min_dist = (dist, idx)
 
+
+	def compare_signatures(self):
+        pass
 
 	# Interactive mode for the robot to control without writing a program each time
 	def interactive_mode(self):
