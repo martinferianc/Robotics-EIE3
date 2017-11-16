@@ -32,6 +32,7 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
+		self.number_of_signatures = 5
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -416,12 +417,12 @@ class Robot:
     # used, it returns -1;
     def get_free_index(self):
         n = 0
-        while n < self.size:
-            if (os.path.isfile(self.filenames[n]) == False):
+        while n < self.number_of_signatures:
+            if (os.path.isfile("signatures/sig{}".format(n)) == False):
                 break
             n += 1
 
-        if (n >= self.size):
+        if (n >= self.number_of_signatures):
             return -1;
         else:
             return n;
@@ -429,9 +430,9 @@ class Robot:
     # Delete all loc_%%.dat files
     def delete_loc_files(self):
         print "STATUS:  All signature files removed."
-        for n in range(self.size):
-            if os.path.isfile(self.filenames[n]):
-                os.remove(self.filenames[n])
+        for n in range(self.number_of_signatures):
+            if os.path.isfile("signatures/sig{}.sig".format(n)):
+                os.remove("signatures/sig{}.sig".format(n))
 
 	# Writes the signature to the file identified by index (e.g, if index is 1
     # it will be file loc_01.dat). If file already exists, it will be replaced.
