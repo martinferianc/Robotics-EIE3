@@ -411,6 +411,57 @@ class Robot:
 		return success
 
 	# LOCATION RECOGNITION
+	# Get the index of a filename for the new signature. If all filenames are
+    # used, it returns -1;
+    def get_free_index(self):
+        n = 0
+        while n < self.size:
+            if (os.path.isfile(self.filenames[n]) == False):
+                break
+            n += 1
+
+        if (n >= self.size):
+            return -1;
+        else:
+            return n;
+
+    # Delete all loc_%%.dat files
+    def delete_loc_files(self):
+        print "STATUS:  All signature files removed."
+        for n in range(self.size):
+            if os.path.isfile(self.filenames[n]):
+                os.remove(self.filenames[n])
+
+	# Writes the signature to the file identified by index (e.g, if index is 1
+    # it will be file loc_01.dat). If file already exists, it will be replaced.
+    def save(self, signature, index):
+        filename = self.filenames[index]
+        if os.path.isfile(filename):
+            os.remove(filename)
+
+        f = open(filename, 'w')
+
+        for i in range(len(signature.sig)):
+            s = str(signature.sig[i]) + "\n"
+            f.write(s)
+        f.close();
+
+    # Read signature file identified by index. If the file doesn't exist
+    # it returns an empty signature.
+    def read(self, index):
+        ls = LocationSignature()
+        filename = self.filenames[index]
+        if os.path.isfile(filename):
+            f = open(filename, 'r')
+            for i in range(len(ls.sig)):
+                s = f.readline()
+                if (s != ''):
+                    ls.sig[i] = int(s)
+            f.close();
+        else:
+            print "WARNING: Signature does not exist."
+
+        return ls
 	# FILL IN: spin robot or sonar to capture a signature and store it in ls
 	def characterize_location(self):
 	    print "TODO:    You should implement the function that captures a signature."
