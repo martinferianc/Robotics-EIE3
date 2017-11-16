@@ -32,7 +32,6 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
-		self.number_of_signatures = 5
 
 		self.motor_speeds = [0,0]
 		self.threads = []
