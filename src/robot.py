@@ -233,12 +233,12 @@ class Robot:
 	def __rotate_top_motor(self, angles=[0], motors=None):
 		if motors is None:
 			motors = [self.motor_ports["top"]]
-		#print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
+		# print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		self.interface.increaseMotorAngleReferences(motors, [x*self.ultra_angle_calibration for x in angles])
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(motors):
 			pass
-		#print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
+		# print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		return True
 
 	### END OF PRIVATE FUNCTIONS
@@ -282,7 +282,7 @@ class Robot:
 		return self.distance
 
 	def start_debugging(self):
-		self.print_thread = Poller(t=3, target=self.print_state)
+		self.print_thread = Poller(t=5, target=self.print_state)
 		self.print_thread.start()
 		return True
 
@@ -357,7 +357,7 @@ class Robot:
 	# Move the top camera to specified pose
 	def set_ultra_pose(self, pose):
 		success = True
-		#print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
+        # print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
 		# Limits on pose settings so that it doesn't overrotate and stretch the cable
 		while pose > 360:
 			pose -= 360
@@ -483,7 +483,8 @@ class Robot:
 				min_dist = (dist, idx)
 
 
-	def compare_signatures(self):
+	def compare_signatures(self, sig_obs, sig_read):
+
         pass
 
 	# Interactive mode for the robot to control without writing a program each time
