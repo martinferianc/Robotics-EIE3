@@ -6,12 +6,14 @@
         "minPWM": 18.0,
         "minOutput": -255,
         "maxOutput": 255,
-        "k_p": 425.0,
+        "k_p": 400.0,
         "k_i": 550.0,
-        "k_d": 375.0
+        "k_d": 450.0
     },
 
-    "ultra_angle_calibration": 0.0178,
+    "ultra_angle_calibration": 0.018,
+    "ultra_sound_offset": -2,
+    "ultra_sound_proportional_offset": 0,
 
     "touch_ports": [0, 2],
     "bumpers": {
@@ -20,7 +22,7 @@
     },
     "ultrasonic_port": 3,
     "motor_ports": {
-      "left": 0,
+      "left": 3,
       "right": 1,
       "top" : 2
     },
@@ -30,10 +32,11 @@
     },
 
     "standard_deviation": {
-    	"x": 0.2427,
-	    "y": 0.238,
-	    "theta_straight": 0.009,
-    	"ultrasound": 0.03,
-	    "theta_rotate": 0.012
+        "x": 1,
+        "y": 1,
+        "theta_straight": 0.03,
+        "ultrasound": 2.2,
+        "theta_rotate": 0.08,
+        "theta_top_rotate": 0.01
     }
 }
