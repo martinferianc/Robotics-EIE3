@@ -31,6 +31,7 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
+		self.number_of_signatures = 5
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -415,8 +416,8 @@ class Robot:
     # used, it returns -1;
     def get_free_index(self):
         n = 0
-        while n < self.size:
-            if (os.path.isfile(self.filenames[n]) == False):
+        while n < self.number_of_signatures:
+            if (os.path.isfile("signatures/sig{}".format(n)) == False):
                 break
             n += 1
 
