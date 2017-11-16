@@ -421,7 +421,7 @@ class Robot:
                 break
             n += 1
 
-        if (n >= self.size):
+        if (n >= self.number_of_signatures):
             return -1;
         else:
             return n;
