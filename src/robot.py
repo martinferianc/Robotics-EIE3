@@ -60,7 +60,7 @@ class Robot:
 
 		self.load_base_config()
 		self.load_pid_config()
-		self.particle_state = ParticleState(standard_deviation = self.standard_deviation,n_particles=100,x = x,y = y,theta=theta,mode=mode,mcl = self.mcl,Map = self.Map)
+		self.particle_state = ParticleState(standard_deviation = self.standard_deviation,n_particles=300,x = x,y = y,theta=theta,mode=mode,mcl = self.mcl,Map = self.Map)
 		if threading:
 			self.start_threading()
 
