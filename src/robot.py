@@ -410,6 +410,40 @@ class Robot:
 			self.particle_state.update_state("rotation", rotation)
 		return success
 
+	# LOCATION RECOGNITION
+	# FILL IN: spin robot or sonar to capture a signature and store it in ls
+	def characterize_location(self):
+	    print "TODO:    You should implement the function that captures a signature."
+
+		return pickle
+
+	# Learn location
+	# This function characterizes the current location, and stores the obtained
+	# signature into the next available file.
+	def learn_location(self, X, Y):
+	    # charaterize_location()
+
+		# return pickle x-axis distance, frequency on y-axis
+
+	# This function tries to recognize the current location.
+	# 1.   Characterize current location
+	# 2.   For every learned locations
+	# 2.1. Read signature of learned location from file
+	# 2.2. Compare signature to signature coming from actual characterization
+	# 3.   Retain the learned location whose minimum distance with
+	#      actual characterization is the smallest.
+	# 4.   Display the index of the recognized location on the screen
+	def recognize_location(self):
+	    ls_obs = LocationSignature();
+	    characterize_location(ls_obs);
+
+	    # FILL IN: COMPARE ls_read with ls_obs and find the best match
+	    for idx in range(signatures.size):
+	        print "STATUS:  Comparing signature " + str(idx) + " with the observed signature."
+	        ls_read = signatures.read(idx);
+	        dist    = compare_signatures(ls_obs, ls_read)
+
+
 	# Interactive mode for the robot to control without writing a program each time
 	def interactive_mode(self):
 		command = 0
