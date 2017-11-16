@@ -234,12 +234,12 @@ class Robot:
 	def __rotate_top_motor(self, angles=[0], motors=None):
 		if motors is None:
 			motors = [self.motor_ports["top"]]
-		print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
+		#print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		self.interface.increaseMotorAngleReferences(motors, [x*self.ultra_angle_calibration for x in angles])
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(motors):
 			pass
-		print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
+		#print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		return True
 
 	### END OF PRIVATE FUNCTIONS
@@ -358,7 +358,7 @@ class Robot:
 	# Move the top camera to specified pose
 	def set_ultra_pose(self, pose):
 		success = True
-		print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
+		#print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
 		# Limits on pose settings so that it doesn't overrotate and stretch the cable
 		while pose > 360:
 			pose -= 360
@@ -412,31 +412,29 @@ class Robot:
 			self.particle_state.update_state("rotation", rotation)
 		return success
 
-	# LOCATION RECOGNITION
-	# Get the index of a filename for the new signature. If all filenames are
-    # used, it returns -1;
-    def get_free_index(self):
-        n = 0
-        while n < self.number_of_signatures:
-            if (os.path.isfile("signatures/sig{}".format(n)) == False):
-                break
-            n += 1
 
-        if (n >= self.number_of_signatures):
-            return -1;
-        else:
-            return n;
+        def get_free_index(self):
+            n = 0
+            while n < self.number_of_signatures:
+                if (os.path.isfile("signatures/sig{}".format(n)) == False):
+                    break
+                n += 1
+
+            if (n >= self.number_of_signatures):
+                return -1;
+            else:
+                return n;
 
     # Delete all loc_%%.dat files
-    def delete_loc_files(self):
-        print "STATUS:  All signature files removed."
-        for n in range(self.number_of_signatures):
-            if os.path.isfile("signatures/sig{}.sig".format(n)):
-                os.remove("signatures/sig{}.sig".format(n))
+        def delete_loc_files(self):
+            print "STATUS:  All signature files removed."
+            for n in range(self.number_of_signatures):
+                if os.path.isfile("signatures/sig{}.sig".format(n)):
+                    os.remove("signatures/sig{}.sig".format(n))
 
 	# Writes the signature to the file identified by index (e.g, if index is 1
     # it will be file loc_01.dat). If file already exists, it will be replaced.
-    def save(self, signature, index):
+        def save(self, signature, index):
 		f=open("signatures/sig{}.sig".format(str(index)),'w')
 		pickle.dump(signature, f)
   		f.close()
@@ -463,13 +461,14 @@ class Robot:
 			for i in m:
 				histogram[i]+=1
 			ultrasound_pose+=1
+		self.set_ultra_pose(0)
 		return histogram
 
 	# Learn location
 	# This function characterizes the current location, and stores the obtained
 	# signature into the next available file.
 	def learn_location(self, index):
-	   location = characterize_location()
+	   location = self.characterize_location()
 	   self.save(location,index)
 
 
