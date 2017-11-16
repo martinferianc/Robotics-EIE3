@@ -15,7 +15,9 @@ The robot is able to move around the mapped environment in small steps of 20cm, 
   After motion, the robot makes a sonar measurement of the distance to the wall in front, and use this to adjust the particle weights based on a likelihood function.  
   Then, it will normalise and resample the particle distribution and be ready to complete another motion step.  
 
-By repeating these steps, the robot is able to keep track of its location accurately (at least up to the limits of what is possible with only one sonar sensor).
+If the robot senses that the distribution of particles is getting too large with respect to x and y, it will begin a resampling procedure to try and reduce this error. It acheives this by swiveling the ultrasonic sensor left and right 90 degrees and taking a distance measurement. Using the three measurements and resampling each time, the robot is able to reduce the deviation of it's particles, resulting in a more accurate position estimate.
+
+By repeating these steps, the robot is able to keep track of its location as it navigates around the maze.
 
 The particle distribution for each step will be displayed in the web interface.
 
