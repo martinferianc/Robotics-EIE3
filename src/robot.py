@@ -9,6 +9,7 @@ from collections import deque
 import numpy as np
 import random
 import os
+import pickle
 
 class Robot:
 	## INTITIALIZATION FUNCTIONS
@@ -31,7 +32,6 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
-		self.number_of_signatures = 5
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -416,12 +416,12 @@ class Robot:
     # used, it returns -1;
     def get_free_index(self):
         n = 0
-        while n < self.number_of_signatures:
-            if (os.path.isfile("signatures/sig{}".format(n)) == False):
+        while n < self.size:
+            if (os.path.isfile(self.filenames[n]) == False):
                 break
             n += 1
 
-        if (n >= self.number_of_signatures):
+        if (n >= self.size):
             return -1;
         else:
             return n;
@@ -429,62 +429,49 @@ class Robot:
     # Delete all loc_%%.dat files
     def delete_loc_files(self):
         print "STATUS:  All signature files removed."
-        for n in range(self.number_of_signatures):
-            if os.path.isfile("signatures/sig{}.sig".format(n)):
-                os.remove("signatures/sig{}.sig".format(n))
+        for n in range(self.size):
+            if os.path.isfile(self.filenames[n]):
+                os.remove(self.filenames[n])
 
 	# Writes the signature to the file identified by index (e.g, if index is 1
     # it will be file loc_01.dat). If file already exists, it will be replaced.
     def save(self, signature, index):
-        filename = self.filenames[index]
-        if os.path.isfile(filename):
-            os.remove(filename)
+		f=open("signatures/sig{}.sig".format(str(index)),'w')
+		pickle.dump(signature, f)
+  		f.close()
 
-        f = open(filename, 'w')
+	#Returns the
+	def read(self, index):
+		filename = "signatures/sig{}.sig".format(str(index))
+		try:
+			f = open(filename,'r')
+			histogram = pickle.load(f)
+			return histogram
+		except IOError as e:
+			raise  "Not a valid signature file"
 
-        for i in range(len(signature.sig)):
-            s = str(signature.sig[i]) + "\n"
-            f.write(s)
-        f.close();
-
-    # Read signature file identified by index. If the file doesn't exist
-    # it returns an empty signature.
-    def read(self, index):
-        ls = LocationSignature()
-        filename = self.filenames[index]
-        if os.path.isfile(filename):
-            f = open(filename, 'r')
-            for i in range(len(ls.sig)):
-                s = f.readline()
-                if (s != ''):
-                    ls.sig[i] = int(s)
-            f.close();
-        else:
-            print "WARNING: Signature does not exist."
-
-        return ls
 	# FILL IN: spin robot or sonar to capture a signature and store it in ls
 	def characterize_location(self):
-	    print "TODO:    You should implement the function that captures a signature."
-
-		return pickle
+		histogram = np.zeros(shape=255)
+		ultrasound_pose = -180
+		while ultrasound_pose < 179:
+			self.set_ultra_pose(ultrasound_pose)
+			m = []
+			for i in range(5):
+				m.append(self.get_distance())
+			for i in m:
+				histogram[i]+=1
+			ultrasound_pose+=1
+		return histogram
 
 	# Learn location
 	# This function characterizes the current location, and stores the obtained
 	# signature into the next available file.
-	def learn_location(self, X, Y):
-	    # charaterize_location()
+	def learn_location(self, index):
+	   location = self.characterize_location()
+	   self.save(location,index)
 
-		# return pickle x-axis distance, frequency on y-axis
 
-	# This function tries to recognize the current location.
-	# 1.   Characterize current location
-	# 2.   For every learned locations
-	# 2.1. Read signature of learned location from file
-	# 2.2. Compare signature to signature coming from actual characterization
-	# 3.   Retain the learned location whose minimum distance with
-	#      actual characterization is the smallest.
-	# 4.   Display the index of the recognized location on the screen
 	def recognize_location(self):
 	    ls_obs = LocationSignature();
 	    characterize_location(ls_obs);
