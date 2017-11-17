@@ -466,19 +466,10 @@ class Robot:
 	# Learn location
 	# This function characterizes the current location, and stores the obtained
 	# signature into the next available file.
-	def learn_location(self, X, Y):
-	    # charaterize_location()
+	def learn_location(self, index):
+	   location = self.characterize_location()
+	   self.save(location,index)
 
-		# return pickle x-axis distance, frequency on y-axis
-
-	# This function tries to recognize the current location.
-	# 1.   Characterize current location
-	# 2.   For every learned locations
-	# 2.1. Read signature of learned location from file
-	# 2.2. Compare signature to signature coming from actual characterization
-	# 3.   Retain the learned location whose minimum distance with
-	#      actual characterization is the smallest.
-	# 4.   Display the index of the recognized location on the screen
 	def recognize_location(self):
 		sig_obs = self.characterize_location()
 	    # FILL IN: COMPARE ls_read with ls_obs and find the best match
