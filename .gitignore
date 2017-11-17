@@ -1,3 +1,4 @@
 robot_state.json
 *.pyc
 motor_position_1.log
+*.swp
