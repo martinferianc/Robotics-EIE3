@@ -233,12 +233,12 @@ class Robot:
 	def __rotate_top_motor(self, angles=[0], motors=None):
 		if motors is None:
 			motors = [self.motor_ports["top"]]
-		#print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
+		# print("Starting reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		self.interface.increaseMotorAngleReferences(motors, [x*self.ultra_angle_calibration for x in angles])
 		# This function does PID control until angle references are reached
 		while not self.interface.motorAngleReferencesReached(motors):
 			pass
-		#print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
+		# print("Ending reference angles: {}".format(self.interface.getMotorAngles(motors)))
 		return True
 
 	### END OF PRIVATE FUNCTIONS
@@ -282,7 +282,7 @@ class Robot:
 		return self.distance
 
 	def start_debugging(self):
-		self.print_thread = Poller(t=3, target=self.print_state)
+		self.print_thread = Poller(t=5, target=self.print_state)
 		self.print_thread.start()
 		return True
 
@@ -357,7 +357,7 @@ class Robot:
 	# Move the top camera to specified pose
 	def set_ultra_pose(self, pose):
 		success = True
-		#print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
+        # print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
 		# Limits on pose settings so that it doesn't overrotate and stretch the cable
 		while pose > 360:
 			pose -= 360
@@ -470,17 +470,21 @@ class Robot:
 	   location = self.characterize_location()
 	   self.save(location,index)
 
-
 	def recognize_location(self):
-	    ls_obs = LocationSignature();
-	    characterize_location(ls_obs);
-
+		sig_obs = self.characterize_location()
 	    # FILL IN: COMPARE ls_read with ls_obs and find the best match
-	    for idx in range(signatures.size):
+		min_dist = None
+	    for idx in range(self.number_of_signatures):
 	        print "STATUS:  Comparing signature " + str(idx) + " with the observed signature."
-	        ls_read = signatures.read(idx);
-	        dist    = compare_signatures(ls_obs, ls_read)
+	        sig_read = self.read(idx)
+	        dist = self.compare_signatures(sig_obs, sig_read)
+			if not min_dist or dist<min_dist:
+				min_dist = (dist, idx)
 
+
+	def compare_signatures(self, sig_obs, sig_read):
+
+        pass
 
 	# Interactive mode for the robot to control without writing a program each time
 	def interactive_mode(self):
