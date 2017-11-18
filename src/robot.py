@@ -451,17 +451,20 @@ class Robot:
 	# FILL IN: spin robot or sonar to capture a signature and store it in ls
 	def characterize_location(self):
 		histogram = np.zeros(shape=255)
+		histogram_angle = np.zeros(shape=360)
 		ultrasound_pose = -180
 		while ultrasound_pose < 179:
 			self.set_ultra_pose(ultrasound_pose)
-			m = []
 			for i in range(5):
-				m.append(self.get_distance())
-			for i in m:
-				histogram[i]+=1
+				distance = self.get_distance()
+				histogram[distance]+=1
+				if ultrasound_pose+360>=360:
+					histogram_angle[ultrasound_pose]=distance
+				else:
+					histogram_angle[ultrasound_pose+360]=distance
 			ultrasound_pose+=1
 		self.set_ultra_pose(0)
-		return histogram
+		return histogram, histogram_angle
 
 	# Learn location
 	# This function characterizes the current location, and stores the obtained
