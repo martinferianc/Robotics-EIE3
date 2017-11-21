@@ -714,3 +714,15 @@ class Robot:
         # 4. We need to update our particle distribution @Mike
         # 5. Check we are at the end @Mike
         return 1
+
+    def check_finished(self):
+        """ Check if we are at the end
+            If self.state["x"] > 320, return True
+            else return False
+        """
+        # finshLine subjects to change
+        finishLine = 320
+        if self.state["x"] > finishLine:
+            return True
+        else
+            return False
