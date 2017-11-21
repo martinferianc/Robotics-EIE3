@@ -16,9 +16,11 @@ Robot = Robot(interface,
               threading=False
               )
 
-Robot.set_speed(speeds=[6,6],k=1)
+speed = int(input("Enter desired speed:"))
+Robot.set_speed(speeds=[speed,speed],k=1)
 raw_input("Press enter when max speed has been hit.")
 Robot.start_obstacle_detection()
+time.sleep(300/speed)
 
 Robot.stop()
 Robot.stop_threading()
