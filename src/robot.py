@@ -715,13 +715,11 @@ class Robot:
         # 5. Check we are at the end @Mike
         return 1
 
-    def check_finished(self):
+    def check_finished(self, finishLine=320):
         """ Check if we are at the end
             If self.state["x"] > 320, return True
             else return False
         """
-        # finshLine subjects to change
-        finishLine = 320
         if self.state["x"] > finishLine:
             return True
         else
