@@ -18,7 +18,7 @@ Robot = Robot(interface,
               threading=False,
               x=0,
               y=starting_y,
-              theta=0
+              theta=0,planning
               )
 
 Robot.start_obstacle_detection(interval=0.05)

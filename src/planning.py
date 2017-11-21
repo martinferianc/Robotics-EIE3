@@ -4,10 +4,10 @@
 import os, math, time, random
 
 class Planner:
-    def __init__(self, y,x=0,theta=0,radius = 0.06, size = 0.2, safe_dist=0.2, playefield=(0, 0, 3.0, 2.0), target=(4,0)):
+    def __init__(self, y,x=0,theta=0,radius = 0.06, size = 0.2, safe_dist=0.2, playfield=(0, 0, 3.0, 2.0), target=(4,0)):
         # Constants and variables
         # Units here are in metres and radians using our standard coordinate frame
-        self.BARRIERRADIUS = radius
+        self.obstacleRADIUS = radius
         self.ROBOTRADIUS = size
         self.W = 2 * self.ROBOTRADIUS # width of robot
         self.SAFEDIST = safe_dist      # used in the cost function for avoiding obstacles
@@ -33,17 +33,17 @@ class Planner:
         # Timestep delta to run control and simulation at
         self.dt = 0.1
 
-        # Barrier (obstacle) locations
-        self.barriers = []
-        # barrier contents are (bx, by, visibilitymask)
-        # Generate some initial random barriers
+        # obstacle (obstacle) locations
+        self.obstacles = []
+        # obstacle contents are (bx, by, visibilitymask)
+        # Generate some initial random obstacles
         # Simulation of forward looking depth sensor; assume cone beam
-        # Which barriers can it see? If a barrier has been seen at least once it becomes known to the planner
+        # Which obstacles can it see? If a obstacle has been seen at least once it becomes known to the planner
         self.SENSORRANGE = 1.5
         self.SENSORHALFANGLE = 15.0 * math.pi / 180.0
 
-    def append_barrier(self, barrier):
-        self.barriers.append([barrier,0])
+    def append_obstacle(self, obstacle):
+        self.obstacles.append([obstacle,0])
 
     # Function to predict new robot position based on current pose and velocity controls
     # Uses time deltat in future
@@ -87,21 +87,21 @@ class Planner:
     def __calculate_closest_obstacle_distance(self,x, y):
     	closestdist = 100000.0
     	# Calculate distance to closest obstacle
-    	for barrier in self.barriers:
-    		# Is this a barrier we know about? barrier[2] flag is set when sonar observes it
-    		if barrier[1] is True:
-    			dx = barrier[0].get_x() - x
-    			dy = barrier[0].get_y() - y
+    	for obstacle in self.obstacles:
+    		# Is this a obstacle we know about? obstacle[2] flag is set when sonar observes it
+    		if obstacle[1] is True:
+    			dx = obstacle[0].get_x() - x
+    			dy = obstacle[0].get_y() - y
     			d = math.sqrt(dx**2 + dy**2)
-    			# Distance between closest touching point of circular robot and circular barrier
-    			dist = d - self.BARRIERRADIUS - self.ROBOTRADIUS
+    			# Distance between closest touching point of circular robot and circular obstacle
+    			dist = d - self.obstacleRADIUS - self.ROBOTRADIUS
     			if (dist < closestdist):
     				closestdist = dist
     	return closestdist
 
-    def __observe_barriers(self,x, y, theta):
-    	for i, barrier in enumerate(barriers):
-    		vector = (barrier[0].get_x() - x, barrier[0].get_y() - y)
+    def __observe_obstacles(self,x, y, theta):
+    	for i, obstacle in enumerate(obstacles):
+    		vector = (obstacle[0].get_x() - x, obstacle[0].get_y() - y)
     		vectorangle = math.atan2(vector[1], vector[0])
     		vectorlength = math.sqrt(vector[0]**2 + vector[1]**2)
     		anglediff = vectorangle - theta
@@ -109,15 +109,15 @@ class Planner:
     			anglediff = anglediff + 2 * math.pi
     		while(anglediff > math.pi):
     			anglediff = anglediff - 2 * math.pi
-    		# compare anglediff with arc length barrier presents at the distance it is away
-    		barrierangularhalfwidth = self.BARRIERRADIUS / vectorlength
-    		if(abs(anglediff) - self.SENSORHALFANGLE < barrierangularhalfwidth and vectorlength < self.SENSORRANGE):
-    			self.barriers[i][1] = True
+    		# compare anglediff with arc length obstacle presents at the distance it is away
+    		obstacleangularhalfwidth = self.obstacleRADIUS / vectorlength
+    		if(abs(anglediff) - self.SENSORHALFANGLE < obstacleangularhalfwidth and vectorlength < self.SENSORRANGE):
+    			self.obstacles[i][1] = True
 
 
     def get_plan(self,x,y,theta,vL,vR):
-    	# Check if any new barriers are visible from current pose
-    	self.__observe_barriers(x, y, theta)
+    	# Check if any new obstacles are visible from current pose
+    	self.__observe_obstacles(x, y, theta)
 
     	# Planning
     	# We want to find the best benefit where we have a positive component for closeness to target,
