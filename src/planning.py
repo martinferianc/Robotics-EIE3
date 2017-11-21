@@ -234,66 +234,6 @@ while(1):
 
 
 
-    # Planning is finished; now do graphics
-	screen.fill(black)
-	drawBarriers(barriers)
-	# Target location
-	pygame.draw.circle(screen, red, (int(u0 + k * target[0]), int(v0 - k * target[1])), int(k * ROBOTRADIUS), 0)
-
-	# Draw robot
-	u = u0 + k * x
-	v = v0 - k * y
-	pygame.draw.circle(screen, white, (int(u), int(v)), int(k * ROBOTRADIUS), 3)
-	# Draw wheels as little blobs so you can see robot orientation
-	# left wheel centre
-	wlx = x - (W/2.0) * math.sin(theta)
-	wly = y + (W/2.0) * math.cos(theta)
-	ulx = u0 + k * wlx
-	vlx = v0 - k * wly
-	WHEELBLOB = 0.04
-	pygame.draw.circle(screen, blue, (int(ulx), int(vlx)), int(k * WHEELBLOB))
-	# right wheel centre
-	wrx = x + (W/2.0) * math.sin(theta)
-	wry = y - (W/2.0) * math.cos(theta)
-	urx = u0 + k * wrx
-	vrx = v0 - k * wry
-	pygame.draw.circle(screen, blue, (int(urx), int(vrx)), int(k * WHEELBLOB))
-
-	# Draw paths: little arcs which show the different paths the robot is selecting between
-	# A bit complicated so don't worry about the details!
-	for path in pathstodraw:
-		#if path[0] = 1:    # Pure rotation: nothing to draw
-		if path[0] == 0:    # Straight line
-			straightpath = path[1]
-			linestart = (u0 + k * x, v0 - k * y)
-			lineend = (u0 + k * (x + straightpath * math.cos(theta)), v0 - k * (y + straightpath * math.sin(theta)))
-			pygame.draw.line(screen, (0, 200, 0), linestart, lineend, 1)
-		if path[0] == 2:    # General case: circular arc
-			# path[2] and path[3] are start and stop angles for arc but they need to be in the right order to pass
-			if (path[3] > path[2]):
-				startangle = path[2]
-				stopangle = path[3]
-			else:
-				startangle = path[3]
-				stopangle = path[2]
-			# Pygame arc doesn't draw properly unless angles are positive
-			if (startangle < 0):
-				startangle += 2*math.pi
-				stopangle += 2*math.pi
-			if (path[1][1][0] != 0):
-				pygame.draw.arc(screen, (0, 200, 0), path[1], startangle, stopangle, 1)
-
-	# Uncomment to also draw circles for predicted end positions of robot
-	#for newposition in newpositionstodraw:
-		#u = u0 + k * newposition[0]
-		#v = v0 - k * newposition[1]
-		#pygame.draw.circle(screen, (0,100,0), (int(u), int(v)), int(k * ROBOTRADIUS), 3)
-		#time.sleep(1.0)
-		#pygame.display.flip()
-
-	# Update display
-	pygame.display.flip()
-
 
 	# Actually now move robot based on chosen vL and vR
 	(x, y, theta, tmppath) = predictPosition(vL, vR, x, y, theta, dt)

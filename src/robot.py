@@ -672,25 +672,11 @@ class Robot:
 		except Exception, e:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
-
-	### DEPRECATED
-	def calibrate(self, radians, angle):
-
-		#So that we always start calibrating approximately at zero
-		motorAngles = self.interface.getMotorAngles(self.wheels)
-		motorAngles_zero = (round(0-motorAngles[0][0],2), round(0-motorAngles[1][0],2))
-		self.interface.increaseMotorAngleReferences(self.wheels,[motorAngles_zero[0],motorAngles_zero[1]])
-		while not self.interface.motorAngleReferencesReached(self.wheels):
-			motorAngles = self.interface.getMotorAngles(self.wheels)
-			if motorAngles:
-				print "Motor angles calibrating to 0: ", motorAngles[0][0], ", ", motorAngles[1][0]
-			time.sleep(0.1)
-
-		self.interface.startLogging("motor_position_0_"+str(int(angle))+".log")
-		self.interface.increaseMotorAngleReferences(self.wheels,[radians,radians])
-         	while not self.interface.motorAngleReferencesReached(self.wheels):
-			motorAngles = self.interface.getMotorAngles(self.wheels)
-			if motorAngles:
-		    	    print "Motor angles: ", motorAngles[0][0], ", ", motorAngles[1][0]
-			time.sleep(0.1)
-		self.interface.stopLogging()
+    def challenge(self):
+        # -1. Set y axis position @
+        # 0. Change the particles into numpy arrays @Martin
+        # 1. Thread running which check distance and adds obstacleCost @George
+        # 2. We need to pass the objects to the plannning script to determine the shortest paths @Martin
+        # 3. Return v_l, v_r, adjust the speeds to that @Owen
+        # 4. We need to update our particle distribution @Mike
+        # 5. Check we are at the end @Mike
