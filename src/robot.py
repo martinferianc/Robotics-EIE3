@@ -643,7 +643,7 @@ class Robot:
             # To add a barrier: self.planner.append_barrier(barrier)
             # Calculate the vl, vr, x_new, y_new, theta_new: self.planner.get_plan(x,y,theta,vL,vR)
             self.planner.append_obstacle(Obstacle(1,1,0.1,0.1))
-            print(self.planner.get_plan(3,0,0,0,0)
+            print(self.planner.get_plan(3,0,0,0,0))
 
             # 1. Thread running which check distance and adds obstacleCost @George
             # 2. We need to pass the objects to the plannning script to determine the shortest paths @Martin
