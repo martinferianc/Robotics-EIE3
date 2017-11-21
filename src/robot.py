@@ -209,8 +209,8 @@ class Robot:
 		return d
 
     def detect_obstacles(self, maxdist=110):
-        angles = [0]
-        #angles = [-15,0,15,0]
+        #angles = [0]
+        angles = [-15,0,15,0]
         for ultra_angle in angles:
             # Rotate camera to position
             self.set_ultra_pose(ultra_angle)
@@ -432,14 +432,14 @@ class Robot:
 		return success
 
 	#Sets a constant speed for specified motors
-	def set_speed(self, speeds=[2,2], wheels=None):
+	def set_speed(self, speeds=[2,2], wheels=None, k = 1):
 		if wheels is None:
 			wheels = self.wheels
 		for index,i in enumerate(speeds):
 			if abs(i)>10:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
-		self.interface.setMotorRotationSpeedReferences(wheels,speeds)
+		self.interface.setMotorRotationSpeedReferences(wheels,[k*x for x in speeds])
 		self.motor_speeds = speeds
 		return True
 
