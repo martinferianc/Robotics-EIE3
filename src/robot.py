@@ -2,6 +2,7 @@ from __future__ import division
 import time
 import json
 import math
+from obstacle import Obstacle
 from thread import Poller
 from particle import ParticleState
 from collections import deque
