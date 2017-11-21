@@ -10,8 +10,17 @@ import brickpi
 interface=brickpi.Interface()
 interface.initialize()
 
+starting_y = int(input("Enter rough starting y coordinate:"))
+
 Robot = Robot(interface,
               pid_config_file="carpet_config.json",
               mcl=False,
-              threading=True
+              threading=False,
+              x=0,
+              y=starting_y,
+              theta=0
               )
+
+Robot.start_obstacle_detection(interval=0.05)
+
+Robot.challenge()

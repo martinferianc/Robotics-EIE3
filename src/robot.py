@@ -707,10 +707,10 @@ class Robot:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
     def challenge(self):
-        # -1. Set y axis position @
         # 0. Change the particles into numpy arrays @Martin
         # 1. Thread running which check distance and adds obstacleCost @George
         # 2. We need to pass the objects to the plannning script to determine the shortest paths @Martin
         # 3. Return v_l, v_r, adjust the speeds to that @Owen
         # 4. We need to update our particle distribution @Mike
         # 5. Check we are at the end @Mike
+        return 1
