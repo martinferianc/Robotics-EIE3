@@ -48,23 +48,23 @@ class Planner:
     # Function to predict new robot position based on current pose and velocity controls
     # Uses time deltat in future
     # Returns xnew, ynew, thetanew
-    def __predict_position(self,vL, vR, x, y, theta):
+    def __predict_position(self,vL, vR, x, y, theta, TAU):
     	# Simple special cases
     	# Straight line motion
     	if (vL == vR):
-    		xnew = x + vL * self.dt * math.cos(theta)
-    		ynew = y + vL * self.dt * math.sin(theta)
+    		xnew = x + vL * TAU * math.cos(theta)
+    		ynew = y + vL * TAU * math.sin(theta)
     		thetanew = theta
     	# Pure rotation motion
     	elif (vL == -vR):
     		xnew = x
     		ynew = y
-    		thetanew = theta + ((vR - vL) * self.dt / self.W)
+    		thetanew = theta + ((vR - vL) * TAU / self.W)
     	else:
     		# Rotation and arc angle of general circular motion
     		# Using equations given in Lecture 2
     		R = self.W / 2.0 * (vR + vL) / (vR - vL)
-    		deltatheta = (vR - vL) * self.dt / self.W
+    		deltatheta = (vR - vL) * TAU / self.W
     		xnew = x + R * (math.sin(deltatheta + theta) - math.sin(theta))
     		ynew = y - R * (math.cos(deltatheta + theta) - math.cos(theta))
     		thetanew = theta + deltatheta
@@ -100,7 +100,7 @@ class Planner:
     	return closestdist
 
     def __observe_obstacles(self,x, y, theta):
-    	for i, obstacle in enumerate(obstacles):
+    	for i, obstacle in enumerate(self.obstacles):
     		vector = (obstacle[0].get_x() - x, obstacle[0].get_y() - y)
     		vectorangle = math.atan2(vector[1], vector[0])
     		vectorlength = math.sqrt(vector[0]**2 + vector[1]**2)
