@@ -214,7 +214,7 @@ class Robot:
             for ultra_angle in angles:
                 # Rotate camera to position
                 self.set_ultra_pose(ultra_angle)
-		
+
                 # Get sonar reading
                 d = self.update_distance()
 		time.sleep(0.5)
@@ -439,7 +439,8 @@ class Robot:
 			if abs(i)>10:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
-		self.interface.setMotorRotationSpeedReferences(wheels,[k*x for x in speeds])
+        speeds = [k*x for x in speeds]
+		self.interface.setMotorRotationSpeedReferences(wheels,speeds)
 		self.motor_speeds = speeds
 		return True
 
