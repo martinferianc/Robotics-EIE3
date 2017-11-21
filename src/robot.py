@@ -6,6 +6,7 @@ from obstacle import Obstacle
 from thread import Poller
 from particle import ParticleState
 from collections import deque
+from planning import Planner
 import numpy as np
 import random
 import os
@@ -24,7 +25,8 @@ class Robot:
 				 mode = "continuous",
 				 mcl = False,
 				 Map = None,
-				 canvas = None):
+				 canvas = None,
+                 planning = False):
 		# Robot initilization
 		self.interface = interface
 		self.mcl = mcl
@@ -35,6 +37,8 @@ class Robot:
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
+        if planning:
+            self.planner = Planner(0)
 		self.distances = {
 			-90:255,
 			-45:255,
@@ -631,7 +635,14 @@ class Robot:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
         def challenge(self):
-            # 0. Change the particles into numpy arrays @Martin
+            if not self.planner:
+                raise Exception("Planner has not been initialized!")
+
+            #API
+            # To add a barrier: self.planner.append_barrier(barrier)
+            # Calculate the vl, vr, x_new, y_new, theta_new: self.planner.get_plan(x,y,theta,vL,vR)
+
+
             # 1. Thread running which check distance and adds obstacleCost @George
             # 2. We need to pass the objects to the plannning script to determine the shortest paths @Martin
             # 3. Return v_l, v_r, adjust the speeds to that @Owen
