@@ -9,14 +9,14 @@ class Obstacle:
         self.std_y = std_y
         self.radius = radius
 
-    def is_in_obstacle(self,x,y):
+    def is_in_obstacle(self,x,y,buff = 0):
         proposed_centres = {}
         proposed_centres["True"]=0
         proposed_centres["False"]=0
         for i in range(100):
             x_c = random.gauss(self.x, self.std_x)
             y_c = random.gauss(self.y, self.std_y)
-            if (x-self.x)**2+(y-self.y)**2 < r**2:
+            if (x-self.x)**2+(y-self.y)**2 < (self.radius+buff)**2:
                 proposed_centres["True"]+=1
             else:
                 proposed_centres["False"]+=1

@@ -42,6 +42,7 @@ class Robot:
 			45:255,
 			90:255
 		}
+        self.obstacles = []
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -207,6 +208,30 @@ class Robot:
 		self.distance = d
 		return d
 
+    def detect_obstacles(self, maxdist=110):
+        angles = [0]
+        #angles = [-15,0,15,0]
+        for ultra_angle in angles:
+            # Rotate camera to position
+            self.set_ultra_pose(ultra_angle)
+
+            # Get sonar reading
+            d = self.update_distance()
+
+            # If reading within maxdist
+            if d < maxdist:
+                # Get robot position
+                robot_x, robot_y, robot_p = self.particle_state.get_coordinates()
+                ultra_rad = math.radians(ultra_angle)
+                # Create object in position calculated from robot's position
+                obstacle_x = robot_x + d*math.sin(robot_p+ultra_rad)
+                obstacle_y = robot_y + d*math.cos(robot_p+ultra_rad)
+                for o in self.obstacles:
+                    if not o.is_in_obstacle(x,y,buff=3):
+                        self.obstacles.append(Obstacle(obstacle_x, obstacle_y))
+                        print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, ultra_pose, obstacle_x, obstacle_y))
+        return 1
+
 	def __distance_loop(self):
 		poses = [-90, -45, 0 ,45, 90, 45, 0, -45]
 		for i in poses:
@@ -270,6 +295,15 @@ class Robot:
 		return True
 
 	### END OF PRIVATE FUNCTIONS
+	### PUBLIC FUNCTIONS
+	def start_obstacle_detection(self, interval = 0.05):
+		if self.ultrasonic_port is not None:
+			detection_thread = Poller(t=interval,target=self.detect_obstacles)
+			self.threads.append(detection_thread)
+			detection_thread.start()
+		else:
+			raise Exception("Ultrasonic sensor not initialized!")
+		return True
 
 	### PUBLIC FUNCTIONS
 	def start_threading(self, touch=True, ultrasonic=False, interval = 0.05):
