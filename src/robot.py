@@ -1,5 +1,4 @@
 from __future__ import division
-import brickpi
 import time
 import json
 import math
@@ -9,7 +8,7 @@ from collections import deque
 import numpy as np
 import random
 import os
-import pickle
+import brickpi
 
 class Robot:
 	## INTITIALIZATION FUNCTIONS
@@ -18,38 +17,50 @@ class Robot:
 				 pid_config_file="paper_config.json",
 				 config_file="base_config.json",
 				 threading=False,
-				 x = None,
-				 y = None,
-				 theta = None,
+				 x = 0,
+				 y = 0,
+				 theta = 0,
 				 mode = "continuous",
 				 mcl = False,
-				 map = None):
+				 Map = None,
+				 canvas = None):
 		# Robot initilization
 		self.interface = interface
-
+		self.mcl = mcl
+		self.Map = Map
+		self.canvas = canvas
 		self.print_thread = None
 		self.wheel_diameter = 5.3 #cm
 		self.circumference = self.wheel_diameter * math.pi
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
+		self.distances = {
+			-90:255,
+			-45:255,
+			0:255,
+			45:255,
+			90:255
+		}
 
 		self.motor_speeds = [0,0]
 		self.threads = []
 
+		self.max_sd_error = 3
+
 		# Robot state
-		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
+		self.state = {'pose':{'x':x, 'y': y, 'theta': theta}, 'ultra_pose': 0}
 		if(os.path.isfile("robot_state.json")):
 			try:
 				with open("robot_state.json","r") as f:
 					self.state = json.load(f)
 			except Exception as e:
 				print "Error reading from the JSON file."
-
 		self.config_file = config_file
 		self.pid_config_file = pid_config_file
 
 		self.load_base_config()
 		self.load_pid_config()
+		self.particle_state = ParticleState(standard_deviation = self.standard_deviation,n_particles=300,x = x,y = y,theta=theta,mode=mode,mcl = self.mcl,Map = self.Map)
 		if threading:
 			self.start_threading()
 
@@ -66,6 +77,8 @@ class Robot:
 		self.touch_ports = data["touch_ports"]
 		self.ultrasonic_port = data["ultrasonic_port"]
 		self.motor_ports = data["motor_ports"]
+		self.distance_offset = data["ultra_sound_offset"]
+                self.distance_proportional_offset = data["ultra_sound_proportional_offset"]
 
 		#Motor initialization
 		# self.wheels IS JUST THE WHEEL MOTORS
@@ -100,7 +113,7 @@ class Robot:
 		if self.touch_ports is not None:
 			self.bumpers = data["bumpers"]
 			for i in self.touch_ports:
-				self.interface.sensorEnable(i, brickpi.SensorType.SENSOR_TOUCH)
+				self.interface.sensorEnable(i,brickpi.SensorType.SENSOR_TOUCH)
 
 		if self.ultrasonic_port is not None:
 				self.interface.sensorEnable(self.ultrasonic_port, brickpi.SensorType.SENSOR_ULTRASONIC)
@@ -116,9 +129,8 @@ class Robot:
 		self.standard_deviation["y"] = data["standard_deviation"]["y"]
 		self.standard_deviation["theta_straight"] = data["standard_deviation"]["theta_straight"]
 		self.standard_deviation["theta_rotate"] = data["standard_deviation"]["theta_rotate"]
+		self.standard_deviation["theta_top_rotate"] = data["standard_deviation"]["theta_top_rotate"]
 		self.standard_deviation["ultrasound"] = data["standard_deviation"]["ultrasound"]
-
-		self.particle_state = ParticleState(self.standard_deviation,100)
 
 	#Load the PID config file
 	def load_pid_config(self):
@@ -175,17 +187,32 @@ class Robot:
 
 	def __read_ultrasonic_sensor(self):
 		if self.ultrasonic_port is not None:
-			result = self.interface.getSensorValue(self.ultrasonic_port)
-	  		return result[0]
+			try:
+				result = self.interface.getSensorValue(self.ultrasonic_port)
+				return result[0]
+			except IndexError:
+				return 255
 		else:
 			raise Exception("Ultrasonic sensor not initialized!")
 
 	# Update self.distance to self.__median_filtered_ultrasonic()
-	def __update_distance(self):
-		self.distance_stack.append(self.__read_ultrasonic_sensor())
+	def update_distance(self):
+		for i in range(15):
+                    raw_ultra_reading = self.__read_ultrasonic_sensor()
+                    calibrated_ultra_reading = raw_ultra_reading + self.distance_offset + (raw_ultra_reading*self.distance_proportional_offset)
+                    self.distance_stack.append(calibrated_ultra_reading)
 		q_copy = self.distance_stack
-		self.distance = sorted(q_copy)[int((len(q_copy)-1)/2)]
-		return True
+		d = sorted(q_copy)[int((len(q_copy)-1)/2)]
+		self.distance = d
+		return d
+
+	def __distance_loop(self):
+		poses = [-90, -45, 0 ,45, 90, 45, 0, -45]
+		for i in poses:
+			self.set_ultra_pose(i)
+			time.sleep(0.1)
+			self.distances[i] = self.update_distance()
+		print (self.distances)
 
 	# Move specified wheel a certain distance
 	def __move_wheels(self, distances=[1,1],wheels=None):
@@ -222,7 +249,7 @@ class Robot:
 		#print("New pose: {}".format(self.state["pose"].get("theta")))
 		# Maybe only save state when the robot is shutting down?
 		if update_particles:
-			self.particle_state.update_state("rotation", angle)
+			self.particle_state.update_state("rotation", angle, self.distance)
 		return self.__move_wheels([dist,-dist])
 
 	#Takes the angle in degrees and rotates the robot left
@@ -244,7 +271,7 @@ class Robot:
 	### END OF PRIVATE FUNCTIONS
 
 	### PUBLIC FUNCTIONS
-	def start_threading(self, touch=True, ultrasonic=True, interval = 0.05):
+	def start_threading(self, touch=True, ultrasonic=False, interval = 0.05):
 		# If threads already exist, stop them and delete them.
 		if self.threads:
 			for i in self.threads:
@@ -260,7 +287,7 @@ class Robot:
 				raise Exception("Touch sensors not initialized!")
 		if ultrasonic:
 			if self.ultrasonic_port is not None:
-				distance_thread = Poller(t=interval,target=self.__update_distance)
+				distance_thread = Poller(t=interval,target=self.update_distance)
 				self.threads.append(distance_thread)
 				distance_thread.start()
 			else:
@@ -303,6 +330,7 @@ class Robot:
 
 		print("POSITIONING")
 		print("Robot theta: {}".format(self.state["pose"]["theta"]))
+		print("Robot x,y: {0},{1}".format(self.state["pose"]["x"],self.state["pose"]["y"]))
 		print("Camera pose: {}".format(self.state["ultra_pose"]))
 		current_x, current_y, current_theta = self.particle_state.get_coordinates()
 
@@ -319,15 +347,54 @@ class Robot:
 		self.state = {'pose':{'x':0, 'y': 0, 'theta': 0}, 'ultra_pose': 0}
 		self.particle_state.reset()
 		return True
-	def navigate_to_waypoint(self,X,Y):
-                current_x, current_y, current_theta = self.particle_state.get_coordinates()
-		diff_X = (X*100)-current_x
-		diff_Y = (Y*100)-current_y
+
+	def step_to_waypoint(self,X,Y,maxdistance=20):
+		success = False
+		while not success:
+			success = self.navigate_to_waypoint(X,Y,maxdistance)
+			if self.canvas:
+				particles = self.particle_state.get_state()
+				self.canvas.drawParticles(particles)
+		return success
+
+	def navigate_to_waypoint(self,X,Y, maxdistance = None):
+		success = True
+		current_x, current_y, current_theta = self.particle_state.get_coordinates()
+		diff_X = X-current_x
+		diff_Y = Y-current_y
+		if abs(diff_X)<0.5:
+			diff_X = 0
+		if abs(diff_Y)<0.5:
+			diff_Y = 0
 		distance = math.sqrt(math.pow(diff_X,2)+math.pow(diff_Y,2))
 		angle = math.degrees(math.atan2(diff_Y, diff_X))
+		if maxdistance:
+			if distance > maxdistance:
+				distance = maxdistance
+				success = False
+		print("\nNavigating to point ({0},{1}) from point ({2},{3},{4})".format(X, Y,current_x,current_y,current_theta))
 		print("diff x: {0}, diff y: {1} arctan2 result: {2}".format(diff_X, diff_Y, angle))
 		self.set_robot_pose(angle, update_particles=True)
-		return self.travel_straight(distance, update_particles=True)
+		print "Rotation Finished"
+		self.travel_straight(distance, update_particles=True)
+
+		# Check if S.D of particles is very large (they should be updated again)
+		current_err = self.particle_state.get_error()
+		print "Current Error - X:{0}, Y:{1}, Theta: {2}".format(current_err[0], current_err[1], current_err[2])
+		if ((current_err[0] > self.max_sd_error) or (current_err[1] > self.max_sd_error)):
+			d = self.update_distance()
+			time.sleep(0.1)
+			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'0':d})
+			self.set_ultra_pose(90)
+			d = self.update_distance()
+			time.sleep(0.1)
+			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'90':d})
+			self.set_ultra_pose(-90)
+			d = self.update_distance()
+			time.sleep(0.1)
+			self.particle_state.update_state(action="refinement",movement=None,ultrasound={'-90':d})
+			self.set_ultra_pose(0)
+		return success
 
 	#Sets a constant speed for specified motors
 	def set_speed(self, speeds=[2,2], wheels=None):
@@ -351,7 +418,7 @@ class Robot:
 	def travel_straight(self, distance, update_particles=False):
 		success = self.__move_wheels(distances=[distance,distance])
 		if update_particles:
-			self.particle_state.update_state("straight", distance)
+			self.particle_state.update_state("straight", distance, ultrasound = {'0':self.update_distance()})
 		return success
 
 	# Move the top camera to specified pose
@@ -408,7 +475,7 @@ class Robot:
 		print("Ending pose: {}".format(s_pose))
 
 		if update_particles:
-			self.particle_state.update_state("rotation", rotation)
+			self.particle_state.update_state("rotation", rotation, {'0':self.distance})
 		return success
 
 
@@ -493,7 +560,7 @@ class Robot:
 	def interactive_mode(self):
 		command = 0
 		while command!=-1:
-			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)\n9: Rotate right\n10: Save state\n11: Reset state\n12: Print state\n13: Start threading\n14: Stop threading")
+			print("Available commands:\n-1: End session.\n1: Travel straight.\n2: Set pose.\n3: Move wheels.\n4: Set ultra pose.\n5: Recalibrate ultra pose.\n6: Reload config files.\n7: Print sensor values.\n8: Navigate to (X,Y)(cm)\n9: Rotate right\n10: Save state\n11: Reset state\n12: Print state\n13: Start threading\n14: Stop threading")
 			command = int(input())
 			if command == 1:
 				print("Enter distance to move straight: ")
@@ -542,10 +609,13 @@ class Robot:
 				self.start_threading()
 			elif command==14:
 				self.stop_threading()
+			elif command==15:
+				print(self.update_distance())
 			else:
 				command = -1
-				self.stop()
 				self.stop_threading()
+				self.stop()
+
 		return True
 
 
