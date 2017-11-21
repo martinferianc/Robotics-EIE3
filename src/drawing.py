@@ -29,14 +29,14 @@ class Canvas:
         y2 = self.__screenY(line[3])
         print "drawLine:" + str((x1,y1,x2,y2))
 
-    def drawCross(self,point):
-        x1_a = self.__screenX(point[0]-2)
+    def drawCross(self,point, size = 2):
+        x1_a = self.__screenX(point[0]-size)
         y1 = self.__screenY(point[1])
-        x1_b = self.__screenX(point[0]+2)
+        x1_b = self.__screenX(point[0]+size)
         print "drawLine:" + str((x1_a,y1,x1_b,y1))
         x2 = self.__screenX(point[0])
-        y2_a = self.__screenY(point[1]-2)
-        y2_b = self.__screenY(point[1]+2)
+        y2_a = self.__screenY(point[1]-size)
+        y2_b = self.__screenY(point[1]+size)
         print "drawLine:" + str((x2,y2_a,x2,y2_b))
 
     def drawParticles(self,data):

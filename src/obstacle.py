@@ -16,8 +16,15 @@ class Obstacle:
         for i in range(100):
             x_c = random.gauss(self.x, self.std_x)
             y_c = random.gauss(self.y, self.std_y)
-            if (x-self.x)**2+(y-self.y)**2 < (self.radius+buff)**2:
+            if (x-x_c)**2+(y-y_c)**2 < (self.radius+buff)**2:
                 proposed_centres["True"]+=1
             else:
                 proposed_centres["False"]+=1
         return proposed_centres["True"]>=30
+
+    def get_x(self):
+        return self.x
+
+
+    def get_y(self):
+        return self.y

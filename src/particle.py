@@ -26,12 +26,24 @@ class ParticleState():
         self.state = []
         self.mcl = mcl
         self.Map = Map
+
+        if mode == "line":
+            for i in range(n_particles):
+                theta = 0
+                if x is None:
+                    x = 0
+                    y = random.randint(0,y)
+                if y is None:
+                    y = 0
+                    x = random.randint(0,x)
+                self.state.append(np.array([np.array([x,y,theta]),1/n_particles]))
+
         if mode == "continuous":
             if x is not None and y is not None and theta is not None:
                 print("Initializing particle state with x,y,theta = ({0},{1},{2})".format(x,y,math.radians(theta)))
-                self.state = [[[x,y,math.radians(theta)],1/n_particles] for i in xrange(n_particles)]
+                self.state = np.array(np.array([np.array([np.array([x,y,math.radians(theta)]),1/n_particles]) for i in xrange(n_particles)]))
             else:
-	            self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
+	            self.state = np.array([np.array([np.array([0,0,0]),1/n_particles]) for i in xrange(n_particles)])
         elif mode == "global":
             for i in range(n_particles):
                 x = random.randint(1,210)
@@ -45,7 +57,7 @@ class ParticleState():
                         y = random.randint(1,210)
                     else:
                         valid = True
-                self.state.append([[x,y,theta],1/n_particles])
+                self.state.append(np.array([np.array([x,y,theta]),1/n_particles]))
         elif mode == "localised":
             X = [point[0] for point in points]
             Y = [point[1] for point in points]
@@ -53,10 +65,11 @@ class ParticleState():
                 x = random.choice(X)
                 y = random.choice(Y)
                 theta = random.uniform(-math.pi, math.pi)
-                self.state.append([[x,y,theta],1/n_particles])
+                self.state.append(np.array([np.array([x,y,theta]),1/n_particles]))
 
         else:
-            self.state = [[[0,0,0],1/n_particles] for i in xrange(n_particles)]
+            self.state = np.array([np.array([np.array([0,0,0]),1/n_particles]) for i in xrange(n_particles)])
+        self.state = np.array(self.state)
         self.number_of_particles = n_particles
         self.standard_deviation = standard_deviation
 
@@ -110,9 +123,9 @@ class ParticleState():
             mean_y = sum([point[0][1]*point[1]  for point in self.state])
             mean_theta = sum([point[0][2]*point[1]  for point in self.state])
         else:
-            mean_x = np.mean(np.array([point[0][0] for point in self.state]))
-            mean_y = np.mean(np.array([point[0][1] for point in self.state]))
-            mean_theta = np.mean(np.array([point[0][2] for point in self.state]))
+            mean_x = np.mean([point[0][0] for point in self.state])
+            mean_y = np.mean([point[0][1] for point in self.state])
+            mean_theta = np.mean([point[0][2] for point in self.state])
         # print("Coordinates - x: {0}, y: {1}, theta {2}".format(mean_x, mean_y, mean_theta))
         mean_theta = move_angle_within_range(mean_theta)
         return (mean_x, mean_y, mean_theta)
@@ -121,16 +134,15 @@ class ParticleState():
 	    self.state = [([0,0,0],1/self.number_of_particles) for i in xrange(self.number_of_particles)]
 
     def get_error(self):
-        std_x = np.std(np.array([point[0][0] for point in self.state]))
-        std_y = np.std(np.array([point[0][1] for point in self.state]))
-        std_theta = np.std(np.array([point[0][2] for point in self.state]))
+        std_x = np.std([point[0][0] for point in self.state])
+        std_y = np.std([point[0][1] for point in self.state])
+        std_theta = np.std([point[0][2] for point in self.state])
         return std_x, std_y, std_theta
 
     def get_state(self):
         return self.state
 
     def __normalise_weights(self):
-        #Mike
         # Normalisation of weights
         # Returns new state with all weights normalized
         # initialize weight_sum
@@ -193,9 +205,9 @@ class ParticleState():
                 chosen_idx += 1
                 if (chosen_idx >= len(cum_histo)-1):
                     break
-            new_state.append([copy.deepcopy(particle_coord[chosen_idx]), 1/float(self.number_of_particles)])
+            new_state.append(np.array([copy.deepcopy(particle_coord[chosen_idx]), 1/float(self.number_of_particles)]))
         # put new state into self
-        self.state = new_state
+        self.state = np.array(new_state)
 
     def __predict_distance_to_nearest_wall(self,point, ultrasound_pose=None):
         #Calculates the distance to nearest wall, returning M
