@@ -42,7 +42,7 @@ class Robot:
 			45:255,
 			90:255
 		}
-        self.obstacles = []
+                self.obstacles = []
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -208,29 +208,29 @@ class Robot:
 		self.distance = d
 		return d
 
-    def detect_obstacles(self, maxdist=110):
-        #angles = [0]
-        angles = [-15,0,15,0]
-        for ultra_angle in angles:
-            # Rotate camera to position
-            self.set_ultra_pose(ultra_angle)
-
-            # Get sonar reading
-            d = self.update_distance()
-
-            # If reading within maxdist
-            if d < maxdist:
-                # Get robot position
-                robot_x, robot_y, robot_p = self.particle_state.get_coordinates()
-                ultra_rad = math.radians(ultra_angle)
-                # Create object in position calculated from robot's position
-                obstacle_x = robot_x + d*math.sin(robot_p+ultra_rad)
-                obstacle_y = robot_y + d*math.cos(robot_p+ultra_rad)
-                for o in self.obstacles:
-                    if not o.is_in_obstacle(x,y,buff=3):
-                        self.obstacles.append(Obstacle(obstacle_x, obstacle_y))
-                        print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, ultra_pose, obstacle_x, obstacle_y))
-        return 1
+        def detect_obstacles(self, maxdist=110):
+            #angles = [0]
+            angles = [-30,0,30,0]
+            for ultra_angle in angles:
+                # Rotate camera to position
+                self.set_ultra_pose(ultra_angle)
+		
+                # Get sonar reading
+                d = self.update_distance()
+		time.sleep(0.5)
+                # If reading within maxdist
+                if d < maxdist:
+                    # Get robot position
+                    robot_x, robot_y, robot_p = self.particle_state.get_coordinates()
+                    ultra_rad = math.radians(ultra_angle)
+                    # Create object in position calculated from robot's position
+                    obstacle_x = robot_x + d*math.sin(robot_p+ultra_rad)
+                    obstacle_y = robot_y + d*math.cos(robot_p+ultra_rad)
+                    for o in self.obstacles:
+                        if not o.is_in_obstacle(x,y,buff=3):
+                            self.obstacles.append(Obstacle(obstacle_x, obstacle_y))
+                            print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, ultra_pose, obstacle_x, obstacle_y))
+            return 1
 
 	def __distance_loop(self):
 		poses = [-90, -45, 0 ,45, 90, 45, 0, -45]
@@ -513,84 +513,6 @@ class Robot:
 			self.particle_state.update_state("rotation", rotation, {'0':self.distance})
 		return success
 
-
-        def get_free_index(self):
-            n = 0
-            while n < self.number_of_signatures:
-                if (os.path.isfile("signatures/sig{}".format(n)) == False):
-                    break
-                n += 1
-
-            if (n >= self.number_of_signatures):
-                return -1;
-            else:
-                return n;
-
-    # Delete all loc_%%.dat files
-        def delete_loc_files(self):
-            print "STATUS:  All signature files removed."
-            for n in range(self.number_of_signatures):
-                if os.path.isfile("signatures/sig{}.sig".format(n)):
-                    os.remove("signatures/sig{}.sig".format(n))
-
-	# Writes the signature to the file identified by index (e.g, if index is 1
-    # it will be file loc_01.dat). If file already exists, it will be replaced.
-        def save(self, signature, index):
-		f=open("signatures/sig{}.sig".format(str(index)),'w')
-		pickle.dump(signature, f)
-  		f.close()
-
-	#Returns the
-	def read(self, index):
-		filename = "signatures/sig{}.sig".format(str(index))
-		try:
-			f = open(filename,'r')
-			histogram = pickle.load(f)
-			return histogram
-		except IOError as e:
-			raise  "Not a valid signature file"
-
-	# FILL IN: spin robot or sonar to capture a signature and store it in ls
-	def characterize_location(self):
-		histogram = np.zeros(shape=255)
-		histogram_angle = np.zeros(shape=360)
-		ultrasound_pose = -180
-		while ultrasound_pose < 179:
-			self.set_ultra_pose(ultrasound_pose)
-			for i in range(5):
-				distance = self.get_distance()
-				histogram[distance]+=1
-				if ultrasound_pose+360>=360:
-					histogram_angle[ultrasound_pose]=distance
-				else:
-					histogram_angle[ultrasound_pose+360]=distance
-			ultrasound_pose+=1
-		self.set_ultra_pose(0)
-		return histogram, histogram_angle
-
-	# Learn location
-	# This function characterizes the current location, and stores the obtained
-	# signature into the next available file.
-	def learn_location(self, index):
-	   location = self.characterize_location()
-	   self.save(location,index)
-
-	def recognize_location(self):
-		sig_obs = self.characterize_location()
-	    # FILL IN: COMPARE ls_read with ls_obs and find the best match
-		min_dist = None
-	    for idx in range(self.number_of_signatures):
-	        print "STATUS:  Comparing signature " + str(idx) + " with the observed signature."
-	        sig_read = self.read(idx)
-	        dist = self.compare_signatures(sig_obs, sig_read)
-			if not min_dist or dist<min_dist:
-				min_dist = (dist, idx)
-
-
-	def compare_signatures(self, sig_obs, sig_read):
-
-        pass
-
 	# Interactive mode for the robot to control without writing a program each time
 	def interactive_mode(self):
 		command = 0
@@ -706,21 +628,21 @@ class Robot:
 		except Exception, e:
 			print("There is some problem setting motor speed, {}".format(str(e)))
 
-    def challenge(self):
-        # 0. Change the particles into numpy arrays @Martin
-        # 1. Thread running which check distance and adds obstacleCost @George
-        # 2. We need to pass the objects to the plannning script to determine the shortest paths @Martin
-        # 3. Return v_l, v_r, adjust the speeds to that @Owen
-        # 4. We need to update our particle distribution @Mike
-        # 5. Check we are at the end @Mike
-        return 1
+        def challenge(self):
+            # 0. Change the particles into numpy arrays @Martin
+            # 1. Thread running which check distance and adds obstacleCost @George
+            # 2. We need to pass the objects to the plannning script to determine the shortest paths @Martin
+            # 3. Return v_l, v_r, adjust the speeds to that @Owen
+            # 4. We need to update our particle distribution @Mike
+            # 5. Check we are at the end @Mike
+            return 1
 
-    def check_finished(self, finishLine=320):
-        """ Check if we are at the end
-            If self.state["x"] > 320, return True
-            else return False
-        """
-        if self.state["x"] > finishLine:
-            return True
-        else
-            return False
+        def check_finished(self, finishLine=320):
+            """ Check if we are at the end
+                If self.state["x"] > 320, return True
+                else return False
+            """
+            if self.state["x"] > finishLine:
+                return True
+            else:
+                return False
