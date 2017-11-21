@@ -68,18 +68,6 @@ class Planner:
     		xnew = x + R * (math.sin(deltatheta + theta) - math.sin(theta))
     		ynew = y - R * (math.cos(deltatheta + theta) - math.cos(theta))
     		thetanew = theta + deltatheta
-    		# To calculate parameters for arc drawing (complicated Pygame stuff, don't worry)
-    		# We need centre of circle
-    		(cx, cy) = (x - R * math.sin(theta), y + R * math.cos (theta))
-    		# Turn this into Rect
-    		Rabs = abs(R)
-    		((tlx, tly), (Rx, Ry)) = ((int(u0 + k * (cx - Rabs)), int(v0 - k * (cy + Rabs))), (int(k * (2 * Rabs)), int(k * (2 * Rabs))))
-    		if (R > 0):
-    			start_angle = theta - math.pi/2.0
-    		else:
-    			start_angle = theta + math.pi/2.0
-    		stop_angle = start_angle + deltatheta
-
     	return (xnew, ynew, thetanew)
 
     # Function to calculate the closest obstacle at a position (x, y)
