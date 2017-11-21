@@ -228,7 +228,8 @@ class Robot:
                     obstacle_y = robot_y + d*math.cos(robot_p+ultra_rad)
                     for o in self.obstacles:
                         if not o.is_in_obstacle(x,y,buff=3):
-                            self.obstacles.append(Obstacle(obstacle_x, obstacle_y))
+                            err = self.particle_state.get_error()
+                            self.obstacles.append(Obstacle(obstacle_x, obstacle_y, err[0], err[1]))
                             print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, ultra_pose, obstacle_x, obstacle_y))
             return 1
 
@@ -439,7 +440,7 @@ class Robot:
 			if abs(i)>10:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
-        speeds = [k*x for x in speeds]
+                speeds = [k*x for x in speeds]
 		self.interface.setMotorRotationSpeedReferences(wheels,speeds)
 		self.motor_speeds = speeds
 		return True

@@ -13,7 +13,7 @@ interface.initialize()
 starting_y = int(input("Enter rough starting y coordinate:"))
 
 Robot = Robot(interface,
-              pid_config_file="carpet_config.json",
+              pid_config_file="speed_config.json",
               mcl=False,
               threading=False,
               x=0,

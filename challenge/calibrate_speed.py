@@ -11,7 +11,7 @@ interface=brickpi.Interface()
 interface.initialize()
 
 Robot = Robot(interface,
-              pid_config_file="carpet_config.json",
+              pid_config_file="speed_config.json",
               mcl=False,
               threading=False
               )
