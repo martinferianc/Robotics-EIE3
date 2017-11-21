@@ -136,7 +136,7 @@ class Planner:
     			if (vLpossible <= self.MAXVELOCITY and vRpossible <= self.MAXVELOCITY and vLpossible >= -self.MAXVELOCITY and vRpossible >= -self.MAXVELOCITY):
     				# Predict new position in TAU seconds
     				TAU = 1.5
-    				(xpredict, ypredict, thetapredict, path) = self.__predict_position(vLpossible, vRpossible, x, y, theta, TAU)
+    				(xpredict, ypredict, thetapredict)= self.__predict_position(vLpossible, vRpossible, x, y, theta, TAU)
 
     				# What is the distance to the closest obstacle from this possible position?
     				distanceToObstacle = self.__calculate_closest_obstacle_distance(xpredict, ypredict)
@@ -165,6 +165,6 @@ class Planner:
     	vR = vRchosen
 
     	# Actually now move robot based on chosen vL and vR
-    	(x, y, theta, tmppath) = self.__predict_position(vL, vR, x, y, theta)
+    	(x, y, theta) = self.__predict_position(vL, vR, x, y, theta)
 
         return (vL, vR, x,y,theta)
