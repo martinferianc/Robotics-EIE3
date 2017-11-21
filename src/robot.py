@@ -439,7 +439,7 @@ class Robot:
 			if abs(i)>10:
 				raise Exception("Speed set too high, abort.")
 			speeds[index]=-i
-        speeds = [k*x for x in speeds]
+                speeds = [k*x for x in speeds]
 		self.interface.setMotorRotationSpeedReferences(wheels,speeds)
 		self.motor_speeds = speeds
 		return True
