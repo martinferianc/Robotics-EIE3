@@ -42,8 +42,16 @@ class Planner:
         self.SENSORRANGE = 1.5
         self.SENSORHALFANGLE = 15.0 * math.pi / 180.0
 
-    def append_obstacle(self, obstacle):
+    def append_obstacle(self, obstacle, threshold = 2):
+        for obs in self.obstacles:
+            x = obs.get_x()
+            y = obs.get_y()
+            diff_x = abs(x-obstacle.get_x())
+            diff_y = abs(y-obstacle.get_y())
+            if diff_x<threshold and diff_y<threshold:
+                return False
         self.obstacles.append([obstacle,0])
+        return True
 
     # Function to predict new robot position based on current pose and velocity controls
     # Uses time deltat in future
