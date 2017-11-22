@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 class Obstacle:
 
@@ -8,23 +9,33 @@ class Obstacle:
         self.std_x = std_x
         self.std_y = std_y
         self.radius = radius
+        self.__update_state()
 
     def is_in_obstacle(self,x,y,buff = 0):
-        proposed_centres = {}
-        proposed_centres["True"]=0
-        proposed_centres["False"]=0
+        return (x-self.x_c)**2+(y-self.y_c)**2 < (self.radius+buff)**2:
+
+    def __update_state(self):
+        X = []
+        Y = []
         for i in range(100):
-            x_c = random.gauss(self.x, self.std_x)
-            y_c = random.gauss(self.y, self.std_y)
-            if (x-x_c)**2+(y-y_c)**2 < (self.radius+buff)**2:
-                proposed_centres["True"]+=1
-            else:
-                proposed_centres["False"]+=1
-        return proposed_centres["True"]>=30
+            X.append(random.gauss(self.x, self.std_x))
+            Y.append(random.gauss(self.y, self.std_y))
+        self.x_c = np.mean(np.array(X))
+        self.y_c = np.mean(np.array(Y))
+
+
+    def set_std(self, std_x, std_y):
+        self.std_x = std_x
+        self.std_y = std_y
+
+    def set_coordinates(self, x, y):
+        self.x = x
+        self.y = y
+        self.__update_state()
 
     def get_x(self):
-        return self.x
+        return self.x_c
 
 
     def get_y(self):
-        return self.y
+        return self.y_c
