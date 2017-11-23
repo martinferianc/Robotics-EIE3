@@ -12,7 +12,7 @@ class Obstacle:
         self.__update_state()
 
     def is_in_obstacle(self,x,y,buff = 0):
-        return (x-self.x_c)**2+(y-self.y_c)**2 < (self.radius+buff)**2:
+        return ((x-self.x_c)**2+(y-self.y_c)**2 < (self.radius+buff)**2)
 
     def __update_state(self):
         X = []
