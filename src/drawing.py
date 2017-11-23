@@ -43,9 +43,9 @@ class Canvas:
         display = [(self.__screenX(d[0][0])+d[1],self.__screenY(d[0][1])+d[1]) for d in data]
         print "drawParticles:" + str(display)
     def __screenX(self,x):
-        return (x + self.margin)*self.scale
+        return (x + self.margin+110)*self.scale
     def __screenY(self,y):
-        return (self.map_size + self.margin - y)*self.scale
+        return (self.map_size +110+ self.margin - y)*self.scale
 
 class Map:
     def __init__(self, canvas):
