@@ -117,7 +117,7 @@ class Planner:
     			self.obstacles[i][1] = True
 
 
-    def get_plan(self,x,y,theta,vL,vR):
+    def get_plan(self,x,y,theta,vL,vR,interval):
     	# Check if any new obstacles are visible from current pose
     	self.__observe_obstacles(x, y, theta)
 
@@ -129,8 +129,8 @@ class Planner:
     	OBSTACLEWEIGHT = 16
 
     	# Range of possible motions: each of vL and vR could go up or down a bit
-    	vLpossiblearray = (vL - self.MAXACCELERATION * self.dt, vL, vL + self.MAXACCELERATION * self.dt)
-    	vRpossiblearray = (vR - self.MAXACCELERATION * self.dt, vR, vR + self.MAXACCELERATION * self.dt)
+    	vLpossiblearray = (vL - self.MAXACCELERATION * interval, vL, vL + self.MAXACCELERATION * interval)
+    	vRpossiblearray = (vR - self.MAXACCELERATION * interval, vR, vR + self.MAXACCELERATION * interval)
 
         vLchosen = 0
         vRchosen = 0
@@ -140,7 +140,7 @@ class Planner:
     			# We can only choose an action if it's within velocity limits
     			if (vLpossible <= self.MAXVELOCITY and vRpossible <= self.MAXVELOCITY and vLpossible >= -self.MAXVELOCITY and vRpossible >= -self.MAXVELOCITY):
     				# Predict new position in TAU seconds
-    				TAU = 1.5
+    				TAU = interval
     				(xpredict, ypredict, thetapredict)= self.__predict_position(vLpossible, vRpossible, x, y, theta, TAU)
 
     				# What is the distance to the closest obstacle from this possible position?
@@ -170,6 +170,6 @@ class Planner:
     	vR = vRchosen
 
     	# Actually now move robot based on chosen vL and vR
-    	(x, y, theta) = self.__predict_position(vL, vR, x, y, theta, self.dt)
+    	(x, y, theta) = self.__predict_position(vL, vR, x, y, theta, interval)
 
         return (vL, vR, x,y,theta)
