@@ -226,6 +226,7 @@ class Robot:
                     # Get robot position
                     robot_x, robot_y, robot_p = self.particle_state.get_coordinates()
                     ultra_rad = math.radians(ultra_angle)
+                    print("Robot at x:{}. y:{}, theta:{}, ultra_angle:{}".format(robot_x, robot_y, robot_p,ultra_angle))
                     # Create object in position calculated from robot's position
                     obstacle_x = robot_x + d*math.sin(robot_p+ultra_rad)
                     obstacle_y = robot_y + d*math.cos(robot_p+ultra_rad)
