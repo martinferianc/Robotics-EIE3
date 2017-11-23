@@ -14,7 +14,7 @@ Canvas = Canvas()
 Map = Map(Canvas)
 
 Robot = Robot(interface,
-              pid_config_file="speed_config.json",
+              pid_config_file="carpet_config.json",
               mcl=False,
               threading=False,
               x=0,
