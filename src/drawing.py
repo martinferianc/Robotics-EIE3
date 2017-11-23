@@ -31,7 +31,7 @@ class Canvas:
 
     def drawCross(self,point, size_x = 2, size_y = 2):
         x1_a = self.__screenX(point[0]-size_x)
-        y1 = self.__screenY(point[1])
+        y1 = self.__screenY(point[1]+110)
         x1_b = self.__screenX(point[0]+size_x)
         print "drawLine:" + str((x1_a,y1,x1_b,y1))
         x2 = self.__screenX(point[0])
