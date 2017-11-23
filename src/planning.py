@@ -132,6 +132,9 @@ class Planner:
     	vLpossiblearray = (vL - self.MAXACCELERATION * self.dt, vL, vL + self.MAXACCELERATION * self.dt)
     	vRpossiblearray = (vR - self.MAXACCELERATION * self.dt, vR, vR + self.MAXACCELERATION * self.dt)
 
+        vLchosen = 0
+        vRchosen = 0
+
     	for vLpossible in vLpossiblearray:
     		for vRpossible in vRpossiblearray:
     			# We can only choose an action if it's within velocity limits
