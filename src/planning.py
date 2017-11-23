@@ -45,9 +45,8 @@ class Planner:
 
     def append_obstacle(self, obstacle, threshold = 2):
         for obs in self.obstacles:
-            print(obs)
-            x = obs.get_x()
-            y = obs.get_y()
+            x = obs[0].get_x()
+            y = obs[0].get_y()
             diff_x = abs(x-obstacle.get_x())
             diff_y = abs(y-obstacle.get_y())
             if diff_x<threshold and diff_y<threshold:
