@@ -634,7 +634,7 @@ class Robot:
             diff_x = math.pow(x-x_new,2)
             diff_y = math.pow(y-y_new,2)
             d = math.sqrt(diff_x+diff_y)
-            print("New plan calculated: vL:{},vR:{}".format(v_l,v_r)
+            print("New plan calculated: vL:{},vR:{}".format(v_l,v_r))
 
             self.set_speed([v_l*3, v_r*3], self.wheels)
             self.particle_state.update_state("mixed", movement=d,theta=theta-theta_new)
