@@ -634,7 +634,7 @@ class Robot:
             diff_y = math.pow(y-y_new,2)
             d = math.sqrt(diff_x+diff_y)
             self.set_speed([v_l*3, v_r*3], self.wheels)
-            self.particle_state.update_state("mixed", movement=d,theta=theta-theta_new):
+            self.particle_state.update_state("mixed", movement=d,theta=theta-theta_new)
             particles = self.particle_state.get_state()
             self.canvas.drawParticles(particles)
             return 1
