@@ -228,8 +228,8 @@ class Robot:
                     ultra_rad = math.radians(ultra_angle)
                     print("Robot at x:{}. y:{}, theta:{}, ultra_angle:{}".format(robot_x, robot_y, robot_p,ultra_angle))
                     # Create object in position calculated from robot's position
-                    obstacle_x = robot_x + d*math.sin(robot_p+ultra_rad)
-                    obstacle_y = robot_y + d*math.cos(robot_p+ultra_rad)
+                    obstacle_x = robot_x + d*math.cos(robot_p+ultra_rad)
+                    obstacle_y = robot_y + d*math.sin(robot_p+ultra_rad)
                     err = self.particle_state.get_error()
                     self.planner.append_obstacle(Obstacle(obstacle_x, obstacle_y, err[0], err[1]))
                     print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, self.state.get("ultra_pose", 0), obstacle_x, obstacle_y))
