@@ -22,9 +22,9 @@
     },
     "ultrasonic_port": 3,
     "motor_ports": {
-      "left": 3,
+      "left": 2,
       "right": 1,
-      "top" : 2
+      "top" : 0
     },
 
     "prop_ctl": {
