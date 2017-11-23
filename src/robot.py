@@ -38,7 +38,7 @@ class Robot:
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
                 if planning:
-                    self.planner = Planner(0)
+                    self.planner = Planner(0,cavas = self.canvas)
 
 		self.distances = {
 			-90:255,
@@ -47,7 +47,6 @@ class Robot:
 			45:255,
 			90:255
 		}
-                self.obstacles = []
 
 		self.motor_speeds = [0,0]
 		self.threads = []
@@ -214,8 +213,7 @@ class Robot:
 		return d
 
         def detect_obstacles(self, maxdist=110):
-            #angles = [0]
-            angles = [-30,0,30,0]
+            angles = [-30,-15,0,15,30,0]
             for ultra_angle in angles:
                 # Rotate camera to position
                 self.set_ultra_pose(ultra_angle)
@@ -231,20 +229,11 @@ class Robot:
                     # Create object in position calculated from robot's position
                     obstacle_x = robot_x + d*math.sin(robot_p+ultra_rad)
                     obstacle_y = robot_y + d*math.cos(robot_p+ultra_rad)
-                    for o in self.obstacles:
-                        if not o.is_in_obstacle(x,y,buff=3):
-                            err = self.particle_state.get_error()
-                            self.obstacles.append(Obstacle(obstacle_x, obstacle_y, err[0], err[1]))
+                    err = self.particle_state.get_error()
+                    self.planner.append_obstacle(Obstacle(obstacle_x, obstacle_y, err[0], err[1]))
                             print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, ultra_pose, obstacle_x, obstacle_y))
-            return 1
+            return True
 
-	def __distance_loop(self):
-		poses = [-90, -45, 0 ,45, 90, 45, 0, -45]
-		for i in poses:
-			self.set_ultra_pose(i)
-			time.sleep(0.1)
-			self.distances[i] = self.update_distance()
-		print (self.distances)
 
 	# Move specified wheel a certain distance
 	def __move_wheels(self, distances=[1,1],wheels=None):
@@ -639,18 +628,21 @@ class Robot:
             if not self.planner:
                 raise Exception("Planner has not been initialized!")
 
-            #API
-            # To add a barrier: self.planner.append_barrier(barrier)
-            # Calculate the vl, vr, x_new, y_new, theta_new: self.planner.get_plan(x,y,theta,vL,vR)
-            self.planner.append_obstacle(Obstacle(1,1,0.1,0.1))
-            print(self.planner.get_plan(3,0,0,0,0))
-
-            # 1. Thread running which check distance and adds obstacleCost @George
-            # 2. We need to pass the objects to the plannning script to determine the shortest paths @Martin
-            # 3. Return v_l, v_r, adjust the speeds to that @Owen
-            # 4. We need to update our particle distribution @Mike
-            # 5. Check we are at the end @Mike
+			x,y,theta = self.particle_state.get_coordinates()
+            v_l, v_r, x_new, y_new, theta_new = self.planner.get_plan(x,y,theta,self.motor_speeds[0]//3,self.motor_speeds[1]//3)
+			diff_x = math.pow(x-x_new,2)
+			diff_y = math.pow(y-y_new,2)
+			d = math.sqrt(diff_x+diff_y)
+			self.set_speed([v_l*3, v_r*3], self.wheels)
+			self.particle_state.update_state("mixed", movement=d,theta=theta-theta_new):
+            particles = self.particle_state.get_state()
+            self.canvas.drawParticles(particles)
             return 1
+        def start_challenge(self, interval = 0.05):
+            challenge_thread = Poller(t=interval,target=self.challenge)
+            self.threads.append(challenge_thread)
+            challenge_thread.start()
+            return True
 
         def check_finished(self, finishLine=320):
             """ Check if we are at the end

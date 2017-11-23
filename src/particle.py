@@ -74,8 +74,19 @@ class ParticleState():
         self.standard_deviation = standard_deviation
 
     # Movement is distance for
-    def update_state(self, action, movement, ultrasound={'0', 255}):
-        if action == "straight":
+    def update_state(self, action, movement,theta=None, ultrasound={'0', 255}):
+        if action == "mixed":
+            # movement is the distance travelled
+            for point in self.state:
+                #print "Point before movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])
+                e_x=random.gauss(0,self.standard_deviation["x"])
+                e_y=random.gauss(0,self.standard_deviation["y"])
+                e_theta=random.gauss(0,self.standard_deviation["theta_straight"])
+                point[0][0]+=(movement + e_x)*math.cos(point[0][2])
+                point[0][1]+=(movement + e_y)*math.sin(point[0][2])
+                point[0][2]+=e_theta+math.radians(theta)
+                point[0][2] = move_angle_within_range(point[0][2])
+        elif action == "straight":
             # movement is the distance travelled
             for point in self.state:
                 #print "Point before movement: {0}, {1}, {2}".format(point[0][0], point[0][1], point[0][2])

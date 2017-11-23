@@ -4,7 +4,7 @@
 import os, math, time, random
 
 class Planner:
-    def __init__(self, y,x=0,theta=0,radius = 0.06, size = 0.2, safe_dist=0.2, playfield=(0, 0, 3.0, 2.0), target=(4,0)):
+    def __init__(self, y,x=0,theta=0,radius = 0.06, size = 0.2, safe_dist=0.2, playfield=(0, 0, 3.0, 2.0), target=(3.1,0), canvas = None):
         # Constants and variables
         # Units here are in metres and radians using our standard coordinate frame
         self.obstacleRADIUS = radius
@@ -41,6 +41,7 @@ class Planner:
         # Which obstacles can it see? If a obstacle has been seen at least once it becomes known to the planner
         self.SENSORRANGE = 1.5
         self.SENSORHALFANGLE = 15.0 * math.pi / 180.0
+        self.canvas = canvas
 
     def append_obstacle(self, obstacle, threshold = 2):
         for obs in self.obstacles:
@@ -51,6 +52,11 @@ class Planner:
             if diff_x<threshold and diff_y<threshold:
                 return False
         self.obstacles.append([obstacle,0])
+        x = obstacle.get_x()
+        y = obstacle.get_y()
+        radius = obstacle.get_radius()
+        std_x,std_y = obstacle.get_std()
+        self.canvas.drawCross(x,y,size_x = std_x+radius,size_y = std_y+radius)
         return True
 
     # Function to predict new robot position based on current pose and velocity controls

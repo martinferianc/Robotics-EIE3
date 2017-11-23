@@ -36,6 +36,10 @@ class Obstacle:
     def get_x(self):
         return self.x_c
 
-
     def get_y(self):
         return self.y_c
+
+    def get_std(self):
+        return self.std_x, self.std_y
+    def get_radius(self):
+        return self.radius

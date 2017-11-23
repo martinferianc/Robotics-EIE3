@@ -10,18 +10,21 @@ import brickpi
 interface=brickpi.Interface()
 interface.initialize()
 
-starting_y = int(input("Enter rough starting y coordinate:"))
+Canvas = Canvas()
+Map = Map(Canvas)
 
 Robot = Robot(interface,
               pid_config_file="speed_config.json",
               mcl=False,
               threading=False,
               x=0,
-              y=starting_y,
+              y=0,
               theta=0,
+              mode="line",
+              canvas = Canvas,
               planning = True
               )
 
 Robot.start_obstacle_detection(interval=0.05)
 
-Robot.challenge()
+Robot.start_challenge(interval = 1)
