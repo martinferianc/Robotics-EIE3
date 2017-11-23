@@ -43,7 +43,7 @@ class Planner:
         self.SENSORHALFANGLE = 15.0 * math.pi / 180.0
         self.canvas = canvas
 
-    def append_obstacle(self, obstacle, threshold = 2):
+    def append_obstacle(self, obstacle, threshold = 7):
         for obs in self.obstacles:
             x = obs[0].get_x()
             y = obs[0].get_y()
