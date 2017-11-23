@@ -35,8 +35,8 @@ class Canvas:
         x1_b = self.__screenX(point[0]+size_x)
         print "drawLine:" + str((x1_a,y1,x1_b,y1))
         x2 = self.__screenX(point[0])
-        y2_a = self.__screenY(point[1]-size_y)
-        y2_b = self.__screenY(point[1]+size_y)
+        y2_a = self.__screenY(point[1]-size_y+110)
+        y2_b = self.__screenY(point[1]+size_y+110)
         print "drawLine:" + str((x2,y2_a,x2,y2_b))
 
     def drawParticles(self,data):
