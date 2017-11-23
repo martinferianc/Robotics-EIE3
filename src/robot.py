@@ -38,7 +38,7 @@ class Robot:
 		self.distance = 0
 		self.distance_stack = deque(maxlen=15)
                 if planning:
-                    self.planner = Planner(0,cavas = self.canvas)
+                    self.planner = Planner(0,canvas = self.canvas)
 
 		self.distances = {
 			-90:255,
