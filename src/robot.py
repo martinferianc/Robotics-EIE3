@@ -37,8 +37,8 @@ class Robot:
         self.circumference = self.wheel_diameter * math.pi
         self.distance = 0
         self.distance_stack = deque(maxlen=15)
-                if planning:
-                    self.planner = Planner(0,canvas = self.canvas)
+        if planning:
+            self.planner = Planner(0,canvas = self.canvas)
 
         self.distances = {
             -90:255,
