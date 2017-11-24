@@ -212,28 +212,28 @@ class Robot:
         self.distance = d
         return d
 
-        def detect_obstacles(self, maxdist=110):
-            angles = [-30,-15,0,15,30,0]
-            for ultra_angle in angles:
-                # Rotate camera to position
-                self.set_ultra_pose(ultra_angle)
+    def detect_obstacles(self, maxdist=110):
+        angles = [-30,-15,0,15,30,0]
+        for ultra_angle in angles:
+            # Rotate camera to position
+            self.set_ultra_pose(ultra_angle)
 
-                # Get sonar reading
-                d = self.update_distance()
-                time.sleep(0.5)
-                # If reading within maxdist
-                if d < maxdist:
-                    # Get robot position
-                    robot_x, robot_y, robot_p = self.particle_state.get_coordinates()
-                    ultra_rad = math.radians(ultra_angle)
-                    print("Robot at x:{}. y:{}, theta:{}, ultra_angle:{}".format(robot_x, robot_y, robot_p,ultra_angle))
-                    # Create object in position calculated from robot's position
-                    obstacle_x = robot_x + d*math.cos(robot_p+ultra_rad)
-                    obstacle_y = robot_y + d*math.sin(robot_p+ultra_rad)
-                    err = self.particle_state.get_error()
-                    self.planner.append_obstacle(Obstacle(obstacle_x, obstacle_y, err[0], err[1]))
-                    print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, self.state.get("ultra_pose", 0), obstacle_x, obstacle_y))
-            return True
+            # Get sonar reading
+            d = self.update_distance()
+            time.sleep(0.5)
+            # If reading within maxdist
+            if d < maxdist:
+                # Get robot position
+                robot_x, robot_y, robot_p = self.particle_state.get_coordinates()
+                ultra_rad = math.radians(ultra_angle)
+                print("Robot at x:{}. y:{}, theta:{}, ultra_angle:{}".format(robot_x, robot_y, robot_p,ultra_angle))
+                # Create object in position calculated from robot's position
+                obstacle_x = robot_x + d*math.cos(robot_p+ultra_rad)
+                obstacle_y = robot_y + d*math.sin(robot_p+ultra_rad)
+                err = self.particle_state.get_error()
+                self.planner.append_obstacle(Obstacle(obstacle_x, obstacle_y, err[0], err[1]))
+                print("Obstacle detected {0}cm away at angle of {1} from robot. Obstacle coordinates - x:{2}. y:{3}".format(d, self.state.get("ultra_pose", 0), obstacle_x, obstacle_y))
+        return True
 
 
     # Move specified wheel a certain distance
