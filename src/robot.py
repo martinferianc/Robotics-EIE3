@@ -84,7 +84,7 @@ class Robot:
         self.ultrasonic_port = data["ultrasonic_port"]
         self.motor_ports = data["motor_ports"]
         self.distance_offset = data["ultra_sound_offset"]
-                self.distance_proportional_offset = data["ultra_sound_proportional_offset"]
+        self.distance_proportional_offset = data["ultra_sound_proportional_offset"]
 
         #Motor initialization
         # self.wheels IS JUST THE WHEEL MOTORS
@@ -220,7 +220,7 @@ class Robot:
 
                 # Get sonar reading
                 d = self.update_distance()
-        time.sleep(0.5)
+                time.sleep(0.5)
                 # If reading within maxdist
                 if d < maxdist:
                     # Get robot position
@@ -435,7 +435,7 @@ class Robot:
             if abs(i)>10:
                 raise Exception("Speed set too high, abort.")
             speeds[index]=-i
-                speeds = [k*x for x in speeds]
+        speeds = [k*x for x in speeds]
         self.interface.setMotorRotationSpeedReferences(wheels,speeds)
         self.motor_speeds = speeds
         return True
