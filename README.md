@@ -8,6 +8,7 @@ Motor port 3 is fried! Do not use it.
 `ssh-pi 44:33:4c:6c:c1:46`
 
 Password: mmoggmmo
+
 Node.js interface password: gmmommog
 
 MAC Address: 44:33:4c:6c:c1:46
