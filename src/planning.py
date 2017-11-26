@@ -94,7 +94,6 @@ class Planner:
         for obstacle in self.obstacles:
             # Is this a obstacle we know about? obstacle[2] flag is set when sonar observes it
             if obstacle[1] is True:
-                print("")
                 dx = obstacle[0].get_x()/100 - x
                 dy = obstacle[0].get_y()/100 - y
                 d = math.sqrt(dx**2 + dy**2)
