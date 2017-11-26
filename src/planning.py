@@ -145,7 +145,7 @@ class Planner:
 
                     # What is the distance to the closest obstacle from this possible position?
                     distanceToObstacle = self.__calculate_closest_obstacle_distance(xpredict, ypredict)
-
+                    print("Distance to nearest obstacle: {}".format(distanceToObstacle))
                     # Calculate how much close we've moved to target location
                     previousTargetDistance = math.sqrt((x - self.target[0])**2 + (y - self.target[1])**2)
                     newTargetDistance = math.sqrt((xpredict - self.target[0])**2 + (ypredict - self.target[1])**2)
