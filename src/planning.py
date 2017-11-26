@@ -12,7 +12,7 @@ class Planner:
         self.W = 2 * self.ROBOTRADIUS # width of robot
         self.SAFEDIST = safe_dist      # used in the cost function for avoiding obstacles
 
-        self.MAXVELOCITY = 0.5     #ms^(-1) max speed of each wheel
+        self.MAXVELOCITY = 1     #ms^(-1) max speed of each wheel
         self.MAXACCELERATION = 0.5 #ms^(-2) max rate we can change speed of each wheel
 
         # The region we will fill with obstacles

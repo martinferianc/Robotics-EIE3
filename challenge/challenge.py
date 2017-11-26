@@ -27,4 +27,4 @@ Robot = Robot(interface,
 
 Robot.start_obstacle_detection(interval=5)
 
-Robot.start_challenge(interval = 2)
+Robot.start_challenge(interval = 0.2)
