@@ -630,17 +630,17 @@ class Robot:
                 raise Exception("Planner has not been initialized!")
             x,y,theta = self.particle_state.get_coordinates()
             print("Robot state: x:{},y:{},theta:{}".format(x,y,theta))
-            v_l, v_r, x_new, y_new, theta_new = self.planner.get_plan(x,y,theta,self.motor_speeds[0],self.motor_speeds[1],1)
+            v_l, v_r, x_new, y_new, theta_new = self.planner.get_plan(x/100,y/100,theta,self.motor_speeds[0],self.motor_speeds[1],1)
             print("Robot new state: x:{},y:{},theta:{}".format(x_new,y_new,theta_new))
-            diff_x = math.pow(x-100*x_new,2)
-            diff_y = math.pow(y-100*y_new,2)
+            diff_x = math.pow(x-x_new,2)
+            diff_y = math.pow(y-y_new,2)
             d = math.sqrt(diff_x+diff_y)
             print("New plan calculated: vL:{},vR:{}".format(v_l,v_r))
             self.motor_speed = [v_l,v_r]
             self.set_speed([v_l*10, v_r*10], self.wheels)
             self.particle_state.update_state("mixed", movement=d,theta=theta-theta_new)
             particles = self.particle_state.get_state()
-            self.canvas.drawParticles(particles)
+            self.canvas.drawParticles(particles, offset_y=110)
             return 1
 
         def start_challenge(self, interval = 0.05):

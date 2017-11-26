@@ -56,7 +56,7 @@ class Planner:
         y = obstacle.get_y()
         radius = obstacle.get_radius()
         std_x,std_y = obstacle.get_std()
-        self.canvas.drawCross((x,y), size_x = std_x+radius,size_y = std_y+radius)
+        self.canvas.drawCross((x,y), size_x = std_x+radius,size_y = std_y+radius,offset_y=110)
         return True
 
     # Function to predict new robot position based on current pose and velocity controls
