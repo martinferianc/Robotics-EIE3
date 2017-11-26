@@ -172,4 +172,4 @@ class Planner:
         # Actually now move robot based on chosen vL and vR
         (x, y, theta) = self.__predict_position(vL, vR, x, y, theta, interval)
 
-        return (vL, vR, x,y,theta)
+        return (abs(vL), abs(vR), x,y,theta)
