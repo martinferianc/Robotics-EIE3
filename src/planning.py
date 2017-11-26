@@ -1,7 +1,9 @@
 # Planning
 # Dynamic Window Approach (Local Planning)
 # Andrew Davison 2017
+from __future__ import division
 import os, math, time, random
+
 
 class Planner:
     def __init__(self, y,x=0,theta=0,radius = 0.06, size = 0.2, safe_dist=0.2, playfield=(0, 0, 3.0, 2.0), target=(3.1,0), canvas = None):
@@ -51,7 +53,7 @@ class Planner:
             diff_y = abs(y-obstacle.get_y())
             if diff_x<threshold and diff_y<threshold:
                 return False
-        self.obstacles.append([obstacle,1])
+        self.obstacles.append([obstacle,True])
         x = obstacle.get_x()
         y = obstacle.get_y()
         radius = obstacle.get_radius()
@@ -92,8 +94,9 @@ class Planner:
         for obstacle in self.obstacles:
             # Is this a obstacle we know about? obstacle[2] flag is set when sonar observes it
             if obstacle[1] is True:
-                dx = obstacle[0].get_x() - x
-                dy = obstacle[0].get_y() - y
+                print("")
+                dx = obstacle[0].get_x()/100 - x
+                dy = obstacle[0].get_y()/100 - y
                 d = math.sqrt(dx**2 + dy**2)
                 # Distance between closest touching point of circular robot and circular obstacle
                 dist = d - self.obstacleRADIUS - self.ROBOTRADIUS
