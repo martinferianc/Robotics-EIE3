@@ -51,7 +51,7 @@ class Planner:
             diff_y = abs(y-obstacle.get_y())
             if diff_x<threshold and diff_y<threshold:
                 return False
-        self.obstacles.append([obstacle,0])
+        self.obstacles.append([obstacle,1])
         x = obstacle.get_x()
         y = obstacle.get_y()
         radius = obstacle.get_radius()
