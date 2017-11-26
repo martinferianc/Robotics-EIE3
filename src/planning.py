@@ -53,7 +53,7 @@ class Planner:
             diff_y = abs(y-obstacle.get_y())
             if diff_x<threshold and diff_y<threshold:
                 return False
-        self.obstacles.append([obstacle,True])
+        self.obstacles.append([obstacle,False])
         x = obstacle.get_x()
         y = obstacle.get_y()
         radius = obstacle.get_radius()
@@ -106,7 +106,7 @@ class Planner:
 
     def __observe_obstacles(self,x, y, theta):
         for i, obstacle in enumerate(self.obstacles):
-            vector = (obstacle[0].get_x() - x, obstacle[0].get_y() - y)
+            vector = (obstacle[0].get_x()/100 - x, obstacle[0].get_y()/100 - y)
             vectorangle = math.atan2(vector[1], vector[0])
             vectorlength = math.sqrt(vector[0]**2 + vector[1]**2)
             anglediff = vectorangle - theta
