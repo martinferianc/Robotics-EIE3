@@ -635,6 +635,7 @@ class Robot:
         diff_x = math.pow(x-x_new,2)
         diff_y = math.pow(y-y_new,2)
         d = math.sqrt(diff_x+diff_y)
+        print("Distance travelled:{}".format(d))
         print("New plan calculated: vL:{},vR:{}".format(v_l,v_r))
         self.motor_speed = [v_l,v_r]
         self.set_speed([v_l*10, v_r*10], self.wheels)
