@@ -14,7 +14,7 @@ Canvas = Canvas()
 Map = Map(Canvas)
 
 Robot = Robot(interface,
-              pid_config_file="carpet_config.json",
+              pid_config_file="speed_config.json",
               mcl=False,
               threading=False,
               x=0,
@@ -25,6 +25,6 @@ Robot = Robot(interface,
               planning = True
               )
 
-Robot.start_obstacle_detection(interval=5)
+Robot.start_obstacle_detection(interval=0.05)
 
-Robot.start_challenge(interval = 5)
+Robot.start_challenge(interval = 0.05)

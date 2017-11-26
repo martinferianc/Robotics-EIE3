@@ -6,9 +6,9 @@
 		"minPWM": 18.0,
 		"minOutput": -255,
 		"maxOutput": 255,
-		"k_p": 300.0,
+		"k_p": 25.0,
 		"k_i": 25.0,
-		"k_d": 1200.0
+		"k_d": 800.0
 
 	},
 
@@ -19,9 +19,9 @@
 		"minPWM": 18.0,
 		"minOutput": -255,
 		"maxOutput": 255,
-		"k_p": 400.0,
-		"k_i": 75.0,
-		"k_d": 1200.0
+		"k_p": 50.0,
+		"k_i": 50.0,
+		"k_d": 800.0
 	},
 
 	"distance_calibration": 3.05,

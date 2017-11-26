@@ -66,7 +66,7 @@ class Robot:
 
         self.load_base_config()
         self.load_pid_config()
-        self.particle_state = ParticleState(standard_deviation = self.standard_deviation,n_particles=300,x = x,y = y,theta=theta,mode=mode,mcl = self.mcl,Map = self.Map)
+        self.particle_state = ParticleState(standard_deviation = self.standard_deviation,n_particles=1,x = x,y = y,theta=theta,mode=mode,mcl = self.mcl,Map = self.Map)
         if threading:
             self.start_threading()
 
@@ -457,14 +457,13 @@ class Robot:
     def set_ultra_pose(self, pose):
         success = True
         # print("Current ultra pose: {}".format(self.state.get("ultra_pose", -1)))
-<<<<<<< HEAD
 		# Limits on pose settings so that it doesn't overrotate and stretch the cable
-		while pose > 360:
+        while pose > 360:
 			pose -= 360
-		while pose < -360:
+        while pose < -360:
 			pose += 360
-		if pose == 360:
-			pose = 0
+        if pose == 360:
+            pose = 0
 
 		if pose > 180:
 			# If greater than 180 e.g. 270, turn it into -90
@@ -687,7 +686,6 @@ class Robot:
 
         if rotation==0:
             print("No rotation required.")
->>>>>>> 85086ed0dbb1729d5b627e666324025ad7b09aab
             return True
 
         if rotation > 180:
