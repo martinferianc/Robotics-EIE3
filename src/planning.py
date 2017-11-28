@@ -111,6 +111,7 @@ class Planner:
         vLchosen = 1
         vRchosen = 1
 
+        print "Getting a new plan"
 
         for vLpossible in vLpossiblearray:
             for vRpossible in vRpossiblearray:
