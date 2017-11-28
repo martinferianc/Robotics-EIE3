@@ -85,37 +85,18 @@ class Planner:
         closestdist = 100000.0
         # Calculate distance to closest obstacle
         for obstacle in self.obstacles:
-            # Is this a obstacle we know about? obstacle[2] flag is set when sonar observes it
-            if obstacle[1] is True:
-                dx = obstacle[0].get_x()/100 - x
-                dy = obstacle[0].get_y()/100 - y
-                d = math.sqrt(dx**2 + dy**2)
-                # Distance between closest touching point of circular robot and circular obstacle
-                dist = d - self.obstacleRADIUS - self.ROBOTRADIUS
-                if (dist < closestdist):
-                    closestdist = dist
+            dx = obstacle[0].get_x()/100 - x
+            dy = obstacle[0].get_y()/100 - y
+            d = math.sqrt(dx**2 + dy**2)
+            # Distance between closest touching point of circular robot and circular obstacle
+            dist = d - self.obstacleRADIUS - self.ROBOTRADIUS
+            print "Your dist is: " + str(dist)
+            if (dist < closestdist):
+                closestdist = dist
+                print "Closest obstacle: " + str(dist)
         return closestdist
 
-    def __observe_obstacles(self,x, y, theta):
-        for i, obstacle in enumerate(self.obstacles):
-            vector = (obstacle[0].get_x()/100 - x, obstacle[0].get_y()/100 - y)
-            vectorangle = math.atan2(vector[1], vector[0])
-            vectorlength = math.sqrt(vector[0]**2 + vector[1]**2)
-            anglediff = vectorangle - theta
-            while(anglediff < -math.pi):
-                anglediff = anglediff + 2 * math.pi
-            while(anglediff > math.pi):
-                anglediff = anglediff - 2 * math.pi
-            # compare anglediff with arc length obstacle presents at the distance it is away
-            obstacleangularhalfwidth = self.obstacleRADIUS / vectorlength
-            if(abs(anglediff) - self.SENSORHALFANGLE < obstacleangularhalfwidth and vectorlength < self.SENSORRANGE):
-                self.obstacles[i][1] = True
-
-
     def get_plan(self,x,y,theta,vL,vR,interval):
-        # Check if any new obstacles are visible from current pose
-        self.__observe_obstacles(x, y, theta)
-
         # Planning
         # We want to find the best benefit where we have a positive component for closeness to target,
         # and a negative component for closeness to obstacles, for each of a choice of possible actions
