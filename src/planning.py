@@ -15,7 +15,7 @@ class Planner:
         self.SAFEDIST = safe_dist      # used in the cost function for avoiding obstacles
 
         self.MAXVELOCITY = 1     #ms^(-1) max speed of each wheel
-        self.MAXACCELERATION = 0.5 #ms^(-2) max rate we can change speed of each wheel
+        self.MAXACCELERATION = 1 #ms^(-2) max rate we can change speed of each wheel
 
         # The region we will fill with obstacles
         self.PLAYFIELDCORNERS = playfield
@@ -24,13 +24,6 @@ class Planner:
         self.target = target
 
         # Starting pose of robot
-        self.x = x
-        self.y = y
-        self.theta = theta
-
-        # Starting wheel velocities
-        self.vL = 0.00
-        self.vR = 0.00
 
         # Timestep delta to run control and simulation at
         self.dt = 0.1
@@ -134,8 +127,8 @@ class Planner:
         vLpossiblearray = (vL - self.MAXACCELERATION * interval, vL, vL + self.MAXACCELERATION * interval)
         vRpossiblearray = (vR - self.MAXACCELERATION * interval, vR, vR + self.MAXACCELERATION * interval)
 
-        vLchosen = 0
-        vRchosen = 0
+        vLchosen = 1
+        vRchosen = 1
 
         for vLpossible in vLpossiblearray:
             for vRpossible in vRpossiblearray:
@@ -172,6 +165,6 @@ class Planner:
         vR = vRchosen
 
         # Actually now move robot based on chosen vL and vR
-        (x, y, theta) = self.__predict_position(vL, vR, x, y, theta, interval)
+        (x, y, theta) = self.__predict_position(abs(vL), abs(vR), x, y, theta, interval)
 
         return (vL, vR, x,y,theta)
