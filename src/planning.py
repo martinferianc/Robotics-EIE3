@@ -117,9 +117,9 @@ class Planner:
             for vRpossible in vRpossiblearray:
                 # We can only choose an action if it's within velocity limits
                 print "Velocity Check"
-                print self.MAXVELOCITY
-                print "VL" + str(vLpossible)
-                print "VR" + str(vRpossible)
+                print "MAX " + str(self.MAXVELOCITY)
+                print "VL " + str(vLpossible)
+                print "VR " + str(vRpossible)
                 if(abs(vLpossible) > self.MAXVELOCITY):
                     vLpossible = self.MAXVELOCITY
                 if(abs(vRpossible) > self.MAXVELOCITY):
