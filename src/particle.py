@@ -134,6 +134,7 @@ class ParticleState():
             mean_y = sum([point[0][1]*point[1]  for point in self.state])
             mean_theta = sum([point[0][2]*point[1]  for point in self.state])
         else:
+            print "Not using MCL"
             mean_x = np.mean([point[0][0] for point in self.state])
             mean_y = np.mean([point[0][1] for point in self.state])
             mean_theta = np.mean([point[0][2] for point in self.state])
