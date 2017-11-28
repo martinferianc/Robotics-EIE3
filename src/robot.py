@@ -219,6 +219,7 @@ class Robot:
         if d < maxdist:
             # Get robot position
             robot_x, robot_y, robot_p = self.particle_state.get_coordinates()
+            ultra_rad = math.radians(robot_p)
             print("Robot at x:{}. y:{}, theta:{}, ultra_angle:{}".format(robot_x, robot_y, robot_p,0))
             # Create object in position calculated from robot's position
             obstacle_x = robot_x + d*math.cos(robot_p+ultra_rad)
