@@ -114,6 +114,10 @@ class Planner:
         for vLpossible in vLpossiblearray:
             for vRpossible in vRpossiblearray:
                 # We can only choose an action if it's within velocity limits
+                print "Velocity Check"
+                print self.MAXVELOCITY
+                print vLpossible
+                print vRpossible
                 if (vLpossible <= self.MAXVELOCITY and vRpossible <= self.MAXVELOCITY and vLpossible >= -self.MAXVELOCITY and vRpossible >= -self.MAXVELOCITY):
                     # Predict new position in TAU seconds
                     TAU = interval
@@ -147,6 +151,6 @@ class Planner:
 
         # Actually now move robot based on chosen vL and vR
         (x, y, theta) = self.__predict_position(abs(vL), abs(vR), x, y, theta, interval)
-        
+
         #Convert back to CM
         return (abs(vL), abs(vR), x*100,y*100,theta)
