@@ -632,7 +632,7 @@ class Robot:
         d = math.sqrt(diff_x+diff_y)
         print("Distance travelled:{}".format(d))
         print("New plan calculated: vL:{},vR:{}".format(v_l,v_r))
-        self.set_speed([v_l*10, v_r*10], self.wheels)
+        self.set_speed([v_l, v_r], self.wheels)
         self.particle_state.update_state("mixed", movement=d,theta=theta-theta_new)
         particles = self.particle_state.get_state()
         self.canvas.drawParticles(particles, offset_y=110)
