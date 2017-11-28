@@ -559,6 +559,9 @@ class Robot:
                 self.stop_threading()
             elif command==15:
                 print(self.update_distance())
+            elif command==16:
+                self.set_speed([10,10])
+                print("Full speed straight at 10")
             else:
                 command = -1
                 self.stop_threading()
