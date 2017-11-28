@@ -90,7 +90,6 @@ class Planner:
             d = math.sqrt(dx**2 + dy**2)
             # Distance between closest touching point of circular robot and circular obstacle
             dist = d - self.obstacleRADIUS - self.ROBOTRADIUS
-            print "Your dist is: " + str(dist)
             if (dist < closestdist):
                 closestdist = dist
                 print "Closest obstacle: " + str(dist)
@@ -117,9 +116,9 @@ class Planner:
             for vRpossible in vRpossiblearray:
                 # We can only choose an action if it's within velocity limits
                 print "Velocity Check"
-                print "MAX " + str(self.MAXVELOCITY)
-                print "VL " + str(vLpossible)
-                print "VR " + str(vRpossible)
+                print "MAX: " + str(self.MAXVELOCITY)
+                print "VL: " + str(vLpossible)
+                print "VR: " + str(vRpossible)
                 if(abs(vLpossible) > self.MAXVELOCITY):
                     vLpossible = self.MAXVELOCITY
                 if(abs(vRpossible) > self.MAXVELOCITY):

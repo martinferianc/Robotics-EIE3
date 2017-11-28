@@ -628,7 +628,7 @@ class Robot:
         x,y,theta = self.particle_state.get_coordinates()
         print("Robot state: x:{},y:{},theta:{}".format(x,y,theta))
         print(self.motor_speeds[0])
-        v_l, v_r, x_new, y_new, theta_new = self.planner.get_plan(x/100,y/100,theta,self.motor_speeds[0],self.motor_speeds[1])
+        v_l, v_r, x_new, y_new, theta_new = self.planner.get_plan(x/100,y/100,theta,self.motor_speeds[0]/100,self.motor_speeds[1]/100)
         print("Robot new state: x:{},y:{},theta:{}".format(x_new,y_new,theta_new))
         diff_x = math.pow(x-x_new,2)
         diff_y = math.pow(y-y_new,2)
