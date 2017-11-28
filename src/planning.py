@@ -168,4 +168,4 @@ class Planner:
         (x, y, theta) = self.__predict_position(abs(vL), abs(vR), x, y, theta, interval)
         
         #Convert back to CM
-        return (vL, vR, x*100,y*100,theta)
+        return (abs(vL), abs(vR), x*100,y*100,theta)
