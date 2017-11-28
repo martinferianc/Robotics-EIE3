@@ -626,7 +626,7 @@ class Robot:
         if not self.planner:
             raise Exception("Planner has not been initialized!")
         x,y,theta = self.particle_state.get_coordinates()
-        print("Robot state: x:{},y:{},theta:{}".format(x,y,theta))
+        print("Robot state: x:{},y:{},theta:{}".format(x,y,t            print "Your dist is: " + str(dist)heta))
         print(self.motor_speeds[0])
         v_l, v_r, x_new, y_new, theta_new = self.planner.get_plan(x/100,y/100,theta,self.motor_speeds[0]/100,self.motor_speeds[1]/100)
         print("Robot new state: x:{},y:{},theta:{}".format(x_new,y_new,theta_new))
