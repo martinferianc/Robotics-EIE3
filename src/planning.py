@@ -14,8 +14,8 @@ class Planner:
         self.W = 2 * self.ROBOTRADIUS # width of robot
         self.SAFEDIST = safe_dist      # used in the cost function for avoiding obstacles
 
-        self.MAXVELOCITY = 10     #ms^(-1) max speed of each wheel
-        self.MAXACCELERATION = 6 #ms^(-2) max rate we can change speed of each wheel
+        self.MAXVELOCITY = 0.1     #ms^(-1) max speed of each wheel
+        self.MAXACCELERATION = 0.2 #ms^(-2) max rate we can change speed of each wheel
 
         # The region we will fill with obstacles
         self.PLAYFIELDCORNERS = playfield
@@ -96,7 +96,7 @@ class Planner:
                 print "Closest obstacle: " + str(dist)
         return closestdist
 
-    def get_plan(self,x,y,theta,vL,vR,interval):
+    def get_plan(self,x,y,theta,vL,vR):
         # Planning
         # We want to find the best benefit where we have a positive component for closeness to target,
         # and a negative component for closeness to obstacles, for each of a choice of possible actions
@@ -105,8 +105,8 @@ class Planner:
         OBSTACLEWEIGHT = 16
 
         # Range of possible motions: each of vL and vR could go up or down a bit
-        vLpossiblearray = (vL - self.MAXACCELERATION * interval, vL, vL + self.MAXACCELERATION * interval)
-        vRpossiblearray = (vR - self.MAXACCELERATION * interval, vR, vR + self.MAXACCELERATION * interval)
+        vLpossiblearray = (vL - self.MAXACCELERATION * self.dt, vL, vL + self.MAXACCELERATION * self.dt)
+        vRpossiblearray = (vR - self.MAXACCELERATION * self.dt, vR, vR + self.MAXACCELERATION * self.dt)
 
         vLchosen = 1
         vRchosen = 1
@@ -120,34 +120,37 @@ class Planner:
                 print self.MAXVELOCITY
                 print vLpossible
                 print vRpossible
-                if (vLpossible <= self.MAXVELOCITY and vRpossible <= self.MAXVELOCITY and vLpossible >= -self.MAXVELOCITY and vRpossible >= -self.MAXVELOCITY):
-                    # Predict new position in TAU seconds
-                    TAU = interval
-                    (xpredict, ypredict, thetapredict)= self.__predict_position(vLpossible, vRpossible, x, y, theta, TAU)
+                if(abs(vLpossible) > self.MAXVELOCITY):
+                    vLpossible = self.MAXVELOCITY
+                if(abs(vRpossible) > self.MAXVELOCITY):
+                    vRpossible = self.MAXVELOCITY
+                # Predict new position in TAU seconds
+                TAU = self.dt
+                (xpredict, ypredict, thetapredict)= self.__predict_position(vLpossible, vRpossible, x, y, theta, TAU)
 
-                    # What is the distance to the closest obstacle from this possible position?
-                    distanceToObstacle = self.__calculate_closest_obstacle_distance(xpredict, ypredict)
-                    print("Distance to nearest obstacle: {}".format(distanceToObstacle))
-                    # Calculate how much close we've moved to target location
-                    previousTargetDistance = math.sqrt((x - self.target[0])**2 + (y - self.target[1])**2)
-                    newTargetDistance = math.sqrt((xpredict - self.target[0])**2 + (ypredict - self.target[1])**2)
-                    distanceForward = previousTargetDistance - newTargetDistance
+                # What is the distance to the closest obstacle from this possible position?
+                distanceToObstacle = self.__calculate_closest_obstacle_distance(xpredict, ypredict)
+                print("Distance to nearest obstacle: {}".format(distanceToObstacle))
+                # Calculate how much close we've moved to target location
+                previousTargetDistance = math.sqrt((x - self.target[0])**2 + (y - self.target[1])**2)
+                newTargetDistance = math.sqrt((xpredict - self.target[0])**2 + (ypredict - self.target[1])**2)
+                distanceForward = previousTargetDistance - newTargetDistance
 
-                    # Alternative: how far have I moved forwards?
-                    # distanceForward = xpredict - x
-                    # Positive benefit
-                    distanceBenefit = FORWARDWEIGHT * distanceForward
-                    # Negative cost: once we are less than SAFEDIST from collision, linearly increasing cost
-                    if (distanceToObstacle < self.SAFEDIST):
-                        obstacleCost = OBSTACLEWEIGHT * (self.SAFEDIST - distanceToObstacle)
-                    else:
-                        obstacleCost = 0.0
-                    # Total benefit function to optimise
-                    benefit = distanceBenefit - obstacleCost
-                    if (benefit > bestBenefit):
-                        vLchosen = vLpossible
-                        vRchosen = vRpossible
-                        bestBenefit = benefit
+                # Alternative: how far have I moved forwards?
+                # distanceForward = xpredict - x
+                # Positive benefit
+                distanceBenefit = FORWARDWEIGHT * distanceForward
+                # Negative cost: once we are less than SAFEDIST from collision, linearly increasing cost
+                if (distanceToObstacle < self.SAFEDIST):
+                    obstacleCost = OBSTACLEWEIGHT * (self.SAFEDIST - distanceToObstacle)
+                else:
+                    obstacleCost = 0.0
+                # Total benefit function to optimise
+                benefit = distanceBenefit - obstacleCost
+                if (benefit > bestBenefit):
+                    vLchosen = vLpossible
+                    vRchosen = vRpossible
+                    bestBenefit = benefit
         vL = vLchosen
         vR = vRchosen
 
