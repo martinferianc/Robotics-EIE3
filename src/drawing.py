@@ -29,18 +29,18 @@ class Canvas:
         y2 = self.__screenY(line[3])
         print "drawLine:" + str((x1,y1,x2,y2))
 
-    def drawCross(self,point):
-        x1_a = self.__screenX(point[0]-2)
-        y1 = self.__screenY(point[1])
-        x1_b = self.__screenX(point[0]+2)
+    def drawCross(self,point, size_x = 2, size_y = 2, offset_y=0):
+        x1_a = self.__screenX(point[0]-size_x)
+        y1 = self.__screenY(point[1]+offset_y)
+        x1_b = self.__screenX(point[0]+size_x)
         print "drawLine:" + str((x1_a,y1,x1_b,y1))
         x2 = self.__screenX(point[0])
-        y2_a = self.__screenY(point[1]-2)
-        y2_b = self.__screenY(point[1]+2)
+        y2_a = self.__screenY(point[1]-size_y+offset_y)
+        y2_b = self.__screenY(point[1]+size_y+offset_y)
         print "drawLine:" + str((x2,y2_a,x2,y2_b))
 
-    def drawParticles(self,data):
-        display = [(self.__screenX(d[0][0])+d[1],self.__screenY(d[0][1])+d[1]) for d in data]
+    def drawParticles(self,data,offset_y=0):
+        display = [(self.__screenX(d[0][0])+d[1],self.__screenY(d[0][1]+offset_y)+d[1]) for d in data]
         print "drawParticles:" + str(display)
     def __screenX(self,x):
         return (x + self.margin)*self.scale
