@@ -479,18 +479,14 @@ class Robot:
     def set_robot_pose(self, s_pose, update_particles = False):
         success = True
         print("Starting pose: {}".format(self.state["pose"].get("theta",-1)))
-
         while s_pose >= 360:
             s_pose-=360
         while s_pose <= -360:
             s_pose+=360
-
         rotation = (s_pose-self.state["pose"].get("theta", 0))
-
         if rotation==0:
             print("No rotation required.")
             return True
-
         if rotation > 180:
             rotation-=360
         elif rotation < -180:
@@ -518,7 +514,6 @@ class Robot:
                 print("Enter pose to rotate to:")
                 s_pose = float(input())
                 self.set_robot_pose(s_pose)
-
             elif command == 3:
                 distances = []
                 print("Enter left wheel distance:")

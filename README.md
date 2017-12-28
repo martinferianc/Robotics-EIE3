@@ -1,24 +1,17 @@
 # Robotics-EIE3
-Repo to hold the the code for Robotics course CO333 at Imperial
+Repo to hold the the code for Robotics course CO333 at Imperial College London taught by Andrew Davison: [Link](https://www.doc.ic.ac.uk/~ajd/Robotics/)
 
-## **Note**
-Motor port 3 is fried! Do not use it.
+### Contents
 
-## SSH from DOC computers, IP agnostic method:
-`ssh-pi 44:33:4c:6c:c1:46`
+During several weeks we were encouraged to complete several challenges in hadrwarde and software calibration of our proposed robot.
 
-Password: mmoggmmo
+The challanges included:
 
-Node.js interface password: gmmommog
+1. Building the robot and calibratiing it's odometry and PID controller [asssignment_1](/assignment_1).
+2. Observe possible sensors and program avoidance manouvers based on ultrasound readings and bumpers [asssignment_2](/assignment_2) and [asssignment_3](/assignment_3).
+3. Applying particle filter via Monte Carlo algorithm to navigate the robot through a a pre-defined maze [asssignment_4](/assignment_4)
+4. Trying to learn a particular signature of a location to perform continuous localisation [asssignment_5](/assignment_5).
+5. Final challenge in avoiding obstacles to reach a final destination [challenge](/challenge).
 
-MAC Address: 44:33:4c:6c:c1:46
-
-## Accessing Pi from web
-[https://www.doc.ic.ac.uk/~jrj07/robotics](https://www.doc.ic.ac.uk/~jrj07/robotics)
-
-type in MAC address: 44:33:4c:6c:c1:46
-
-## Running scripts
-Run all scripts from the root directory.
-e.g.
-`python test_scripts/test_wheels.py 20 20`
+### Authors:
+George Punter, Owen Harcombe, Mike Chen, Martin Ferianc at Imperial College London 2017.
