@@ -2,6 +2,8 @@
 
 ![The SLAM robotic vehicle](https://image.ibb.co/mbeuhJ/slam_robot.jpg)
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ENcUDl_qaL4" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
 Repo to hold the the code for Robotics course CO333 at Imperial College London taught by Andrew Davison: [Link](https://www.doc.ic.ac.uk/~ajd/Robotics/)
 
 ### Contents
