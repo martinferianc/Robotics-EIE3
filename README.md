@@ -1,4 +1,11 @@
 # Robotics-EIE3
+
+![The SLAM robotic vehicle](https://image.ibb.co/mbeuhJ/slam_robot.jpg)
+
+
+
+[![video thumbnail](https://img.youtube.com/vi/ENcUDl_qaL4/0.jpg)](https://youtu.be/ENcUDl_qaL4)
+
 Repo to hold the the code for Robotics course CO333 at Imperial College London taught by Andrew Davison: [Link](https://www.doc.ic.ac.uk/~ajd/Robotics/)
 
 ### Contents
