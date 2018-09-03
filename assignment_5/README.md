@@ -1,5 +1,5 @@
 # Robotics-EIE3
-## Robotics Assignment 5: Continuos localisation
+## Robotics Assignment 5: Continuous localisation
 [**The handout**](../Resources/questions6.pdf)
 
 An alternative relocalisation technique to monte carlo localisation involves making a lot of measurements at a number of chosen locations and learning their characteristics.
