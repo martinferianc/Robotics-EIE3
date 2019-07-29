@@ -1,12 +1,11 @@
-# Robotics-EIE3
+# Robotics
 
 ![The SLAM robotic vehicle](https://image.ibb.co/mbeuhJ/slam_robot.jpg)
 
 
-
 [![video thumbnail](https://img.youtube.com/vi/ENcUDl_qaL4/0.jpg)](https://youtu.be/ENcUDl_qaL4)
 
-Repo to hold the the code for Robotics course CO333 at Imperial College London taught by Andrew Davison: [Link](https://www.doc.ic.ac.uk/~ajd/Robotics/)
+Repository that holds the code for Robotics course (CO333) at Imperial College London taught by Andrew Davison: [Link](https://www.doc.ic.ac.uk/~ajd/Robotics/)
 
 ### Contents
 
@@ -20,5 +19,5 @@ The challanges included:
 4. Trying to learn a particular signature of a location to perform continuous localisation [asssignment_5](/assignment_5).
 5. Final challenge in avoiding obstacles to reach a final destination [challenge](/challenge).
 
-### Authors:
+### Credits:
 George Punter, Owen Harcombe, Mike Chen, Martin Ferianc at Imperial College London 2017.
